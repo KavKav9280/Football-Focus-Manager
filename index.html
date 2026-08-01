@@ -11,7 +11,8 @@
 body{margin:0;background:radial-gradient(circle at top,#3b2b20,var(--bg) 55%);color:var(--ink);font:16px Georgia,serif;padding:24px 12px 60px}
 .book{max-width:960px;margin:auto;background:var(--paper);padding:26px;border-radius:14px;box-shadow:0 18px 48px #0008;min-height:750px}
 h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
-.subtitle,.hint{color:#5a6657;font-style:italic;margin:0 0 18px}
+.subtitle,.hint{color:#5a6657;font-style:italic;margin:0 0 10px}
+#welcomeRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
 #accountBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#eadfbe;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px}
 .top-xp{background:var(--ink);color:var(--paper);border-radius:9px;padding:11px 14px;margin:15px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 .top-xp .xp{flex:1;max-width:420px;min-width:140px}
@@ -35,21 +36,18 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 .tier h3{font-size:15px;display:flex;justify-content:space-between;align-items:center}
 .task,.habit{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line);flex-wrap:wrap}
 .task:first-of-type,.habit:first-of-type{border-top:0}
-.task .name,.habit .name{flex:1;min-width:140px}
+.task .name,.habit .name{flex:1;min-width:120px}
 .done .name{text-decoration:line-through;color:#6c7567}
 .time{font:12px monospace;background:#eee2bf;padding:5px;border-radius:4px;white-space:nowrap}
 .time input{border:0;background:transparent;width:150px;font:12px monospace}
+select.inline{font:12px monospace;padding:5px;border-radius:4px}
+input.duration-input{width:60px;font:12px monospace;padding:5px}
 .goal-input{width:66px;padding:5px!important}
 .check{width:21px;height:21px;accent-color:var(--green)}
 .empty{color:#687064;font-style:italic;padding:7px 0}
 .xp{height:12px;background:#dac99c;border-radius:10px;overflow:hidden;border:1px solid #bda878}
 .xp i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0%;transition:.3s}
 .score{font-weight:bold;color:var(--gold)}
-
-.setup-screen{display:flex;flex-direction:column;align-items:center;text-align:center;padding:60px 20px}
-.setup-screen h2{font-size:26px}
-.setup-screen form{display:flex;gap:8px;margin-top:18px}
-.setup-screen input{border:1px solid var(--line);border-radius:8px;padding:12px 14px;font:16px Georgia,serif;min-width:240px}
 
 .avatar{width:54px;height:54px;border-radius:50%;background:#eee2bf;object-fit:cover;border:2px solid #00000022;flex-shrink:0}
 .avatar.lg{width:96px;height:96px}
@@ -85,6 +83,7 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 .upgrade-rating{font-size:54px;font-weight:bold;line-height:1;color:#241b12;text-shadow:0 2px #fff8}
 .upgrade-banner{background:#26382c;color:#f3ead2;border-radius:8px;padding:9px;margin:12px 0;font-weight:bold;animation:pop .4s ease}
 @keyframes pop{0%{transform:scale(.9);opacity:.2}100%{transform:scale(1);opacity:1}}
+.modal-card-lg input[type=text]{width:100%;margin-top:6px}
 
 .match{background:#26382c;color:#f3ead2;padding:15px;border-radius:9px;margin-top:14px}
 .match p{margin:5px 0}
@@ -133,18 +132,12 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 <body>
 <main class="book">
   <h1>Focus Manager</h1>
-  <p class="subtitle" id="welcomeLine">Habits, priorities, and your football-manager career.</p>
+  <div id="welcomeRow">
+    <p class="subtitle" id="welcomeLine" style="margin:0"></p>
+    <button class="btn small hidden" id="renameClubBtn">✏️ Rename</button>
+  </div>
 
   <div id="accountBar"></div>
-
-  <div id="setupScreen" class="setup-screen hidden">
-    <h2>⚽ Name your club</h2>
-    <p class="hint">This is the team you'll build, one habit and task at a time. You'll only be asked once — this is saved on your device.</p>
-    <form id="teamForm">
-      <input name="teamName" type="text" placeholder="e.g. Riverside FC" required maxlength="30">
-      <button class="btn gold">Start Career</button>
-    </form>
-  </div>
 
   <div id="appBody">
     <div class="top-xp">
@@ -170,64 +163,64 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
       </div>
       <div class="summary-grid">
         <div class="summary-col">
-          <h3>Today's Habits <button class="btn small" data-tab="habits">Open</button></h3>
+          <h3>Habits <button class="btn small" data-tab="habits">Open</button></h3>
           <div id="summaryHabits"></div>
         </div>
         <div class="summary-col">
-          <h3>Today's Tasks <button class="btn small" data-tab="tasks">Open</button></h3>
+          <h3>Tasks <button class="btn small" data-tab="tasks">Open</button></h3>
           <div id="summaryTasks"></div>
         </div>
       </div>
       <div class="summary-col" style="margin-top:16px">
-        <h3>Squad at a glance <button class="btn small" data-tab="squad">Open</button></h3>
+        <h3>Squad <button class="btn small" data-tab="squad">Open</button></h3>
         <div class="summary-squad-strip" id="summarySquad"></div>
       </div>
     </section>
 
     <section id="tasks" class="tab hidden">
-      <h2>Task Management System</h2>
-      <p class="hint">Give a task a target date/time and — optionally — a countdown timer in minutes, plus a target goal to track progress toward. Turn on notifications below to get a real system alert when a timer starts, at the halfway point, with 5 minutes left, and when time's up (with a sound alarm). Priority sections sort themselves automatically: any section with active tasks stays on top, empty or fully-completed sections sink to the bottom — this can't be manually reordered. You can still reorder individual tasks within their own section using the arrows.</p>
+      <h2>Tasks</h2>
+      <p class="hint">Sections sort themselves — active tasks stay on top. Everything below is editable any time.</p>
       <p><label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="notifToggle" class="check"> <b>🔔 Notifications</b></label> <span class="hint" id="notifStatus" style="margin:0"></span></p>
       <form id="taskForm" class="form">
         <input name="name" type="text" placeholder="What needs doing?" required>
         <select name="priority">
           <option value="red">Red — Urgent &amp; Important</option>
-          <option value="yellow">Yellow — Not Urgent &amp; Important</option>
-          <option value="blue">Blue — Not Urgent &amp; Not Important</option>
+          <option value="yellow">Yellow — Important</option>
+          <option value="blue">Blue — Neither</option>
         </select>
-        <input name="time" type="datetime-local" title="Scheduled start date & time">
-        <input name="duration" type="number" min="1" placeholder="Duration (minutes)">
-        <input name="targetGoal" type="number" min="1" placeholder="Target goal (optional)">
-        <input name="goalUnit" type="text" placeholder="Unit (e.g. miles)" style="width:130px">
-        <button class="btn gold">Add task</button>
+        <input name="time" type="datetime-local" title="Start time">
+        <input name="duration" type="number" min="1" placeholder="Minutes">
+        <input name="targetGoal" type="number" min="1" placeholder="Goal (optional)">
+        <input name="goalUnit" type="text" placeholder="Unit" style="width:90px">
+        <button class="btn gold">Add</button>
       </form>
       <div id="taskLists"></div>
     </section>
 
     <section id="calendar" class="tab hidden">
       <h2>Calendar</h2>
-      <p class="hint">Every task with a scheduled start time appears here as a block spanning its duration. The current block highlights live while it's active, with a countdown to the end. Log progress toward a task's target goal right on its block — it auto-completes the moment logged progress meets the goal.</p>
+      <p class="hint">Blocks track each task's timer live — they shrink as the timer counts down.</p>
       <div class="cal-scroll"><div class="cal-grid" id="calGrid"></div></div>
     </section>
 
     <section id="habits" class="tab hidden">
       <h2>Daily Habits</h2>
-      <p class="hint">A numeric goal completes automatically when the log meets its rule; lower logs are recorded as failed. Clarification habits are logged as Yes or No.</p>
+      <p class="hint">Numeric goals auto-complete when met; Yes/No habits are logged manually.</p>
       <form id="habitForm" class="form">
         <input name="name" type="text" placeholder="New habit name…" required>
         <select name="goalType">
           <option value="none">No goal (tick)</option>
-          <option value="min">Goal: at least</option>
-          <option value="max">Goal: at most</option>
-          <option value="equal">Goal: equal</option>
+          <option value="min">At least</option>
+          <option value="max">At most</option>
+          <option value="equal">Equal to</option>
         </select>
         <select name="entryType">
           <option value="number">Number</option>
-          <option value="clarification">Clarification (Yes / No)</option>
+          <option value="clarification">Yes / No</option>
         </select>
         <input name="target" type="number" min="0" placeholder="Number">
         <input name="unit" type="text" placeholder="Unit">
-        <button class="btn gold">Add habit</button>
+        <button class="btn gold">Add</button>
       </form>
       <div class="grid">
         <div class="panel"><h3>To complete</h3><div id="habitOpen"></div></div>
@@ -236,15 +229,15 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
     </section>
 
     <section id="statistics" class="tab hidden">
-      <h2>Habit Statistics</h2>
-      <p class="hint">Log today's result for any habits you have created. Your daily history is kept separately, so it is ready for tomorrow as well.</p>
+      <h2>Statistics</h2>
+      <p class="hint">Today's log, and your last 7 days.</p>
       <div class="panel"><h3 id="statsDate"></h3><div id="statsToday"></div></div>
       <div class="panel" style="margin-top:16px"><h3>Last 7 days</h3><div id="statsHistory"></div></div>
     </section>
 
     <section id="squad" class="tab hidden">
       <h2>Your Squad</h2>
-      <p class="hint">Starting XI, back to front: 1 GK · 2 RB · 3-4 CB · 5 LB · 6-8 CM · 9 RW · 10 LW · 11 ST. Click any player to view, edit, or upgrade them — stat points are shared across the squad.</p>
+      <p class="hint">1 GK · 2 RB · 3-4 CB · 5 LB · 6-8 CM · 9 RW · 10 LW · 11 ST — click a player to upgrade.</p>
       <div class="panel">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
           <div><b id="managerLevel">Manager Level 1</b><div class="hint" id="xpText" style="margin:0">0 / 100 XP</div></div>
@@ -260,7 +253,7 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 
     <section id="matches" class="tab hidden">
       <h2>Weekly Matches</h2>
-      <p class="hint">One match per day, up to 38 games per season. Ratings within 7 points of each other are a 50/50 coin toss; otherwise the higher-rated team wins. The match unlocks only once every daily habit and task is complete.</p>
+      <p class="hint">One match a day, 38 a season. ≤7 rating gap is a coin toss. Unlocks once today's habits and tasks are done.</p>
       <div id="seasonRecap"></div>
       <div class="season-status" id="seasonStatus"></div>
       <button id="weekBtn" class="btn gold">Play today's match</button>
@@ -271,19 +264,20 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
   <div id="upgradeModalRoot"></div>
 </main>
 
-<!-- Firebase (only activates once you fill in firebaseConfig below with your own project's keys) -->
+<!-- Firebase (activates once firebaseConfig below has your own project's keys) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-const KEY='focus-manager-v6';
+const KEY='focus-manager-v7';
 const positions=['GK','RB','CB','CB','LB','CM','CM','CM','RW','LW','ST']; // 1..11, back to front
 const OUTFIELD_STATS=['PAC','SHO','PAS','DRI','DEF','PHY'];
 const GK_STATS=['DIV','HAN','KIC','REF','SPD','POS'];
 function statKeysFor(pos){ return pos==='GK'?GK_STATS:OUTFIELD_STATS; }
+const REWARDS={red:60,yellow:40,blue:20};
 
-/* EA-style position weightings (must sum to 1 per position) */
+/* EA-style position weightings (sum to 1 per position) */
 const WEIGHTS={
   ST:{SHO:.30,PAC:.25,DRI:.20,PAS:.10,PHY:.10,DEF:.05},
   RW:{PAC:.30,DRI:.25,PAS:.20,SHO:.10,PHY:.10,DEF:.05},
@@ -295,19 +289,15 @@ const WEIGHTS={
   GK:{REF:.30,DIV:.20,POS:.20,HAN:.15,KIC:.10,SPD:.05}
 };
 const KEY_STATS_LABEL={
-  ST:'Key stats: SHO, PAC, DRI', RW:'Key stats: PAC, DRI, PAS', LW:'Key stats: PAC, DRI, PAS',
-  CM:'Key stats: PAS, DEF, PHY', LB:'Key stats: PAC, DEF, PHY/PAS', RB:'Key stats: PAC, DEF, PHY/PAS',
-  CB:'Key stats: DEF, PHY, PAC', GK:'Key stats: REF, DIV/POS, HAN'
+  ST:'SHO, PAC, DRI', RW:'PAC, DRI, PAS', LW:'PAC, DRI, PAS',
+  CM:'PAS, DEF, PHY', LB:'PAC, DEF, PHY/PAS', RB:'PAC, DEF, PHY/PAS',
+  CB:'DEF, PHY, PAC', GK:'REF, DIV/POS, HAN'
 };
 
 /* =========================================================================
-   FIREBASE CONFIG — fill these in with YOUR OWN project's keys to enable
-   Google Sign-In + cross-device cloud sync. Get them from:
-   Firebase console → Project settings → General → "Your apps" → SDK config.
-   Also enable "Google" under Authentication → Sign-in method, and create a
-   Firestore database (in production or test mode).
-   Until you fill these in, the app runs fully offline on localStorage only.
-   ========================================================================= */
+   FIREBASE CONFIG — fill in your own project's keys to enable Google
+   Sign-In + cross-device sync (Firebase console → Project settings → SDK
+   config; enable Google sign-in + Firestore). Runs offline until then. */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -331,9 +321,8 @@ function initFirebase(){
   }catch(e){ console.error('Firebase init failed', e); return false; }
 }
 function signInWithGoogle(){
-  if(!initFirebase()){ alert("Cloud sync isn't configured yet — add your Firebase project keys to firebaseConfig in the code to enable Google Sign-In."); return; }
-  const provider=new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(e=>console.error('Sign-in failed', e));
+  if(!initFirebase()){ alert("Cloud sync isn't configured — add your Firebase keys to firebaseConfig in the code."); return; }
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>console.error('Sign-in failed', e));
 }
 function signOutGoogle(){ if(auth) auth.signOut(); }
 async function handleAuthChange(user){
@@ -354,20 +343,19 @@ function pushToCloud(){
 function queueCloudSync(){ if(!currentUser) return; clearTimeout(cloudSyncTimer); cloudSyncTimer=setTimeout(pushToCloud, 1500); }
 function renderAuthUI(){
   const el=document.getElementById('accountBar'); if(!el) return;
-  if(!fbConfigured()){ el.innerHTML=`<span class="hint" style="margin:0">☁️ Cloud sync not configured — add your Firebase keys in the code to enable Google Sign-In.</span>`; return; }
-  if(currentUser){ el.innerHTML=`<span>Signed in as <b>${esc(currentUser.displayName||currentUser.email||'Manager')}</b></span> <button class="btn small" id="signOutBtn">Sign out</button> <span class="hint" style="margin:0">Cloud sync active</span>`; }
-  else{ el.innerHTML=`<button class="btn small gold" id="signInBtn">Sign in with Google</button> <span class="hint" style="margin:0">to sync your club across devices</span>`; }
+  if(!fbConfigured()){ el.innerHTML=`<span class="hint" style="margin:0">☁️ Cloud sync not configured.</span>`; return; }
+  if(currentUser){ el.innerHTML=`<span>Signed in as <b>${esc(currentUser.displayName||currentUser.email||'Manager')}</b></span> <button class="btn small" id="signOutBtn">Sign out</button>`; }
+  else{ el.innerHTML=`<button class="btn small gold" id="signInBtn">Sign in with Google</button> <span class="hint" style="margin:0">to sync across devices</span>`; }
 }
 
-/* ---------------- local persistence (localStorage) ----------------
-   Note: localStorage does not persist inside Claude.ai's sandboxed
-   artifact preview — it works normally once this file is hosted or
-   opened directly in a real browser outside that sandbox. */
+/* ---------------- local persistence ----------------
+   Note: localStorage doesn't persist inside Claude.ai's sandboxed preview —
+   it works normally once hosted or opened in a real browser. */
 function saveLocal(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ console.warn('localStorage unavailable', e); } }
 function loadLocal(){ try{ const raw=localStorage.getItem(KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
 function save(){ saveLocal(); queueCloudSync(); }
 
-/* ---------------- name / avatar / country / cpu generators ---------------- */
+/* ---------------- generators ---------------- */
 function id(){ return Date.now()+Math.random().toString(16).slice(2); }
 const FIRST=['Marcus','Leo','Kian','Theo','Jamal','Noah','Ezra','Finn','Malik','Rio','Andre','Diego','Kofi','Mateo','Yusuf','Owen','Bruno','Sami','Hugo','Enzo'];
 const LAST=['Bell','Osei','Farrow','Nakamura','Silva','Novak','Ashby','Reyes','Dubois','Hartley','Vance','Okafor','Lindqvist','Moreno','Steiner','Achebe','Larsen','Petrov','Marsh','Colon'];
@@ -380,11 +368,7 @@ const CPU_PREFIX=['Ironbridge','Vale','Northgate','Castleview','Harrow','Fenwick
 const CPU_SUFFIX=['United','Rovers','Athletic','City','Town','Wanderers','Albion','Rangers'];
 const CPU_POSITIONS=['GK','CB','CB','LB','RB','CM','CM','CAM','RW','LW','ST'];
 function genCpuRoster(baseline){
-  // Each player's rating sits within ±2 of the team's target baseline rating.
-  return CPU_POSITIONS.map(pos=>({
-    pos, name:genPlayerName(),
-    rating:Math.max(1, Math.min(99, baseline + (Math.floor(Math.random()*5)-2)))
-  }));
+  return CPU_POSITIONS.map(pos=>({ pos, name:genPlayerName(), rating:Math.max(1, Math.min(99, baseline + (Math.floor(Math.random()*5)-2))) }));
 }
 function genCpuTeams(n){
   const teams=[], used=new Set();
@@ -408,11 +392,17 @@ function newPlayer(pos,i){
   return {id:i, pos, name:genPlayerName(), country:pickCountry(), avatarSeed:'p'+i+'-'+id(),
     rep:Math.floor(Math.random()*4), stats:Object.fromEntries(statKeysFor(pos).map(s=>[s,0]))};
 }
+function newTask(name, priority, time, durationMin, targetGoal, goalUnit){
+  return {id:id(), name, priority, time, durationMin,
+    targetGoal, goalUnit:goalUnit||'', loggedValue:0,
+    done:false, startedAt:null, elapsedMs:0,
+    notified:{half:false,five:false,done:false,upcoming:false}, awaitingConfirm:false};
+}
 
 /* ---------------- state ---------------- */
 const defaults=()=>({
   teamName:null,
-  tasks:[], habits:[], history:{}, taskSectionOrder:['red','yellow','blue'],
+  tasks:[], habits:[], history:{},
   notificationsEnabled:false,
   xp:0, points:0,
   players:positions.map((pos,i)=>newPlayer(pos,i)),
@@ -424,6 +414,7 @@ const defaults=()=>({
 let state=defaults();
 let confirmQueue=[];
 let upgradeModalOpen=false;
+let renamingClub=false;
 let audioCtx=null;
 let swRegistration=null;
 const $=s=>document.querySelector(s);
@@ -439,25 +430,25 @@ function ovr(){ return Math.round(state.players.reduce((s,p)=>s+rating(p),0)/11)
 function levelInfo(x=state.xp){ let level=1,need=10,into=x; while(into>=need){ into-=need; level++; need+=10; } return {level,need,into}; }
 function level(){ return levelInfo().level; }
 function esc(v){ const d=document.createElement('div'); d.textContent=v; return d.innerHTML; }
-function dt(v){ return v? new Date(v).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : 'No time set'; }
+function dt(v){ return v? new Date(v).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : 'No time'; }
 function addXP(x){ const before=level(); state.xp=Math.max(0,state.xp+x); const gained=level()-before; if(gained>0) state.points+=gained*2; }
 function dayKey(offset=0){ const d=new Date(); d.setDate(d.getDate()+offset); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-/* ---------------- native notifications (no custom popups) ---------------- */
+/* ---------------- native notifications ---------------- */
 function registerSW(){
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').then(reg=>{ swRegistration=reg; }).catch(()=>{ /* needs a real https/localhost origin */ });
+    navigator.serviceWorker.register('sw.js').then(reg=>{ swRegistration=reg; }).catch(()=>{});
   }
 }
 function notifStatusText(){
-  if(!('Notification' in window)) return 'not supported in this browser';
-  if(!state.notificationsEnabled) return 'off — toggle to enable';
-  if(Notification.permission==='granted') return 'enabled ✔';
-  if(Notification.permission==='denied') return 'blocked — enable in browser site settings';
-  return 'toggle on, awaiting browser permission…';
+  if(!('Notification' in window)) return 'not supported';
+  if(!state.notificationsEnabled) return 'off';
+  if(Notification.permission==='granted') return 'on ✔';
+  if(Notification.permission==='denied') return 'blocked in browser settings';
+  return 'awaiting permission…';
 }
 function requestNotifications(){
-  if(!('Notification' in window)){ alert('This browser does not support notifications.'); return; }
+  if(!('Notification' in window)){ alert('Notifications are not supported in this browser.'); return; }
   registerSW();
   Notification.requestPermission().then(()=>render());
 }
@@ -504,21 +495,22 @@ function dailyChecklistStatus(){
 }
 
 /* ---------------- tasks ---------------- */
+function taskElapsedMs(t){ return (t.elapsedMs||0) + (t.startedAt ? Date.now()-t.startedAt : 0); }
 function timerControlsHTML(t){
   if(!t.durationMin || t.done) return '';
-  if(t.awaitingConfirm) return `<span class="time">⏰ time's up — confirm below</span>`;
+  if(t.awaitingConfirm) return `<span class="time">⏰ confirm below</span>`;
+  const elapsedMin=taskElapsedMs(t)/60000;
+  const remainMin=Math.max(0, t.durationMin-elapsedMin);
+  const mm=Math.floor(remainMin), ss=Math.floor((remainMin-mm)*60);
   if(t.startedAt){
-    const remainMin=Math.max(0,t.durationMin-(Date.now()-t.startedAt)/60000);
-    const mm=Math.floor(remainMin), ss=Math.floor((remainMin-mm)*60);
-    return `<span class="time">⏱ ${mm}:${String(ss).padStart(2,'0')}</span> <button class="btn small" data-stoptimer="${t.id}">Stop</button>`;
+    return `<span class="time">⏱ ${mm}:${String(ss).padStart(2,'0')}</span> <button class="btn small" data-stoptimer="${t.id}">Pause</button>`;
   }
-  return `<span class="time">${t.durationMin} min timer</span> <button class="btn small" data-starttimer="${t.id}">Start Timer</button>`;
+  if(elapsedMin>0){
+    return `<span class="time">⏸ ${mm}:${String(ss).padStart(2,'0')} left</span> <button class="btn small gold" data-starttimer="${t.id}">Resume</button>`;
+  }
+  return `<button class="btn small gold" data-starttimer="${t.id}">Start Timer</button>`;
 }
 function getSortedSections(){
-  // Strict hierarchy: sections with active (incomplete) tasks stay on top, in
-  // Red/Yellow/Blue order; empty or fully-completed sections sink to the
-  // bottom, also in Red/Yellow/Blue order. If every section is active, or
-  // none are, the result is just the default Red/Yellow/Blue order.
   const tiers=['red','yellow','blue'];
   const hasActive=tier=>state.tasks.some(x=>x.priority===tier && !x.done);
   const active=tiers.filter(hasActive);
@@ -527,21 +519,26 @@ function getSortedSections(){
   return [...active, ...inactive];
 }
 function renderTasks(){
-  const labels={red:'Red — Urgent & Important',yellow:'Yellow — Not Urgent & Important',blue:'Blue — Not Urgent & Not Important'};
-  const rewards={red:60,yellow:40,blue:20};
+  const labels={red:'Red — Urgent & Important',yellow:'Yellow — Important',blue:'Blue — Neither'};
   const order=getSortedSections();
   const toggleEl=document.getElementById('notifToggle');
   if(toggleEl) toggleEl.checked=!!state.notificationsEnabled;
-  $('#notifStatus').textContent=`Notifications: ${notifStatusText()}`;
+  $('#notifStatus').textContent=notifStatusText();
   $('#taskLists').innerHTML=order.map((tier)=>{
     const items=state.tasks.filter(x=>x.priority===tier);
     return `<div class="tier ${tier}">
-      <h3><span>${labels[tier]} <span class="score">+${rewards[tier]} XP</span></span></h3>
+      <h3><span>${labels[tier]} <span class="score">+${REWARDS[tier]} XP</span></span></h3>
       ${items.map((x,xi)=>`
         <div class="task ${x.done?'done':''}">
           <input class="check" type="checkbox" data-task="${x.id}" ${x.done?'checked':''}>
           <span class="name">${esc(x.name)}</span>
-          <span class="time"><input type="datetime-local" value="${x.time||''}" data-time="${x.id}" title="Edit scheduled start time (used by the Calendar tab)"> ${dt(x.time)}</span>
+          <span class="time"><input type="datetime-local" value="${x.time||''}" data-time="${x.id}" title="Start time"></span>
+          <select class="inline" data-priority="${x.id}">
+            <option value="red" ${x.priority==='red'?'selected':''}>Red</option>
+            <option value="yellow" ${x.priority==='yellow'?'selected':''}>Yellow</option>
+            <option value="blue" ${x.priority==='blue'?'selected':''}>Blue</option>
+          </select>
+          <input type="number" class="duration-input" min="1" placeholder="min" value="${x.durationMin||''}" data-duration="${x.id}" title="Timer minutes">
           ${timerControlsHTML(x)}
           <button class="btn small" data-taskup="${x.id}" ${xi===0?'disabled':''}>↑</button>
           <button class="btn small" data-taskdown="${x.id}" ${xi===items.length-1?'disabled':''}>↓</button>
@@ -563,14 +560,13 @@ function completeTaskFromTimer(taskId, completed){
   const idx=state.tasks.findIndex(x=>x.id===taskId); if(idx===-1){ confirmQueue.shift(); render(); return; }
   const t=state.tasks[idx];
   t.awaitingConfirm=false; t.startedAt=null;
-  const rewards={red:60,yellow:40,blue:20};
   if(completed){
-    t.done=true; addXP(rewards[t.priority]);
-    notify('Task complete', `+${rewards[t.priority]} XP — "${t.name}" done!`);
+    t.done=true; addXP(REWARDS[t.priority]);
+    notify('Task complete', `+${REWARDS[t.priority]} XP — "${t.name}" done!`);
   } else {
-    t.done=false; t.notified={start:false,half:false,five:false,done:false};
+    t.done=false; t.elapsedMs=0; t.notified={half:false,five:false,done:false,upcoming:t.notified.upcoming};
     state.tasks.splice(idx,1); state.tasks.push(t);
-    notify('Task rescheduled', `"${t.name}" was reset and moved to the bottom of its list.`);
+    notify('Task rescheduled', `"${t.name}" was reset and moved to the bottom.`);
   }
   confirmQueue.shift();
   save(); render();
@@ -578,16 +574,25 @@ function completeTaskFromTimer(taskId, completed){
 function tickTimers(){
   let changed=false, anyRunning=false;
   state.tasks.forEach(t=>{
-    if(!t.durationMin || t.done || t.awaitingConfirm || !t.startedAt) return;
+    if(t.done) return;
+    if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
+    // upcoming-start reminder, independent of the manual timer
+    if(t.time && !t.notified.upcoming){
+      const start=new Date(t.time);
+      if(!isNaN(start.getTime())){
+        const minsUntil=(start-Date.now())/60000;
+        if(minsUntil<=5 && minsUntil>0){ t.notified.upcoming=true; changed=true; notify('Starting soon', `"${t.name}" starts in about 5 minutes.`); }
+      }
+    }
+    if(!t.durationMin || t.awaitingConfirm || !t.startedAt) return;
     anyRunning=true;
-    const elapsedMin=(Date.now()-t.startedAt)/60000;
-    if(!t.notified) t.notified={start:true,half:false,five:false,done:false};
+    const elapsedMin=taskElapsedMs(t)/60000;
     if(!t.notified.half && elapsedMin/t.durationMin>=0.5){ t.notified.half=true; notify('Halfway there', `"${t.name}" is 50% through its timer.`); changed=true; }
     const remaining=t.durationMin-elapsedMin;
     if(!t.notified.five && remaining<=5 && remaining>0){ t.notified.five=true; notify('5 minutes left', `"${t.name}" is almost up.`); changed=true; }
     if(!t.notified.done && remaining<=0){
       t.notified.done=true; t.awaitingConfirm=true; changed=true;
-      playAlarm(); notify("Time's up!", `"${t.name}" — open the app to confirm if you finished it.`);
+      playAlarm(); notify("Time's up!", `"${t.name}" — open the app to confirm.`);
       confirmQueue.push(t.id);
     }
   });
@@ -597,10 +602,10 @@ function tickTimers(){
 }
 setInterval(tickTimers, 1000);
 
-/* ---------------- calendar (Google-Calendar-style day view) ---------------- */
+/* ---------------- calendar (timer-driven day view) ---------------- */
 function calendarVisible(){ const sec=document.getElementById('calendar'); return sec && !sec.classList.contains('hidden'); }
 function fmtHM(mins){
-  let h=Math.floor(mins/60)%24, m=mins%60;
+  let h=Math.floor(mins/60)%24, m=Math.round(mins%60);
   const ap=h>=12?'PM':'AM'; let h12=h%12; if(h12===0) h12=12;
   return `${h12}:${String(m).padStart(2,'0')} ${ap}`;
 }
@@ -611,18 +616,18 @@ function taskWindow(t){
   const todayStr=start.getFullYear()+'-'+String(start.getMonth()+1).padStart(2,'0')+'-'+String(start.getDate()).padStart(2,'0');
   if(todayStr!==dayKey()) return null;
   const startMin=start.getHours()*60+start.getMinutes();
-  const dur=t.durationMin||30;
-  return {startMin, dur, endMin:startMin+dur, startDate:start};
+  // the block's length IS the timer: full duration until started, then the
+  // live remaining time, shrinking toward "now" as it counts down.
+  const remainMin=Math.max(0.5, (t.durationMin||30) - taskElapsedMs(t)/60000);
+  return {startMin, dur:remainMin, endMin:startMin+remainMin};
 }
 function logTaskProgress(taskId, amount){
   const t=state.tasks.find(x=>x.id===taskId); if(!t||t.targetGoal==null||!amount) return;
   const wasDone=t.done;
   t.loggedValue=Math.max(0,(t.loggedValue||0)+amount);
   if(!wasDone && t.loggedValue>=t.targetGoal){
-    t.done=true;
-    const rewards={red:60,yellow:40,blue:20};
-    addXP(rewards[t.priority]);
-    notify('Goal reached!', `"${t.name}" auto-completed — +${rewards[t.priority]} XP`);
+    t.done=true; addXP(REWARDS[t.priority]);
+    notify('Goal reached!', `"${t.name}" auto-completed — +${REWARDS[t.priority]} XP`);
   }
   save(); render();
 }
@@ -631,34 +636,27 @@ function adjustTargetGoal(taskId, delta){
   t.targetGoal=Math.max(1, t.targetGoal+delta);
   const wasDone=t.done;
   if(!wasDone && (t.loggedValue||0)>=t.targetGoal){
-    t.done=true;
-    const rewards={red:60,yellow:40,blue:20};
-    addXP(rewards[t.priority]);
-    notify('Goal reached!', `"${t.name}" auto-completed — +${rewards[t.priority]} XP`);
+    t.done=true; addXP(REWARDS[t.priority]);
+    notify('Goal reached!', `"${t.name}" auto-completed — +${REWARDS[t.priority]} XP`);
   }
   save(); render();
 }
-function calBlockHTML(t, win, nowMin){
-  const active=nowMin>=win.startMin && nowMin<win.endMin;
-  let liveHTML='';
-  if(active){
-    const endDate=new Date(win.startDate.getTime()+win.dur*60000);
-    const remainMs=Math.max(0, endDate-new Date());
-    const mm=Math.floor(remainMs/60000), ss=Math.floor((remainMs%60000)/1000);
-    liveHTML=`<div class="cal-live">⏱ ${mm}:${String(ss).padStart(2,'0')} left in this block</div>`;
-  }
+function calBlockHTML(t, win){
+  const active=t.startedAt!=null;
+  const mm=Math.floor(win.dur), ss=Math.floor((win.dur-mm)*60);
+  const liveHTML=active? `<div class="cal-live">⏱ ${mm}:${String(ss).padStart(2,'0')} left</div>` : '';
   let goalHTML='';
   if(t.targetGoal!=null){
     const logged=t.loggedValue||0, remaining=Math.max(0,t.targetGoal-logged);
     goalHTML=`<div class="cal-goal">
       <span>${logged}/${t.targetGoal} ${esc(t.goalUnit||'')} (${remaining} left)</span>
-      <button class="btn small" data-goalminus="${t.id}">− goal</button>
-      <button class="btn small" data-goalplus="${t.id}">+ goal</button>
+      <button class="btn small" data-goalminus="${t.id}">−</button>
+      <button class="btn small" data-goalplus="${t.id}">+</button>
       <input type="number" data-goallogval="${t.id}" placeholder="log">
       <button class="btn small gold" data-goallog="${t.id}">Add</button>
     </div>`;
   }
-  return `<div class="cal-block tier-${t.priority} ${active?'active':''} ${t.done?'done':''}" style="top:${win.startMin}px;height:${Math.max(win.dur,22)}px;">
+  return `<div class="cal-block tier-${t.priority} ${active?'active':''} ${t.done?'done':''}" style="top:${win.startMin}px;height:${Math.max(win.dur,18)}px;">
     <div class="cal-block-title">${esc(t.name)}${t.done?' ✓':''}</div>
     <div class="cal-block-time">${fmtHM(win.startMin)} – ${fmtHM(win.endMin)}</div>
     ${liveHTML}${goalHTML}
@@ -669,9 +667,9 @@ function renderCalendar(){
   const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
   let hoursHTML='';
   for(let h=0;h<24;h++){ hoursHTML+=`<div class="cal-hour" style="top:${h*60}px">${fmtHM(h*60)}</div>`; }
-  const blocks=state.tasks.map(t=>{ const win=taskWindow(t); return win?calBlockHTML(t,win,nowMin):''; }).join('');
+  const blocks=state.tasks.map(t=>{ const win=taskWindow(t); return win?calBlockHTML(t,win):''; }).join('');
   grid.innerHTML=hoursHTML+`<div class="cal-now" style="top:${nowMin}px"></div>`+blocks
-    + (state.tasks.some(t=>taskWindow(t)) ? '' : '<div class="cal-empty" style="position:absolute;top:0;left:70px">No tasks scheduled for today yet — give a task a start time in the Tasks tab.</div>');
+    + (state.tasks.some(t=>taskWindow(t)) ? '' : '<div class="cal-empty" style="position:absolute;top:0;left:70px">No tasks scheduled today yet.</div>');
 }
 
 /* ---------------- habits ---------------- */
@@ -684,7 +682,7 @@ function passesGoal(h,value){
 function goalText(h){
   if(h.entryType==='clarification') return 'Log Yes or No';
   const symbols={min:'≥',max:'≤',equal:'='};
-  return h.goalType==='none' ? 'Tick when complete' : `Goal ${symbols[h.goalType]} ${h.target} ${esc(h.unit||'')}`;
+  return h.goalType==='none' ? 'Tick when done' : `Goal ${symbols[h.goalType]} ${h.target} ${esc(h.unit||'')}`;
 }
 function logControl(h,entry,attr){
   return h.entryType==='clarification'
@@ -705,7 +703,7 @@ function habitRow(x,entries){
 function renderHabits(){
   const entries=state.history[dayKey()]||{};
   $('#habitOpen').innerHTML=state.habits.filter(x=>!(entries[x.id]||{}).done).map(x=>habitRow(x,entries)).join('') || '<div class="empty">Nothing waiting today.</div>';
-  $('#habitDone').innerHTML=state.habits.filter(x=>(entries[x.id]||{}).done).map(x=>habitRow(x,entries)).join('') || '<div class="empty">Complete a habit to see it here today.</div>';
+  $('#habitDone').innerHTML=state.habits.filter(x=>(entries[x.id]||{}).done).map(x=>habitRow(x,entries)).join('') || '<div class="empty">None yet today.</div>';
 }
 
 /* ---------------- squad / upgrade modal ---------------- */
@@ -726,18 +724,18 @@ function renderSquad(){
   $('#xpText').textContent=`${progress.into} / ${progress.need} XP to next level`;
   $('#xpFill').style.width=(progress.into/progress.need*100)+'%';
   $('#teamOverall').textContent=`Team OVR ${ovr()}`;
-  $('#playerInstruction').textContent=`Selected: #${state.selected+1} ${p.pos} — ${p.name}. Click any player below to switch.`;
+  $('#playerInstruction').textContent=`Selected: #${state.selected+1} ${p.pos} — ${p.name}`;
   $('#statPanel').innerHTML=`
     <div class="current-player-mini">
       <img class="avatar" src="${avatarUrl(p.avatarSeed)}" alt="">
       <div><b>${esc(p.name)}</b> <span class="flag">${p.country.c}</span><br>
       <small>#${state.selected+1} ${p.pos} · ${tier.label} · OVR ${r} · Rep +${p.rep}</small><br>
-      <small class="hint" style="margin:0">${KEY_STATS_LABEL[p.pos]||''}</small></div>
+      <small class="hint" style="margin:0">Key stats: ${KEY_STATS_LABEL[p.pos]||''}</small></div>
     </div>
     ${state.lastUpgrade?`<div class="upgrade-banner">⚡ ${esc(state.lastUpgrade)}</div>`:''}
-    <p>${state.points} stat point${state.points===1?'':'s'} ready to spend (shared across the squad)</p>
+    <p>${state.points} point${state.points===1?'':'s'} to spend (shared across the squad)</p>
     <button class="btn gold" id="openUpgrade">Open Upgrade Card</button>
-    <button class="btn" id="ngpBtn">Retire Squad — New Game Plus</button>
+    <button class="btn" id="ngpBtn">New Game Plus</button>
   `;
   $('#squadList').innerHTML=state.players.map((pl,i)=>squadCardHTML(pl,i)).join('');
 }
@@ -750,7 +748,6 @@ function upgradeModalHTML(){
         <div class="pname-lg">${esc(p.name)} <span class="flag">${p.country.c}</span></div>
         <div class="upgrade-title">#${state.selected+1} ${p.pos} · ${tier.label} · Rep +${p.rep}</div>
         <div class="upgrade-rating">${r}</div>
-        <div class="hint" style="margin:2px 0 0">${KEY_STATS_LABEL[p.pos]||''}</div>
       </div>
       <div class="stats">${keys.map(s=>`<span>${s} ${p.stats[s]}</span>`).join('')}</div>
       <p>${state.points} point${state.points===1?'':'s'} to spend</p>
@@ -765,9 +762,8 @@ function confirmModalHTML(taskId){
   return `<div class="modal-overlay">
     <div class="modal-card-lg" style="border-color:var(--gold)">
       <h2>⏰ Time's up!</h2>
-      <p>Did you complete "${esc(t.name)}"?</p>
-      <p><button class="btn gold" id="taskDoneYes">Yes, done!</button> <button class="btn danger" id="taskDoneNo">Not yet</button></p>
-      <p class="hint">Marking "Not yet" resets the timer and moves this task to the bottom of its list.</p>
+      <p>Did you finish "${esc(t.name)}"?</p>
+      <p><button class="btn gold" id="taskDoneYes">Yes</button> <button class="btn danger" id="taskDoneNo">Not yet</button></p>
     </div>
   </div>`;
 }
@@ -775,9 +771,23 @@ function syncChoiceModalHTML(){
   return `<div class="modal-overlay">
     <div class="modal-card-lg" style="border-color:var(--gold)">
       <h2>☁️ Cloud save found</h2>
-      <p>We found existing data in your cloud account. What would you like to do?</p>
-      <p><button class="btn gold" id="overwriteLocalBtn">Overwrite local with Cloud Save</button></p>
-      <p><button class="btn" id="overwriteCloudBtn">Keep local data, overwrite Cloud Save</button></p>
+      <p>Which copy should win?</p>
+      <p><button class="btn gold" id="overwriteLocalBtn">Use Cloud Save</button></p>
+      <p><button class="btn" id="overwriteCloudBtn">Use Local Data</button></p>
+    </div>
+  </div>`;
+}
+function clubNameModalHTML(){
+  const existing=state.teamName;
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      <h2>⚽ ${existing?'Rename your club':'Name your club'}</h2>
+      <p class="hint">Saved on this device — asked once.</p>
+      <input id="clubNameInput" type="text" placeholder="e.g. Riverside FC" maxlength="30" value="${esc(existing||'')}" autofocus>
+      <p style="margin-top:14px">
+        <button class="btn gold" id="clubNameSubmit">${existing?'Save':'Start Career'}</button>
+        ${existing?'<button class="btn" id="cancelRename">Cancel</button>':''}
+      </p>
     </div>
   </div>`;
 }
@@ -785,6 +795,7 @@ function openUpgradeModal(){ upgradeModalOpen=true; renderModalRoot(); }
 function closeUpgradeModal(){ upgradeModalOpen=false; renderModalRoot(); }
 function renderModalRoot(){
   const root=$('#upgradeModalRoot');
+  if(!state.teamName||renamingClub){ root.innerHTML=clubNameModalHTML(); return; }
   if(confirmQueue.length>0){ root.innerHTML=confirmModalHTML(confirmQueue[0]); return; }
   if(syncChoiceOpen){ root.innerHTML=syncChoiceModalHTML(); return; }
   if(upgradeModalOpen){ root.innerHTML=upgradeModalHTML(); return; }
@@ -804,9 +815,9 @@ function getTodayOpponent(){
   return state.season.todayOpponent;
 }
 const REPORTS={
-  win:['A dominant display as the team clicked into gear.','Clinical in front of goal — a deserved victory.','The new signings are already paying off.'],
-  draw:['A scrappy, even contest that could have gone either way.','Chances at both ends but the scoreline stayed level.'],
-  loss:['A tough afternoon — the squad still has holes to fill.','Outclassed for large spells; back to the training ground.','Missing pieces in the lineup were exposed today.']
+  win:['A dominant display.','Clinical in front of goal.','The new signings are paying off.'],
+  draw:['A scrappy, even contest.','Chances at both ends, level scoreline.'],
+  loss:['A tough afternoon.','Outclassed for large spells.','Missing pieces exposed today.']
 };
 function simulateSeasonMatch(){
   if(seasonComplete()||!canPlayToday()||!dailyChecklistStatus().ready) return;
@@ -850,29 +861,29 @@ function renderMatches(){
     const scorers=Object.entries(state.season.scorers).sort((a,b)=>b[1]-a[1]).slice(0,5);
     return `<div class="season-recap">
       <h3>🏁 Season ${state.season.number} complete!</h3>
-      <p>${state.season.wins}W – ${state.season.draws}D – ${state.season.losses}L · ${state.season.goalsFor} goals scored, ${state.season.goalsAgainst} conceded</p>
-      <p><b>Top goalscorers:</b> ${scorers.length? scorers.map(([n,g])=>`${esc(n)} (${g})`).join(', ') : 'None recorded'}</p>
+      <p>${state.season.wins}W – ${state.season.draws}D – ${state.season.losses}L · ${state.season.goalsFor} scored, ${state.season.goalsAgainst} conceded</p>
+      <p><b>Top scorers:</b> ${scorers.length? scorers.map(([n,g])=>`${esc(n)} (${g})`).join(', ') : 'None'}</p>
       <button class="btn gold" id="newSeasonBtn">Start Season ${state.season.number+1}</button>
     </div>`;
   })() : '';
   $('#seasonRecap').innerHTML=recap;
   $('#seasonStatus').innerHTML=`
-    <div>Season ${state.season.number} · Game ${state.season.gamesPlayed}/38 · ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L · GF ${state.season.goalsFor} GA ${state.season.goalsAgainst}</div>
-    <div style="margin-top:8px"><b>Today's Fixture:</b> <img class="cpu-crest" src="${crestUrl(opp.crestSeed)}" alt="">${esc(state.teamName||'Your Club')} (OVR ${us}) vs ${esc(opp.name)} (OVR ${opp.rating})</div>
+    <div>Season ${state.season.number} · Game ${state.season.gamesPlayed}/38 · ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L</div>
+    <div style="margin-top:8px"><b>Today:</b> <img class="cpu-crest" src="${crestUrl(opp.crestSeed)}" alt="">${esc(state.teamName||'Your Club')} (OVR ${us}) vs ${esc(opp.name)} (OVR ${opp.rating})</div>
     ${opp.roster ? `<details style="margin-top:6px"><summary style="cursor:pointer">View ${esc(opp.name)} roster</summary><div class="roster-strip">${opp.roster.map(p=>`<span class="summary-chip">${p.pos} ${esc(p.name)} ${p.rating}</span>`).join('')}</div></details>` : ''}
     <div class="lockmsg" style="margin-top:8px;color:${status.ready?'var(--green)':'var(--red)'}">
-      ${status.ready ? '✔ All daily habits & tasks complete — match unlocked!' : `🔒 Complete all daily habits and tasks to unlock today's match! (Habits ${status.doneHabits}/${status.totalHabits} · Tasks ${status.doneTasks}/${status.totalTasks})`}
+      ${status.ready ? '✔ Unlocked!' : `🔒 Finish today's habits & tasks to unlock (Habits ${status.doneHabits}/${status.totalHabits} · Tasks ${status.doneTasks}/${status.totalTasks})`}
     </div>`;
   const btn=$('#weekBtn');
-  if(seasonComplete()){ btn.disabled=true; btn.textContent='Season complete — see recap above'; }
-  else if(!canPlayToday()){ btn.disabled=true; btn.textContent='Already played today — come back tomorrow'; }
-  else if(!status.ready){ btn.disabled=true; btn.textContent='🔒 Locked — finish today\'s habits & tasks first'; }
+  if(seasonComplete()){ btn.disabled=true; btn.textContent='Season complete'; }
+  else if(!canPlayToday()){ btn.disabled=true; btn.textContent='Already played today'; }
+  else if(!status.ready){ btn.disabled=true; btn.textContent='🔒 Locked'; }
   else { btn.disabled=false; btn.textContent=`Play today's match (Game ${state.season.gamesPlayed+1}/38)`; }
   $('#matchReport').innerHTML=state.matches.slice(0,5).map(m=>`
     <div class="match">
-      <h3><img class="cpu-crest" src="${crestUrl(m.crestSeed)}" alt="">Season ${m.season} · Game ${m.game}: ${esc(state.teamName||'Your club')} ${m.us}–${m.them} ${esc(m.opponent)}</h3>
+      <h3><img class="cpu-crest" src="${crestUrl(m.crestSeed)}" alt="">Game ${m.game}: ${esc(state.teamName||'Your club')} ${m.us}–${m.them} ${esc(m.opponent)}</h3>
       <p>${esc(m.text)}</p>
-      <p>Team OVR at kickoff: ${m.ovr}${m.scorers.length?` · Scorers: ${m.scorers.map(esc).join(', ')}`:''}</p>
+      <p>OVR at kickoff: ${m.ovr}${m.scorers.length?` · Scorers: ${m.scorers.map(esc).join(', ')}`:''}</p>
     </div>`).join('') || '<div class="empty">No matches played yet.</div>';
 }
 
@@ -883,7 +894,7 @@ function chartForHabit(h,days){
     const weeks=Array.from({length:49},(_,i)=>dayKey(i-48));
     const yes=weeks.filter(d=>(state.history[d]||{})[h.id]?.value==='Yes').length;
     const no=weeks.filter(d=>(state.history[d]||{})[h.id]?.value==='No').length;
-    return `<h3 style="margin-top:18px">${esc(h.name)}</h3><div class="chart-label">Past 7 weeks: Yes ${yes} time${yes===1?'':'s'} · No ${no} time${no===1?'':'s'}</div><div class="chart-label">Most recent 7 days: ${days.map(d=>((state.history[d]||{})[h.id]?.value)||'—').join(' · ')}</div>`;
+    return `<h3 style="margin-top:18px">${esc(h.name)}</h3><div class="chart-label">Last 7 weeks: Yes ${yes} · No ${no}</div>`;
   }
   const values=days.map(d=>{ const x=(state.history[d]||{})[h.id]; return x&&x.value!==undefined?Number(x.value):(x&&x.done?1:0); });
   const goal=h.goalType&&h.goalType!=='none';
@@ -891,7 +902,7 @@ function chartForHabit(h,days){
   const pts=values.map((v,i)=>`${18+i*43},${110-(v/max)*88}`).join(' ');
   const target=goal? 110-(Number(h.target)/max)*88 : null;
   return `<h3 style="margin-top:18px">${esc(h.name)}</h3><div class="chart-label">${goalText(h)}</div>
-  <svg class="chart" viewBox="0 0 280 130" role="img" aria-label="Seven day history for ${esc(h.name)}">
+  <svg class="chart" viewBox="0 0 280 130" role="img" aria-label="History for ${esc(h.name)}">
     <line x1="18" y1="110" x2="270" y2="110" stroke="#c8b88c"/>
     ${target!==null?`<line x1="18" y1="${target}" x2="270" y2="${target}" stroke="#c99d20" stroke-dasharray="4 3"/>`:''}
     <polyline points="${pts}" fill="none" stroke="#638c6c" stroke-width="3"/>
@@ -901,7 +912,7 @@ function chartForHabit(h,days){
 function renderStatistics(){
   const today=dayKey(), entries=state.history[today]||{};
   const pretty=new Date(today+'T12:00:00').toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
-  $('#statsDate').textContent=`Today — ${pretty}`;
+  $('#statsDate').textContent=pretty;
   const rows=state.habits.map(h=>{
     const entry=entries[h.id]||{};
     const automatic=h.entryType==='clarification'||h.goalType!=='none';
@@ -912,25 +923,25 @@ function renderStatistics(){
       <span class="score">${entry.done?'Done':entry.failed?'Failed':'—'}</span>
     </div>`;
   }).join('');
-  $('#statsToday').innerHTML=rows || '<div class="empty">Create habits in the Habits tab and they will appear here.</div>';
+  $('#statsToday').innerHTML=rows || '<div class="empty">Create habits first.</div>';
   const days=Array.from({length:7},(_,i)=>dayKey(i-6));
   $('#statsHistory').innerHTML=state.habits.length
-    ? `<p class="hint">Numeric habits show the past seven days. Clarification habits show Yes/No totals for the past seven weeks.</p>${state.habits.map(h=>chartForHabit(h,days)).join('')}`
-    : '<div class="empty">No habit history yet.</div>';
+    ? state.habits.map(h=>chartForHabit(h,days)).join('')
+    : '<div class="empty">No history yet.</div>';
 }
 
 /* ---------------- summary ---------------- */
 function renderSummary(){
   const today=dayKey(), entries=state.history[today]||{};
   $('#summaryTeamName').textContent=state.teamName||'';
-  $('#summaryRecord').textContent=`Manager Level ${level()} · Team OVR ${ovr()} · Season ${state.season.number}: ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L · Game ${state.season.gamesPlayed}/38`;
-  $('#summaryHabits').innerHTML=state.habits.slice(0,8).map(h=>habitRow(h,entries)).join('') || '<div class="empty">No habits yet — add some in the Habits tab.</div>';
+  $('#summaryRecord').textContent=`Lv.${level()} · OVR ${ovr()} · S${state.season.number}: ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L · ${state.season.gamesPlayed}/38`;
+  $('#summaryHabits').innerHTML=state.habits.slice(0,8).map(h=>habitRow(h,entries)).join('') || '<div class="empty">No habits yet.</div>';
   $('#summaryTasks').innerHTML=state.tasks.slice(0,8).map(x=>`
     <div class="task ${x.done?'done':''}">
       <input class="check" type="checkbox" data-task="${x.id}" ${x.done?'checked':''}>
       <span class="name">${esc(x.name)}</span>
       <span class="time">${dt(x.time)}</span>
-    </div>`).join('') || '<div class="empty">No tasks yet — add some in the Tasks tab.</div>';
+    </div>`).join('') || '<div class="empty">No tasks yet.</div>';
   $('#summarySquad').innerHTML=state.players.map((p,i)=>{
     const r=rating(p), tier=tierOf(r);
     return `<span class="summary-chip tier-${tier.key} ${i===state.selected?'active':''}">#${i+1} ${p.pos} ${r}</span>`;
@@ -939,62 +950,69 @@ function renderSummary(){
 
 /* ---------------- top-level render ---------------- */
 function render(){
-  renderAuthUI();
-  if(!state.teamName){
-    $('#setupScreen').classList.remove('hidden'); $('#appBody').classList.add('hidden');
-    $('#welcomeLine').textContent='Habits, priorities, and your football-manager career.';
-    return;
+  try{
+    renderAuthUI();
+    const rb=$('#renameClubBtn');
+    if(rb) rb.classList.toggle('hidden', !state.teamName);
+    $('#welcomeLine').textContent = state.teamName ? `Welcome, ${state.teamName}!` : 'Habits, tasks, and your football-manager career.';
+    const progress=levelInfo();
+    $('#topLevel').textContent=`Manager Level ${progress.level}`;
+    $('#topXp').textContent=`${progress.into} / ${progress.need} XP`;
+    $('#topXpFill').style.width=(progress.into/progress.need*100)+'%';
+    renderSummary(); renderTasks(); renderCalendar(); renderHabits(); renderStatistics(); renderSquad(); renderMatches();
+  } catch(err){
+    console.error('render() error (modal will still be reconciled):', err);
+  } finally {
+    // This always runs, so the modal never gets stuck showing stale state
+    // even if something above throws.
+    renderModalRoot();
   }
-  $('#setupScreen').classList.add('hidden'); $('#appBody').classList.remove('hidden');
-  $('#welcomeLine').textContent=`Welcome, ${state.teamName}! Here's your club, exactly as you left it.`;
-  const progress=levelInfo();
-  $('#topLevel').textContent=`Manager Level ${progress.level}`;
-  $('#topXp').textContent=`${progress.into} / ${progress.need} XP`;
-  $('#topXpFill').style.width=(progress.into/progress.need*100)+'%';
-  renderSummary(); renderTasks(); renderCalendar(); renderHabits(); renderStatistics(); renderSquad(); renderMatches();
-  renderModalRoot();
 }
 
-/* ---------------- forms ---------------- */
-$('#teamForm').onsubmit=e=>{
-  e.preventDefault(); const f=new FormData(e.target);
-  state.teamName=(f.get('teamName')||'').trim()||'My Club';
-  saveLocal(); // persist immediately, synchronously, before anything else happens
-  e.target.remove(); // completely remove the textbox/form from the DOM — it must never reappear
-  save(); render();
-};
+/* ---------------- static forms ---------------- */
 $('#taskForm').onsubmit=e=>{
   e.preventDefault(); const f=new FormData(e.target);
   const duration=f.get('duration'), targetGoal=f.get('targetGoal');
-  state.tasks.push({id:id(), name:f.get('name'), priority:f.get('priority'), time:f.get('time'),
-    durationMin:duration?Number(duration):null,
-    targetGoal:targetGoal?Number(targetGoal):null, goalUnit:f.get('goalUnit')||'', loggedValue:0,
-    done:false, startedAt:null,
-    notified:{start:false,half:false,five:false,done:false}, awaitingConfirm:false});
+  state.tasks.push(newTask(f.get('name'), f.get('priority'), f.get('time'),
+    duration?Number(duration):null, targetGoal?Number(targetGoal):null, f.get('goalUnit')));
   save(); e.target.reset(); render();
 };
 $('#habitForm').onsubmit=e=>{ e.preventDefault(); const f=new FormData(e.target); const type=f.get('goalType'), entryType=f.get('entryType'); state.habits.push({id:id(), name:f.get('name'), goalType:type, entryType, target:entryType==='number'&&type!=='none'?Number(f.get('target')):null, unit:f.get('unit'), done:false}); save(); e.target.reset(); render(); };
 $('#weekBtn').onclick=()=>simulateSeasonMatch();
+$('#renameClubBtn').onclick=()=>{ renamingClub=true; renderModalRoot(); };
+
+/* ---------------- delegated submit (for the dynamically-rendered club modal) ---------------- */
+function submitClubName(){
+  const input=document.getElementById('clubNameInput');
+  const v=input?input.value.trim():'';
+  if(v){ state.teamName=v; renamingClub=false; saveLocal(); render(); }
+}
+document.addEventListener('keydown',e=>{
+  if(e.target && e.target.id==='clubNameInput' && e.key==='Enter'){ e.preventDefault(); submitClubName(); }
+});
 
 /* ---------------- delegated change/click handlers ---------------- */
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='notifToggle'){
-    // Bug fix: persist this immediately and synchronously, and touch nothing
-    // route/tab-related — just the toggle's own state and status text.
     state.notificationsEnabled=t.checked;
     saveLocal();
     if(t.checked) requestNotifications();
-    $('#notifStatus').textContent=`Notifications: ${notifStatusText()}`;
+    $('#notifStatus').textContent=notifStatusText();
     return;
   }
   if(t.dataset.task){
-    const x=state.tasks.find(x=>x.id===t.dataset.task), rewards={red:60,yellow:40,blue:20};
+    const x=state.tasks.find(x=>x.id===t.dataset.task);
     if(x.done!==t.checked){
       x.done=t.checked;
       if(t.checked){ x.startedAt=null; x.awaitingConfirm=false; }
-      addXP(t.checked?rewards[x.priority]:-rewards[x.priority]);
+      addXP(t.checked?REWARDS[x.priority]:-REWARDS[x.priority]);
     }
+  }
+  if(t.dataset.priority){ const x=state.tasks.find(x=>x.id===t.dataset.priority); if(x) x.priority=t.value; }
+  if(t.dataset.duration){
+    const x=state.tasks.find(x=>x.id===t.dataset.duration);
+    if(x){ const v=t.value?Number(t.value):null; x.durationMin=v&&v>0?v:null; }
   }
   if(t.dataset.habitvalue||t.dataset.statvalue){
     const hid=t.dataset.habitvalue||t.dataset.statvalue, habit=state.habits.find(x=>x.id===hid);
@@ -1010,7 +1028,7 @@ document.addEventListener('change',e=>{
     const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
     if(habit.goalType==='none'&&habit.entryType!=='clarification'&&entry.done!==t.checked){ entry.done=t.checked; entry.failed=false; addXP(t.checked?10:-10); }
   }
-  if(t.dataset.time){ state.tasks.find(x=>x.id===t.dataset.time).time=t.value; }
+  if(t.dataset.time){ const x=state.tasks.find(x=>x.id===t.dataset.time); if(x){ x.time=t.value; x.notified={half:false,five:false,done:false,upcoming:false}; } }
   save(); render();
 });
 
@@ -1021,6 +1039,8 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('button')||e.target;
   if(t.id==='signInBtn'){ signInWithGoogle(); }
   if(t.id==='signOutBtn'){ signOutGoogle(); }
+  if(t.id==='cancelRename'){ renamingClub=false; renderModalRoot(); }
+  if(t.id==='clubNameSubmit'){ submitClubName(); }
   if(t.id==='overwriteLocalBtn'){
     state=Object.assign(defaults(), pendingCloudState||{});
     pendingCloudState=null; syncChoiceOpen=false; saveLocal(); render();
@@ -1039,17 +1059,18 @@ document.addEventListener('click',e=>{
   }
   if(t.dataset.starttimer){
     const task=state.tasks.find(x=>x.id===t.dataset.starttimer);
-    if(task){ ensureAudioCtx(); task.startedAt=Date.now(); task.notified={start:true,half:false,five:false,done:false}; task.awaitingConfirm=false; notify('Timer started', `"${task.name}" — ${task.durationMin} min countdown began.`); }
+    if(task){ ensureAudioCtx(); task.startedAt=Date.now(); task.awaitingConfirm=false; notify('Timer started', `"${task.name}" — ${task.durationMin} min countdown.`); }
     save(); render();
   }
   if(t.dataset.stoptimer){
+    // Pause: bank the elapsed time, don't lose progress or reset notifications.
     const task=state.tasks.find(x=>x.id===t.dataset.stoptimer);
-    if(task){ task.startedAt=null; task.notified={start:false,half:false,five:false,done:false}; }
+    if(task){ task.elapsedMs=taskElapsedMs(task); task.startedAt=null; }
     save(); render();
   }
   if(t.dataset.stat){
     const p=state.players[state.selected];
-    if(p&&state.points>0){ p.stats[t.dataset.stat]=Math.min(99,p.stats[t.dataset.stat]+1); state.points--; state.lastUpgrade=`#${state.selected+1} ${p.pos}: ${t.dataset.stat} increased to ${p.stats[t.dataset.stat]}!`; }
+    if(p&&state.points>0){ p.stats[t.dataset.stat]=Math.min(99,p.stats[t.dataset.stat]+1); state.points--; state.lastUpgrade=`#${state.selected+1} ${p.pos}: ${t.dataset.stat} → ${p.stats[t.dataset.stat]}`; }
     save(); render();
   }
   if(t.id==='openUpgrade'){ openUpgradeModal(); }
@@ -1058,7 +1079,7 @@ document.addEventListener('click',e=>{
   if(t.id==='taskDoneNo'){ completeTaskFromTimer(confirmQueue[0], false); }
   if(t.id==='ngpBtn'){
     const keep={teamName:state.teamName, ngp:(state.ngp||0)+1, cpuTeams:state.cpuTeams, season:state.season, matches:state.matches,
-      tasks:state.tasks, habits:state.habits, history:state.history, taskSectionOrder:state.taskSectionOrder};
+      tasks:state.tasks, habits:state.habits, history:state.history, notificationsEnabled:state.notificationsEnabled};
     state=defaults(); Object.assign(state, keep);
     closeUpgradeModal(); save(); render();
   }
@@ -1092,7 +1113,6 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
     if(state.season.todayOpponent===undefined) state.season.todayOpponent=null;
     if(state.season.todayOpponent && !state.season.todayOpponent.roster) state.season.todayOpponent=null;
     if(!state.history) state.history={};
-    if(!state.taskSectionOrder) state.taskSectionOrder=['red','yellow','blue'];
     if(state.notificationsEnabled===undefined) state.notificationsEnabled=false;
     if(state.selected===undefined) state.selected=state.active||0;
     state.tasks.forEach(t=>{
@@ -1100,7 +1120,9 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
       if(t.targetGoal===undefined) t.targetGoal=null;
       if(t.loggedValue===undefined) t.loggedValue=0;
       if(t.goalUnit===undefined) t.goalUnit='';
-      if(!t.notified) t.notified={start:false,half:false,five:false,done:false};
+      if(t.elapsedMs===undefined) t.elapsedMs=0;
+      if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
+      if(t.notified.upcoming===undefined) t.notified.upcoming=false;
       if(t.awaitingConfirm===undefined) t.awaitingConfirm=false;
       if(t.startedAt===undefined) t.startedAt=null;
     });
