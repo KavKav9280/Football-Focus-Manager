@@ -31,6 +31,7 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 .form input,.form select{border:1px solid var(--line);border-radius:6px;padding:9px;background:#fffaf0;color:var(--ink);font:14px Georgia,serif}
 .form input[type=text]{flex:1;min-width:180px}
 .form input[name=duration]{width:110px}
+.task-time-input{max-width:190px}
 .tier{border-left:7px solid;padding:10px 12px;margin:12px 0;background:#fff9e9;border-radius:5px}
 .tier.red{border-color:var(--red)}.tier.yellow{border-color:var(--yellow)}.tier.blue{border-color:var(--blue)}
 .tier h3{font-size:15px;display:flex;justify-content:space-between;align-items:center}
@@ -126,12 +127,19 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .cal-empty{padding:16px;color:#687064;font-style:italic}
 .roster-strip{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 
+.splash-screen{position:fixed;inset:0;background:#f8e6c2;display:flex;align-items:center;justify-content:center;z-index:200;opacity:1;transition:opacity .6s ease}
+.splash-screen.hide{opacity:0;pointer-events:none}
+
 @media(max-width:620px){.book{padding:18px}.grid{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.statControls{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
+<div id="splashScreen" class="splash-screen"><div id="splashLogoSlot"></div></div>
 <main class="book">
-  <h1>Focus Manager</h1>
+  <div id="brandRow" style="display:flex;align-items:center;gap:8px">
+    <span id="headerLogo" style="font-family:Georgia,'Times New Roman',serif;font-weight:700;color:#1f4a34;letter-spacing:1px;font-size:22px;background:#f8e6c2;border-radius:6px;padding:2px 8px;border:1px solid var(--line)">FFM</span>
+    <h1 style="margin:0">Focus Manager</h1>
+  </div>
   <div id="welcomeRow">
     <p class="subtitle" id="welcomeLine" style="margin:0"></p>
     <button class="btn small hidden" id="renameClubBtn">✏️ Rename</button>
@@ -188,10 +196,8 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
           <option value="yellow">Yellow — Important</option>
           <option value="blue">Blue — Neither</option>
         </select>
-        <input name="time" type="datetime-local" title="Start time">
+        <input name="time" type="datetime-local" title="Start time" class="task-time-input">
         <input name="duration" type="number" min="1" placeholder="Minutes">
-        <input name="targetGoal" type="number" min="1" placeholder="Goal (optional)">
-        <input name="goalUnit" type="text" placeholder="Unit" style="width:90px">
         <button class="btn gold">Add</button>
       </form>
       <div id="taskLists"></div>
@@ -208,17 +214,17 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
       <p class="hint">Numeric goals auto-complete when met; Yes/No habits are logged manually.</p>
       <form id="habitForm" class="form">
         <input name="name" type="text" placeholder="New habit name…" required>
-        <select name="goalType">
+        <select name="entryType" id="habitEntryType">
+          <option value="number">Number</option>
+          <option value="clarification">Clarification (Yes / No)</option>
+        </select>
+        <select name="goalType" id="habitGoalType">
           <option value="none">No goal (tick)</option>
           <option value="min">At least</option>
           <option value="max">At most</option>
           <option value="equal">Equal to</option>
         </select>
-        <select name="entryType">
-          <option value="number">Number</option>
-          <option value="clarification">Yes / No</option>
-        </select>
-        <input name="target" type="number" min="0" placeholder="Number">
+        <input name="target" type="number" min="0" placeholder="Number" id="habitTarget">
         <input name="unit" type="text" placeholder="Unit">
         <button class="btn gold">Add</button>
       </form>
@@ -295,19 +301,18 @@ const KEY_STATS_LABEL={
 };
 
 /* =========================================================================
-   FIREBASE CONFIG — fill in your own project's keys to enable Google
-   Sign-In + cross-device sync (Firebase console → Project settings → SDK
-   config; enable Google sign-in + Firestore). Runs offline until then. */
+   FIREBASE CONFIG — Focus Football Manager project. */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBacv7swmmf-YVRNuqY9WmutvykMLMOamI",
+  authDomain: "focus-football-manager-635c1.firebaseapp.com",
+  projectId: "focus-football-manager-635c1",
+  storageBucket: "focus-football-manager-635c1.firebasestorage.app",
+  messagingSenderId: "974080048484",
+  appId: "1:974080048484:web:b46529290f3701b5254e71",
+  measurementId: "G-T6JBFSMCPC"
 };
 function fbConfigured(){ return firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('YOUR_'); }
-let fbApp=null, auth=null, db=null, currentUser=null, pendingCloudState=null, syncChoiceOpen=false, cloudSyncTimer=null;
+let fbApp=null, auth=null, db=null, currentUser=null, pendingCloudState=null, syncChoiceOpen=false, cloudSyncTimer=null, authError='';
 function initFirebase(){
   if(!fbConfigured()) return false;
   if(fbApp) return true;
@@ -317,16 +322,38 @@ function initFirebase(){
     auth=firebase.auth();
     db=firebase.firestore();
     auth.onAuthStateChanged(handleAuthChange);
+    auth.getRedirectResult().catch(e=>showAuthError(e)); // catches errors from a completed redirect sign-in
     return true;
   }catch(e){ console.error('Firebase init failed', e); return false; }
 }
-function signInWithGoogle(){
-  if(!initFirebase()){ alert("Cloud sync isn't configured — add your Firebase keys to firebaseConfig in the code."); return; }
-  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>console.error('Sign-in failed', e));
+function showAuthError(err){
+  console.error('Sign-in error', err);
+  const code=err&&err.code||'';
+  if(code==='auth/unauthorized-domain') authError="This site's domain isn't authorized in Firebase yet — add it under Authentication → Settings → Authorized domains in the Firebase console.";
+  else if(code==='auth/popup-blocked') authError='Your browser blocked the sign-in popup. Allow popups for this site and try again.';
+  else if(code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request') authError=''; // user just closed it, not a real error
+  else if(code==='auth/operation-not-supported-in-this-environment'||code==='auth/web-storage-unsupported') authError="Google sign-in isn't supported inside this embedded preview. Open the hosted page directly in a normal browser tab instead.";
+  else authError=(err&&err.message)||'Sign-in failed. Please try again.';
+  renderModalRoot();
+}
+async function signInWithGoogle(){
+  if(!initFirebase()){ authError="Cloud sync isn't configured — add your Firebase keys to firebaseConfig in the code."; renderModalRoot(); return; }
+  authError='';
+  const provider=new firebase.auth.GoogleAuthProvider();
+  try{
+    await auth.signInWithPopup(provider);
+  }catch(err){
+    // Popups are blocked in a lot of embedded/preview contexts — fall back to a full-page redirect.
+    if(err && (err.code==='auth/popup-blocked'||err.code==='auth/operation-not-supported-in-this-environment'||err.code==='auth/cancelled-popup-request')){
+      try{ await auth.signInWithRedirect(provider); }catch(err2){ showAuthError(err2); }
+    } else {
+      showAuthError(err);
+    }
+  }
 }
 function signOutGoogle(){ if(auth) auth.signOut(); }
 async function handleAuthChange(user){
-  currentUser=user; renderAuthUI();
+  currentUser=user; render();
   if(user && db){
     try{
       const ref=db.collection('users').doc(user.uid);
@@ -344,7 +371,10 @@ function queueCloudSync(){ if(!currentUser) return; clearTimeout(cloudSyncTimer)
 function renderAuthUI(){
   const el=document.getElementById('accountBar'); if(!el) return;
   if(!fbConfigured()){ el.innerHTML=`<span class="hint" style="margin:0">☁️ Cloud sync not configured.</span>`; return; }
-  if(currentUser){ el.innerHTML=`<span>Signed in as <b>${esc(currentUser.displayName||currentUser.email||'Manager')}</b></span> <button class="btn small" id="signOutBtn">Sign out</button>`; }
+  if(currentUser){
+    const pic=currentUser.photoURL ? `<img src="${currentUser.photoURL}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle" onerror="this.remove()">` : '';
+    el.innerHTML=`${pic} <span>Signed in as <b>${esc(currentUser.displayName||currentUser.email||'Manager')}</b></span> <button class="btn small" id="signOutBtn">Sign out</button>`;
+  }
   else{ el.innerHTML=`<button class="btn small gold" id="signInBtn">Sign in with Google</button> <span class="hint" style="margin:0">to sync across devices</span>`; }
 }
 
@@ -401,7 +431,7 @@ function newTask(name, priority, time, durationMin, targetGoal, goalUnit){
 
 /* ---------------- state ---------------- */
 const defaults=()=>({
-  teamName:null,
+  teamName:null, skippedSignIn:false,
   tasks:[], habits:[], history:{},
   notificationsEnabled:false,
   xp:0, points:0,
@@ -430,8 +460,32 @@ function ovr(){ return Math.round(state.players.reduce((s,p)=>s+rating(p),0)/11)
 function levelInfo(x=state.xp){ let level=1,need=10,into=x; while(into>=need){ into-=need; level++; need+=10; } return {level,need,into}; }
 function level(){ return levelInfo().level; }
 function esc(v){ const d=document.createElement('div'); d.textContent=v; return d.innerHTML; }
+function logoSVG(size){
+  size=size||48;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="50" cy="50" r="46" fill="#f3ead2" stroke="#26382c" stroke-width="4"/>
+    <circle cx="50" cy="50" r="34" fill="#ffffff" stroke="#26382c" stroke-width="3"/>
+    <polygon points="50,28 61,36 57,49 43,49 39,36" fill="#26382c"/>
+    <polygon points="50,28 39,36 32,27 41,18 59,18 68,27 61,36" fill="none" stroke="#26382c" stroke-width="2.2"/>
+    <polygon points="43,49 34,58 24,54 27,40 39,36" fill="none" stroke="#26382c" stroke-width="2.2"/>
+    <polygon points="57,49 66,58 76,54 73,40 61,36" fill="none" stroke="#26382c" stroke-width="2.2"/>
+    <circle cx="76" cy="76" r="19" fill="#c99d20" stroke="#f3ead2" stroke-width="3"/>
+    <path d="M68 76 l6 6 l13 -15" fill="none" stroke="#26382c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+/* The FFM wordmark — matches the brand logo (cream bg, deep green serif type). */
+function ffmWordmark(scale, withBg){
+  scale=scale||1;
+  const bg=withBg? `background:#f8e6c2;border-radius:${10*scale}px;padding:${18*scale}px ${10*scale}px;` : '';
+  return `<div style="text-align:center;${bg}">
+    <div style="font-family:Georgia,'Times New Roman',serif;font-weight:700;color:#1f4a34;letter-spacing:${5*scale}px;font-size:${68*scale}px;line-height:1">FFM</div>
+    <div style="font-family:Georgia,serif;letter-spacing:${4*scale}px;font-size:${13*scale}px;color:#1f4a34;text-transform:uppercase;margin-top:${8*scale}px">Football Focus Manager</div>
+    <div style="width:${140*scale}px;height:2px;background:#1f4a34;margin:${12*scale}px auto"></div>
+    <div style="font-family:Georgia,serif;letter-spacing:${2.5*scale}px;font-size:${10.5*scale}px;color:#1f4a34;text-transform:uppercase">Plan. Focus. Develop. Win.</div>
+  </div>`;
+}
 function dt(v){ return v? new Date(v).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : 'No time'; }
-function addXP(x){ const before=level(); state.xp=Math.max(0,state.xp+x); const gained=level()-before; if(gained>0) state.points+=gained*2; }
+function addXP(x){ const before=level(); state.xp=Math.max(0,state.xp+x); const gained=level()-before; if(gained>0) state.points+=gained*8; }
 function dayKey(offset=0){ const d=new Date(); d.setDate(d.getDate()+offset); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
 /* ---------------- native notifications ---------------- */
@@ -791,10 +845,22 @@ function clubNameModalHTML(){
     </div>
   </div>`;
 }
+function loginModalHTML(){
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      ${ffmWordmark(0.55)}
+      <p class="hint" style="margin-top:14px">Sign in with Google to sync your club across devices.</p>
+      ${authError?`<p style="color:var(--red);font-size:13px;font-weight:bold">${esc(authError)}</p>`:''}
+      <p><button class="btn gold" id="googleSignInBtn">🔵 Sign in with Google</button></p>
+      <p><button class="btn" id="skipSignInBtn">Continue without signing in</button></p>
+    </div>
+  </div>`;
+}
 function openUpgradeModal(){ upgradeModalOpen=true; renderModalRoot(); }
 function closeUpgradeModal(){ upgradeModalOpen=false; renderModalRoot(); }
 function renderModalRoot(){
   const root=$('#upgradeModalRoot');
+  if(fbConfigured() && !currentUser && !state.skippedSignIn){ root.innerHTML=loginModalHTML(); return; }
   if(!state.teamName||renamingClub){ root.innerHTML=clubNameModalHTML(); return; }
   if(confirmQueue.length>0){ root.innerHTML=confirmModalHTML(confirmQueue[0]); return; }
   if(syncChoiceOpen){ root.innerHTML=syncChoiceModalHTML(); return; }
@@ -972,9 +1038,9 @@ function render(){
 /* ---------------- static forms ---------------- */
 $('#taskForm').onsubmit=e=>{
   e.preventDefault(); const f=new FormData(e.target);
-  const duration=f.get('duration'), targetGoal=f.get('targetGoal');
+  const duration=f.get('duration');
   state.tasks.push(newTask(f.get('name'), f.get('priority'), f.get('time'),
-    duration?Number(duration):null, targetGoal?Number(targetGoal):null, f.get('goalUnit')));
+    duration?Number(duration):null, null, ''));
   save(); e.target.reset(); render();
 };
 $('#habitForm').onsubmit=e=>{ e.preventDefault(); const f=new FormData(e.target); const type=f.get('goalType'), entryType=f.get('entryType'); state.habits.push({id:id(), name:f.get('name'), goalType:type, entryType, target:entryType==='number'&&type!=='none'?Number(f.get('target')):null, unit:f.get('unit'), done:false}); save(); e.target.reset(); render(); };
@@ -994,6 +1060,12 @@ document.addEventListener('keydown',e=>{
 /* ---------------- delegated change/click handlers ---------------- */
 document.addEventListener('change',e=>{
   const t=e.target;
+  if(t.id==='habitEntryType'){
+    const isNumber=t.value==='number';
+    document.getElementById('habitGoalType').classList.toggle('hidden', !isNumber);
+    document.getElementById('habitTarget').classList.toggle('hidden', !isNumber);
+    return;
+  }
   if(t.id==='notifToggle'){
     state.notificationsEnabled=t.checked;
     saveLocal();
@@ -1039,6 +1111,8 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('button')||e.target;
   if(t.id==='signInBtn'){ signInWithGoogle(); }
   if(t.id==='signOutBtn'){ signOutGoogle(); }
+  if(t.id==='googleSignInBtn'){ signInWithGoogle(); }
+  if(t.id==='skipSignInBtn'){ state.skippedSignIn=true; saveLocal(); renderModalRoot(); }
   if(t.id==='cancelRename'){ renamingClub=false; renderModalRoot(); }
   if(t.id==='clubNameSubmit'){ submitClubName(); }
   if(t.id==='overwriteLocalBtn'){
@@ -1105,6 +1179,12 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
 /* ---------------- init ---------------- */
 (function init(){
   registerSW();
+  const splashSlot=document.getElementById('splashLogoSlot');
+  if(splashSlot) splashSlot.innerHTML=ffmWordmark(1.6);
+  setTimeout(()=>{
+    const splash=document.getElementById('splashScreen');
+    if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 700); }
+  }, 1400);
   const loaded=loadLocal();
   if(loaded){
     state=Object.assign(defaults(), loaded);
@@ -1114,6 +1194,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
     if(state.season.todayOpponent && !state.season.todayOpponent.roster) state.season.todayOpponent=null;
     if(!state.history) state.history={};
     if(state.notificationsEnabled===undefined) state.notificationsEnabled=false;
+    if(state.skippedSignIn===undefined) state.skippedSignIn=false;
     if(state.selected===undefined) state.selected=state.active||0;
     state.tasks.forEach(t=>{
       if(t.durationMin===undefined) t.durationMin=null;
