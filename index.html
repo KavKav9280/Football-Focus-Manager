@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#26382c">
 <link rel="manifest" href="manifest.webmanifest">
-<title>Focus Manager</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="favicon.svg">
+<title>Football Focus Manager</title>
 <style>
 :root{--bg:#211a14;--paper:#f3ead2;--ink:#26382c;--line:#c8b88c;--gold:#c99d20;--red:#b84b3d;--yellow:#d49e24;--blue:#377aa4;--green:#638c6c;
   --bronze-a:#e3b587;--bronze-b:#8a5a34;--silver-a:#e7ecef;--silver-b:#9fa6ad;--gold-a:#f6d97a;--gold-b:#c99d20;--plat-a:#dff7f2;--plat-b:#57c2b3;}
@@ -138,7 +140,7 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 <main class="book">
   <div id="brandRow" style="display:flex;align-items:center;gap:8px">
     <span id="headerLogo" style="font-family:Georgia,'Times New Roman',serif;font-weight:700;color:#1f4a34;letter-spacing:1px;font-size:22px;background:#f8e6c2;border-radius:6px;padding:2px 8px;border:1px solid var(--line)">FFM</span>
-    <h1 style="margin:0">Focus Manager</h1>
+    <h1 style="margin:0">Football Focus Manager</h1>
   </div>
   <div id="welcomeRow">
     <p class="subtitle" id="welcomeLine" style="margin:0"></p>
@@ -860,7 +862,7 @@ function openUpgradeModal(){ upgradeModalOpen=true; renderModalRoot(); }
 function closeUpgradeModal(){ upgradeModalOpen=false; renderModalRoot(); }
 function renderModalRoot(){
   const root=$('#upgradeModalRoot');
-  if(fbConfigured() && !currentUser && !state.skippedSignIn){ root.innerHTML=loginModalHTML(); return; }
+  if(fbConfigured() && !currentUser && (!state.skippedSignIn || authError)){ root.innerHTML=loginModalHTML(); return; }
   if(!state.teamName||renamingClub){ root.innerHTML=clubNameModalHTML(); return; }
   if(confirmQueue.length>0){ root.innerHTML=confirmModalHTML(confirmQueue[0]); return; }
   if(syncChoiceOpen){ root.innerHTML=syncChoiceModalHTML(); return; }
@@ -1112,7 +1114,7 @@ document.addEventListener('click',e=>{
   if(t.id==='signInBtn'){ signInWithGoogle(); }
   if(t.id==='signOutBtn'){ signOutGoogle(); }
   if(t.id==='googleSignInBtn'){ signInWithGoogle(); }
-  if(t.id==='skipSignInBtn'){ state.skippedSignIn=true; saveLocal(); renderModalRoot(); }
+  if(t.id==='skipSignInBtn'){ state.skippedSignIn=true; authError=''; saveLocal(); renderModalRoot(); }
   if(t.id==='cancelRename'){ renamingClub=false; renderModalRoot(); }
   if(t.id==='clubNameSubmit'){ submitClubName(); }
   if(t.id==='overwriteLocalBtn'){
