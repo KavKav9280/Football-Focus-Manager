@@ -1,4 +1,4 @@
-!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#26382c">
@@ -20,13 +20,14 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 #accountBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#eadfbe;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px}
 .top-xp{background:var(--ink);color:var(--paper);border-radius:9px;padding:11px 14px;margin:15px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 .top-xp .xp{flex:1;max-width:420px;min-width:140px}
-.tabs{display:flex;gap:7px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:20px}
+.tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:2px solid var(--line);margin-bottom:20px;scrollbar-width:thin}
+.tabs button{white-space:nowrap;flex-shrink:0}
 .tabs button,.btn{border:0;border-radius:7px;padding:9px 13px;cursor:pointer;font:600 14px Georgia,serif;background:var(--ink);color:var(--paper);transition:transform .12s ease,background .15s ease,box-shadow .15s ease}
 .tabs button:hover,.btn:hover{box-shadow:0 3px 10px #0003}
 .tabs button:active,.btn:active{transform:scale(.95)}
 .tabs button{transition:background .25s ease,color .25s ease,transform .12s ease}
 .tabs button{border-radius:8px 8px 0 0;background:#ded1ae;color:var(--ink)}
-.tabs button.active{background:var(--ink);color:var(--paper)}
+.tabs button.active{background:var(--ink);color:var(--paper);box-shadow:0 3px 0 var(--gold) inset}
 .btn.gold{background:var(--gold);color:#241b12}
 .btn.small{padding:6px 9px;font-size:12px}
 .btn.danger{background:var(--red)}
@@ -47,6 +48,8 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 .task .name,.habit .name{flex:1;min-width:120px}
 .done .name{text-decoration:line-through;color:#6c7567}
 .time{font:12px monospace;background:#eee2bf;padding:5px;border-radius:4px;white-space:nowrap}
+.timer-active-panel{display:inline-flex;align-items:center;gap:4px;background:var(--ink);color:var(--paper);padding:5px 8px;border-radius:6px;font:12px monospace;animation:modalPop .2s ease}
+.timer-active-panel b{font-size:13px}
 .time input{border:0;background:transparent;width:150px;font:12px monospace}
 select.inline{font:12px monospace;padding:5px;border-radius:4px}
 input.duration-input{width:60px;font:12px monospace;padding:5px}
@@ -56,12 +59,12 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .xp{height:12px;background:#dac99c;border-radius:10px;overflow:hidden;border:1px solid #bda878}
 .xp i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0%;transition:width .6s cubic-bezier(.22,1,.36,1)}
 .score{font-weight:bold;color:var(--gold)}
- 
+
 .avatar{width:54px;height:54px;border-radius:50%;background:#eee2bf;object-fit:cover;border:2px solid #00000022;flex-shrink:0}
 .avatar.lg{width:96px;height:96px}
 .flag{font-size:16px;margin-left:2px}
 .cpu-crest{width:34px;height:34px;border-radius:8px;background:#eee2bf;vertical-align:middle;margin-right:6px}
- 
+
 .squad{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 .player{background:#fff9e9;border:2px solid #bda878;padding:11px;border-radius:8px;min-height:150px;text-align:center;transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s ease;cursor:pointer}
 .player:hover{transform:translateY(-3px);box-shadow:0 8px 18px #0002}
@@ -78,7 +81,7 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .statControls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .statControls button{background:#e6d8b4;color:var(--ink);border:1px solid #bda878;border-radius:6px;padding:9px;cursor:pointer;font-weight:bold}
 .current-player-mini{display:flex;align-items:center;gap:12px;margin-bottom:10px}
- 
+
 .modal-overlay{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;z-index:80;padding:16px;animation:overlayFade .2s ease}
 .modal-card-lg{background:var(--paper);border-radius:16px;padding:22px;max-width:420px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px #0008;text-align:center;border:4px solid;animation:modalPop .28s cubic-bezier(.22,1,.36,1)}
 @keyframes overlayFade{0%{opacity:0}100%{opacity:1}}
@@ -94,7 +97,7 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .upgrade-banner{background:#26382c;color:#f3ead2;border-radius:8px;padding:9px;margin:12px 0;font-weight:bold;animation:pop .4s ease}
 @keyframes pop{0%{transform:scale(.9);opacity:.2}100%{transform:scale(1);opacity:1}}
 .modal-card-lg input[type=text]{width:100%;margin-top:6px}
- 
+
 .match{background:#26382c;color:#f3ead2;padding:15px;border-radius:9px;margin-top:14px}
 .match p{margin:5px 0}
 .season-status{background:#eadfbe;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
@@ -103,7 +106,7 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .season-recap h3{margin-top:0}
 .chart{width:100%;height:130px;display:block;background:#fff9e9;border:1px solid var(--line);border-radius:6px;margin:7px 0 15px}
 .chart-label{font-size:13px;color:#5a6657}
- 
+
 .summary-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
 .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .summary-col{background:#eadfbe;border:1px solid var(--line);border-radius:10px;padding:14px}
@@ -115,7 +118,7 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .summary-chip.tier-gold{border-color:var(--gold-b)}
 .summary-chip.tier-platinum{border-color:var(--plat-b)}
 .summary-chip.active{box-shadow:0 0 0 2px #f3d36a}
- 
+
 .cal-scroll{max-height:640px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;background:#fff9e9;position:relative}
 .cal-grid{position:relative;height:1440px}
 .cal-hour{position:absolute;left:0;right:0;height:60px;border-top:1px dashed #d8cba0;font:11px monospace;color:#7d7360;padding:2px 0 0 6px;box-sizing:border-box}
@@ -137,7 +140,7 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .roster-strip{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .cal-seg-purple{position:absolute;left:0;right:0;top:0;background:#7a4fb0;opacity:.35;z-index:1}
 .cal-seg-green{position:absolute;left:0;right:0;background:var(--green);opacity:.35;z-index:1}
- 
+
 .match-live-card{background:#0e2b1a;border-radius:16px;padding:16px;max-width:460px;width:100%;box-shadow:0 20px 60px #0008;color:#f3ead2;animation:modalPop .28s cubic-bezier(.22,1,.36,1)}
 .match-scoreboard{display:flex;align-items:center;justify-content:center;gap:10px;font-family:Georgia,serif;font-weight:bold;margin-bottom:10px;flex-wrap:wrap}
 .match-scoreboard .mclock{background:#000;color:#fff;padding:4px 8px;border-radius:6px;font:12px monospace}
@@ -150,11 +153,25 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .pitch-dot.ball{width:8px;height:8px;background:#fff;box-shadow:0 0 4px #000;animation:none;transition:left 2s linear}
 @keyframes dotJitter{0%{margin-left:-4px;margin-top:-3px}100%{margin-left:4px;margin-top:3px}}
 .match-ticker{margin-top:10px;background:#00000055;border-radius:8px;padding:8px 10px;font-size:13px;max-height:100px;overflow-y:auto}
- 
+
 .splash-screen{position:fixed;inset:0;background:#f8e6c2;display:flex;align-items:center;justify-content:center;z-index:200;opacity:1;transition:opacity .6s ease}
 .splash-screen.hide{opacity:0;pointer-events:none}
- 
-@media(max-width:620px){.book{padding:18px}.grid{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}.statControls{grid-template-columns:repeat(2,1fr)}}
+
+@media(max-width:620px){
+  .book{padding:18px}
+  .grid{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr}
+  .statControls{grid-template-columns:repeat(2,1fr)}
+  body{padding:10px 6px 40px;font-size:15px}
+  h1{font-size:22px}
+  .btn,.tabs button{padding:11px 14px;font-size:14px}
+  .task,.habit{gap:6px}
+  .task .name,.habit .name{min-width:100%;order:-1;margin-bottom:2px}
+  .form input,.form select{min-width:0;flex:1 1 45%}
+  .modal-card-lg{padding:16px}
+  .match-scoreboard{font-size:13px}
+  .squad{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+}
 </style>
 </head>
 <body>
@@ -168,16 +185,16 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
     <p class="subtitle" id="welcomeLine" style="margin:0"></p>
     <button class="btn small hidden" id="renameClubBtn">✏️ Rename</button>
   </div>
- 
+
   <div id="accountBar"></div>
- 
+
   <div id="appBody">
     <div class="top-xp">
       <b id="topLevel">Manager Level 1</b>
       <span id="topXp">0 / 100 XP</span>
       <div class="xp"><i id="topXpFill"></i></div>
     </div>
- 
+
     <nav class="tabs">
       <button class="active" data-tab="summary">Summary</button>
       <button data-tab="tasks">Tasks</button>
@@ -188,9 +205,10 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
       <button data-tab="squad">Squad</button>
       <button data-tab="matches">Weekly Matches</button>
     </nav>
- 
+
     <section id="summary" class="tab">
       <h2>Summary</h2>
+      <p class="hint"><b>What:</b> Your daily dashboard. <b>Includes:</b> Habits, tasks, reminders, and squad at a glance. <b>Rewards:</b> None here — jump into a tab to earn XP.</p>
       <div class="summary-head">
         <div><b id="summaryTeamName"></b><div class="hint" id="summaryRecord" style="margin:0"></div></div>
       </div>
@@ -213,10 +231,10 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
         <div class="summary-squad-strip" id="summarySquad"></div>
       </div>
     </section>
- 
+
     <section id="tasks" class="tab hidden">
       <h2>Tasks</h2>
-      <p class="hint">Sections sort themselves — active tasks stay on top. Everything below is editable any time.</p>
+      <p class="hint"><b>What:</b> Priority to-do list with live timers. <b>Includes:</b> Red/Yellow/Blue tiers (auto-sorted), countdowns, calendar sync. <b>Rewards:</b> +20/+40/+60 XP by priority.</p>
       <p><label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="notifToggle" class="check"> <b>🔔 Notifications</b></label> <span class="hint" id="notifStatus" style="margin:0"></span></p>
       <form id="taskForm" class="form">
         <input name="name" type="text" placeholder="What needs doing?" required>
@@ -231,16 +249,16 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
       </form>
       <div id="taskLists"></div>
     </section>
- 
+
     <section id="calendar" class="tab hidden">
       <h2>Calendar</h2>
-      <p class="hint">Blocks track each task's timer live. A late start shows in <span style="color:#7a4fb0;font-weight:bold">purple</span>; extended time shows in <span style="color:var(--green);font-weight:bold">green</span>.</p>
+      <p class="hint"><b>What:</b> Live timeline of today's tasks. <b>Includes:</b> Real-time blocks; late starts show <span style="color:#7a4fb0;font-weight:bold">purple</span>, extensions show <span style="color:var(--green);font-weight:bold">green</span>. <b>Rewards:</b> None — visual only.</p>
       <div class="cal-scroll"><div class="cal-grid" id="calGrid"></div></div>
     </section>
- 
+
     <section id="reminders" class="tab hidden">
       <h2>Reminders</h2>
-      <p class="hint">Every 5 reminders you check off earns +10 XP.</p>
+      <p class="hint"><b>What:</b> Simple checklist reminders. <b>Includes:</b> Name, date, time. <b>Rewards:</b> +10 XP every 5 checked off.</p>
       <form id="reminderForm" class="form">
         <input name="name" type="text" placeholder="Reminder name" required>
         <input name="date" type="date" required>
@@ -249,10 +267,10 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
       </form>
       <div id="reminderList"></div>
     </section>
- 
+
     <section id="habits" class="tab hidden">
       <h2>Daily Habits</h2>
-      <p class="hint">Numeric goals auto-complete when met; Yes/No habits are logged manually.</p>
+      <p class="hint"><b>What:</b> Recurring daily goals. <b>Includes:</b> Tick, numeric-goal, or Yes/No tracking. <b>Rewards:</b> +10 XP done · −10 XP if missed at daily reset.</p>
       <form id="habitForm" class="form">
         <input name="name" type="text" placeholder="New habit name…" required>
         <select name="entryType" id="habitEntryType">
@@ -274,17 +292,17 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
         <div class="panel"><h3>Finished</h3><div id="habitDone"></div></div>
       </div>
     </section>
- 
+
     <section id="statistics" class="tab hidden">
       <h2>Statistics</h2>
-      <p class="hint">Today's log, and your last 7 days.</p>
+      <p class="hint"><b>What:</b> Your habit history. <b>Includes:</b> Today's log plus 7-day trend charts. <b>Rewards:</b> None — tracking only.</p>
       <div class="panel"><h3 id="statsDate"></h3><div id="statsToday"></div></div>
       <div class="panel" style="margin-top:16px"><h3>Last 7 days</h3><div id="statsHistory"></div></div>
     </section>
- 
+
     <section id="squad" class="tab hidden">
       <h2>Your Squad</h2>
-      <p class="hint">1 GK · 2 RB · 3-4 CB · 5 LB · 6-8 CM · 9 RW · 10 LW · 11 ST — click a player to upgrade.</p>
+      <p class="hint"><b>What:</b> Your 11-player squad. <b>Includes:</b> 1 GK · 2 RB · 3-4 CB · 5 LB · 6-8 CM · 9 RW · 10 LW · 11 ST. <b>Rewards:</b> 2 upgrade points per level, spend on any player.</p>
       <div class="panel">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
           <div><b id="managerLevel">Manager Level 1</b><div class="hint" id="xpText" style="margin:0">0 / 100 XP</div></div>
@@ -297,25 +315,25 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
       <h3 style="margin-top:20px">Starting XI</h3>
       <div class="squad" id="squadList"></div>
     </section>
- 
+
     <section id="matches" class="tab hidden">
       <h2>Weekly Matches</h2>
-      <p class="hint">One match a day, 38 a season. ≤7 rating gap is a coin toss. Unlocks once today's habits and tasks are done.</p>
+      <p class="hint"><b>What:</b> Your CPU season. <b>Includes:</b> Pre-match lineups, 1 match/day, 38-game season, ≤7-rating-gap coin toss. <b>Rewards:</b> League W/D/L record, top-scorer tracking. <b>Unlocks</b> once today's habits &amp; tasks are done.</p>
       <div id="seasonRecap"></div>
       <div class="season-status" id="seasonStatus"></div>
       <button id="weekBtn" class="btn gold">Play today's match</button>
       <div id="matchReport"></div>
     </section>
   </div>
- 
+
   <div id="upgradeModalRoot"></div>
 </main>
- 
+
 <!-- Firebase (activates once firebaseConfig below has your own project's keys) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
- 
+
 <script>
 const KEY='focus-manager-v7';
 const positions=['GK','RB','CB','CB','LB','CM','CM','CM','RW','LW','ST']; // 1..11, back to front
@@ -323,7 +341,7 @@ const OUTFIELD_STATS=['PAC','SHO','PAS','DRI','DEF','PHY'];
 const GK_STATS=['DIV','HAN','KIC','REF','SPD','POS'];
 function statKeysFor(pos){ return pos==='GK'?GK_STATS:OUTFIELD_STATS; }
 const REWARDS={red:60,yellow:40,blue:20};
- 
+
 /* EA-style position weightings (sum to 1 per position) */
 const WEIGHTS={
   ST:{SHO:.30,PAC:.25,DRI:.20,PAS:.10,PHY:.10,DEF:.05},
@@ -340,7 +358,7 @@ const KEY_STATS_LABEL={
   CM:'PAS, DEF, PHY', LB:'PAC, DEF, PHY/PAS', RB:'PAC, DEF, PHY/PAS',
   CB:'DEF, PHY, PAC', GK:'REF, DIV/POS, HAN'
 };
- 
+
 /* =========================================================================
    FIREBASE CONFIG — Focus Football Manager project. */
 const firebaseConfig = {
@@ -409,6 +427,8 @@ function pushToCloud(){
   db.collection('users').doc(currentUser.uid).set(state).catch(e=>console.error('Cloud push failed', e));
 }
 function queueCloudSync(){ if(!currentUser) return; clearTimeout(cloudSyncTimer); cloudSyncTimer=setTimeout(pushToCloud, 1500); }
+window.addEventListener('beforeunload', ()=>{ if(currentUser) pushToCloud(); });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && currentUser) pushToCloud(); });
 function renderAuthUI(){
   const el=document.getElementById('accountBar'); if(!el) return;
   if(!fbConfigured()){ el.innerHTML=`<span class="hint" style="margin:0">☁️ Cloud sync not configured.</span>`; return; }
@@ -418,14 +438,14 @@ function renderAuthUI(){
   }
   else{ el.innerHTML=`<button class="btn small gold" id="signInBtn">Sign in with Google</button> <span class="hint" style="margin:0">to sync across devices</span>`; }
 }
- 
+
 /* ---------------- local persistence ----------------
    Note: localStorage doesn't persist inside Claude.ai's sandboxed preview —
    it works normally once hosted or opened in a real browser. */
 function saveLocal(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ console.warn('localStorage unavailable', e); } }
 function loadLocal(){ try{ const raw=localStorage.getItem(KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
 function save(){ saveLocal(); queueCloudSync(); }
- 
+
 /* ---------------- generators ---------------- */
 function id(){ return Date.now()+Math.random().toString(16).slice(2); }
 const FIRST=['Marcus','Leo','Kian','Theo','Jamal','Noah','Ezra','Finn','Malik','Rio','Andre','Diego','Kofi','Mateo','Yusuf','Owen','Bruno','Sami','Hugo','Enzo'];
@@ -439,16 +459,18 @@ const CPU_PREFIX=['Ironbridge','Vale','Northgate','Castleview','Harrow','Fenwick
 const CPU_SUFFIX=['United','Rovers','Athletic','City','Town','Wanderers','Albion','Rangers'];
 const CPU_POSITIONS=['GK','CB','CB','LB','RB','CM','CM','CAM','RW','LW','ST'];
 function genCpuRoster(baseline){
-  return CPU_POSITIONS.map(pos=>({ pos, name:genPlayerName(), rating:Math.max(60, Math.min(99, baseline + (Math.floor(Math.random()*5)-2))) }));
+  return CPU_POSITIONS.map(pos=>({ pos, name:genPlayerName(), rating:Math.max(65, Math.min(99, baseline + (Math.floor(Math.random()*5)-2))) }));
 }
 function genCpuTeams(n){
   const teams=[], used=new Set();
   while(teams.length<n){
     const name=CPU_PREFIX[Math.floor(Math.random()*CPU_PREFIX.length)]+' '+CPU_SUFFIX[Math.floor(Math.random()*CPU_SUFFIX.length)];
     if(used.has(name)) continue; used.add(name);
-    const baseline=60+Math.floor(Math.random()*35);
+    // Baseline starts at 65 so the weakest teams land in the 65-70 "Tier 1" band,
+    // scaling up toward 95-100 at the top end.
+    const baseline=65+Math.floor(Math.random()*33);
     const roster=genCpuRoster(baseline);
-    const rating=Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length);
+    const rating=Math.max(65, Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length));
     teams.push({id:id(), name, rating, crestSeed:name, roster});
   }
   return teams;
@@ -472,7 +494,7 @@ function newTask(name, priority, time, durationMin, targetGoal, goalUnit){
 function newReminder(name, date, time){
   return {id:id(), name, date, time, done:false};
 }
- 
+
 /* ---------------- state ---------------- */
 const defaults=()=>({
   teamName:null, skippedSignIn:false,
@@ -494,13 +516,13 @@ let renamingClub=false;
 let audioCtx=null;
 let swRegistration=null;
 const $=s=>document.querySelector(s);
- 
+
 /* ---------------- EA-style rating ---------------- */
 function rating(p){
   const w=WEIGHTS[p.pos]||WEIGHTS.CM, keys=statKeysFor(p.pos);
   let sum=0;
   keys.forEach(k=>{ sum += (p.stats[k]||0) * (w[k]||0); });
-  return Math.max(60, Math.min(99, Math.round(sum + (p.rep||0))));
+  return Math.max(65, Math.min(99, Math.round(sum + (p.rep||0))));
 }
 function ovr(){ return Math.round(state.players.reduce((s,p)=>s+rating(p),0)/11); }
 function levelInfo(x=state.xp){ let level=1,need=10,into=x; while(into>=need){ into-=need; level++; need+=10; } return {level,need,into}; }
@@ -548,7 +570,7 @@ function processDailyReset(){
   state.lastResetDate=today;
   saveLocal();
 }
- 
+
 /* ---------------- native notifications ---------------- */
 function registerSW(){
   if('serviceWorker' in navigator){
@@ -596,7 +618,7 @@ function playAlarm(){
     }
   }catch(e){}
 }
- 
+
 /* ---------------- daily completion gate ---------------- */
 function dailyChecklistStatus(){
   const today=dayKey(), entries=state.history[today]||{};
@@ -608,30 +630,35 @@ function dailyChecklistStatus(){
   const tasksComplete=totalTasks===0||doneTasks===totalTasks;
   return {totalHabits,doneHabits,totalTasks,doneTasks,ready:habitsComplete&&tasksComplete};
 }
- 
+
 /* ---------------- tasks ---------------- */
 function taskElapsedMs(t){ return (t.elapsedMs||0) + (t.startedAt ? Date.now()-t.startedAt : 0); }
-function timerControlsHTML(t){
-  if(!t.durationMin || t.done) return '';
-  if(t.awaitingConfirm) return `<span class="time">⏰ confirm below</span>`;
+function timerAreaHTML(t){
+  if(!t.durationMin || t.done){
+    return `<span class="time"><input type="datetime-local" value="${t.time||''}" data-time="${t.id}" title="Start time"></span>`;
+  }
+  if(t.awaitingConfirm){
+    return `<span class="time"><input type="datetime-local" value="${t.time||''}" data-time="${t.id}" title="Start time"></span><span class="time">⏰ confirm below</span>`;
+  }
   const elapsedMin=taskElapsedMs(t)/60000;
+  const isActive = t.startedAt!=null || elapsedMin>0;
+  if(!isActive){
+    return `<span class="time"><input type="datetime-local" value="${t.time||''}" data-time="${t.id}" title="Start time"></span><button class="btn small gold" data-starttimer="${t.id}">Start Timer</button>`;
+  }
+  // Active-timer control panel: the static time field is intentionally gone
+  // here — this whole panel replaces it while a session is running/paused.
   const remainMin=Math.max(0, t.durationMin-elapsedMin);
   const mm=Math.floor(remainMin), ss=Math.floor((remainMin-mm)*60);
-  if(t.startedAt){
-    return `<span class="time">⏱ ${mm}:${String(ss).padStart(2,'0')}</span> <button class="btn small" data-stoptimer="${t.id}">Pause</button>`;
-  }
-  if(elapsedMin>0){
-    return `<span class="time">⏸ ${mm}:${String(ss).padStart(2,'0')} left</span> <button class="btn small gold" data-starttimer="${t.id}">Resume</button>`;
-  }
-  return `<button class="btn small gold" data-starttimer="${t.id}">Start Timer</button>`;
-}
-function timeOrAdjustHTML(t){
-  // Bug fix: once a timer is running, stop showing the static scheduled-time
-  // field — swap it for +/- controls so the user can nudge the timer live.
-  if(t.startedAt){
-    return `<span class="time">⏳ <button class="btn small" data-timeminus="${t.id}">−1m</button> <button class="btn small" data-timeplus="${t.id}">+1m</button></span>`;
-  }
-  return `<span class="time"><input type="datetime-local" value="${t.time||''}" data-time="${t.id}" title="Start time"></span>`;
+  const pauseResumeBtn = t.startedAt
+    ? `<button class="btn small" data-stoptimer="${t.id}" title="Pause">⏸</button>`
+    : `<button class="btn small gold" data-starttimer="${t.id}" title="Resume">▶</button>`;
+  return `<span class="timer-active-panel">
+    <b>${mm}:${String(ss).padStart(2,'0')}</b>
+    <button class="btn small" data-timeminus="${t.id}" title="Subtract 1 minute">−1m</button>
+    <button class="btn small" data-timeplus="${t.id}" title="Add 1 minute">+1m</button>
+    ${pauseResumeBtn}
+    <button class="btn small danger" data-canceltimer="${t.id}" title="Stop and clear this timer session">✕</button>
+  </span>`;
 }
 function getSortedSections(){
   const tiers=['red','yellow','blue'];
@@ -655,14 +682,13 @@ function renderTasks(){
         <div class="task ${x.done?'done':''}">
           <input class="check" type="checkbox" data-task="${x.id}" ${x.done?'checked':''}>
           <span class="name">${esc(x.name)}</span>
-          ${timeOrAdjustHTML(x)}
+          ${timerAreaHTML(x)}
           <select class="inline" data-priority="${x.id}">
             <option value="red" ${x.priority==='red'?'selected':''}>Red</option>
             <option value="yellow" ${x.priority==='yellow'?'selected':''}>Yellow</option>
             <option value="blue" ${x.priority==='blue'?'selected':''}>Blue</option>
           </select>
           <input type="number" class="duration-input" min="1" placeholder="min" value="${x.durationMin||''}" data-duration="${x.id}" title="Timer minutes">
-          ${timerControlsHTML(x)}
           <button class="btn small" data-taskup="${x.id}" ${xi===0?'disabled':''}>↑</button>
           <button class="btn small" data-taskdown="${x.id}" ${xi===items.length-1?'disabled':''}>↓</button>
           <button class="btn small danger" data-del-task="${x.id}">×</button>
@@ -747,7 +773,7 @@ function tickTimers(){
   if(calendarVisible()) renderCalendar();
 }
 setInterval(tickTimers, 1000);
- 
+
 /* ---------------- calendar (timer-driven day view) ---------------- */
 function calendarVisible(){ const sec=document.getElementById('calendar'); return sec && !sec.classList.contains('hidden'); }
 function fmtHM(mins){
@@ -836,7 +862,7 @@ function renderCalendar(){
   grid.innerHTML=hoursHTML+`<div class="cal-now" style="top:${nowMin}px"></div>`+blocks
     + (state.tasks.some(t=>taskWindow(t)) ? '' : '<div class="cal-empty" style="position:absolute;top:0;left:70px">No tasks scheduled today yet.</div>');
 }
- 
+
 /* ---------------- habits ---------------- */
 function passesGoal(h,value){
   if(h.entryType==='clarification') return value==='Yes';
@@ -880,7 +906,7 @@ function renderHabits(){
   $('#habitOpen').innerHTML=state.habits.filter(x=>!(entries[x.id]||{}).done).map(x=>habitRow(x,entries)).join('') || '<div class="empty">Nothing waiting today.</div>';
   $('#habitDone').innerHTML=state.habits.filter(x=>(entries[x.id]||{}).done).map(x=>habitRow(x,entries)).join('') || '<div class="empty">None yet today.</div>';
 }
- 
+
 /* ---------------- squad / upgrade modal ---------------- */
 function squadCardHTML(p,i){
   const r=rating(p), tier=tierOf(r), keys=statKeysFor(p.pos);
@@ -1036,16 +1062,20 @@ function renderModalRoot(){
   if(matchLive){ renderMatchLive(); return; }
   if(prematchOpen){ root.innerHTML=prematchModalHTML(); return; }
   if(fbConfigured() && !currentUser && (!state.skippedSignIn || authError)){ root.innerHTML=loginModalHTML(); return; }
+  // Cloud sync choice MUST be resolved before the club-name gate — otherwise
+  // a new device always prompts for a brand new club name before it ever
+  // gets a chance to offer the existing cloud save, creating a duplicate
+  // profile instead of loading the real one.
+  if(syncChoiceOpen){ root.innerHTML=syncChoiceModalHTML(); return; }
   if(!state.teamName||renamingClub){ root.innerHTML=clubNameModalHTML(); return; }
   if(state.dailyResetSummary){ root.innerHTML=dailyResetModalHTML(); return; }
   if(confirmQueue.length>0){ root.innerHTML=confirmModalHTML(confirmQueue[0]); return; }
   if(incompleteChoiceFor){ root.innerHTML=incompleteChoiceModalHTML(incompleteChoiceFor); return; }
   if(moveLaterFor){ root.innerHTML=moveLaterModalHTML(moveLaterFor); return; }
-  if(syncChoiceOpen){ root.innerHTML=syncChoiceModalHTML(); return; }
   if(upgradeModalOpen){ root.innerHTML=upgradeModalHTML(); return; }
   root.innerHTML='';
 }
- 
+
 /* ---------------- matches / season ---------------- */
 function canPlayToday(){ return state.season.lastPlayDate!==dayKey(); }
 function seasonComplete(){ return state.season.gamesPlayed>=38; }
@@ -1069,12 +1099,12 @@ function computeMatchOutcome(){
   if(Math.random()<0.10) result='draw';
   else if(Math.abs(gap)<=7) result=Math.random()<0.5?'win':'loss';
   else result=gap>0?'win':'loss';
- 
+
   let usScore, themScore;
   if(result==='win'){ themScore=Math.floor(Math.random()*3); usScore=themScore+1+Math.floor(Math.random()*3); }
   else if(result==='loss'){ usScore=Math.floor(Math.random()*3); themScore=usScore+1+Math.floor(Math.random()*3); }
   else { usScore=themScore=Math.floor(Math.random()*3); }
- 
+
   const outfield=state.players.filter(p=>p.pos!=='GK');
   const scorers=[];
   for(let g=0; g<usScore; g++){
@@ -1085,7 +1115,7 @@ function computeMatchOutcome(){
     scorers.push(chosen.name);
   }
   const text=REPORTS[result][Math.floor(Math.random()*REPORTS[result].length)];
- 
+
   // Spread each goal across the 90 minutes for the live visualizer, avoiding duplicate minutes.
   const usedMins=new Set();
   const pickMin=()=>{ let m; do{ m=3+Math.floor(Math.random()*86); }while(usedMins.has(m)); usedMins.add(m); return m; };
@@ -1093,7 +1123,7 @@ function computeMatchOutcome(){
   scorers.forEach(name=>timeline.push({min:pickMin(), team:'us', scorer:name}));
   for(let g=0; g<themScore; g++) timeline.push({min:pickMin(), team:'them', scorer:null});
   timeline.sort((a,b)=>a.min-b.min);
- 
+
   return {us, opp, them, gap, result, usScore, themScore, scorers, text, timeline};
 }
 function applyMatchResult(outcome){
@@ -1107,7 +1137,7 @@ function applyMatchResult(outcome){
   notify('Full time', `${state.teamName||'Your club'} ${usScore}–${themScore} ${opp.name}`);
   save();
 }
- 
+
 /* ---------------- 2D match visualizer ---------------- */
 const FORMATION_XY=[[8,50],[20,15],[18,38],[18,62],[20,85],[32,30],[32,50],[32,70],[42,15],[42,85],[44,50]];
 let matchLive=null; // {opp, outcome, minute, events, timerId, done}
@@ -1211,7 +1241,7 @@ function renderMatches(){
       <p>OVR at kickoff: ${m.ovr}${m.scorers.length?` · Scorers: ${m.scorers.map(esc).join(', ')}`:''}</p>
     </div>`).join('') || '<div class="empty">No matches played yet.</div>';
 }
- 
+
 /* ---------------- statistics ---------------- */
 function chartForHabit(h,days){
   const clarification=h.entryType==='clarification';
@@ -1254,7 +1284,7 @@ function renderStatistics(){
     ? state.habits.map(h=>chartForHabit(h,days)).join('')
     : '<div class="empty">No history yet.</div>';
 }
- 
+
 /* ---------------- summary ---------------- */
 function reminderRow(r){
   return `<div class="task ${r.done?'done':''}">
@@ -1287,7 +1317,7 @@ function renderSummary(){
     return `<span class="summary-chip tier-${tier.key} ${i===state.selected?'active':''}">#${i+1} ${p.pos} ${r}</span>`;
   }).join('');
 }
- 
+
 /* ---------------- top-level render ---------------- */
 function render(){
   try{
@@ -1308,7 +1338,7 @@ function render(){
     renderModalRoot();
   }
 }
- 
+
 /* ---------------- static forms ---------------- */
 $('#taskForm').onsubmit=e=>{
   e.preventDefault(); const f=new FormData(e.target);
@@ -1321,17 +1351,17 @@ $('#habitForm').onsubmit=e=>{ e.preventDefault(); const f=new FormData(e.target)
 $('#reminderForm').onsubmit=e=>{ e.preventDefault(); const f=new FormData(e.target); state.reminders.push(newReminder(f.get('name'), f.get('date'), f.get('time'))); save(); e.target.reset(); render(); };
 $('#weekBtn').onclick=()=>openPrematch();
 $('#renameClubBtn').onclick=()=>{ renamingClub=true; renderModalRoot(); };
- 
+
 /* ---------------- delegated submit (for the dynamically-rendered club modal) ---------------- */
 function submitClubName(){
   const input=document.getElementById('clubNameInput');
   const v=input?input.value.trim():'';
-  if(v){ state.teamName=v; renamingClub=false; saveLocal(); render(); }
+  if(v){ state.teamName=v; renamingClub=false; save(); render(); }
 }
 document.addEventListener('keydown',e=>{
   if(e.target && e.target.id==='clubNameInput' && e.key==='Enter'){ e.preventDefault(); submitClubName(); }
 });
- 
+
 /* ---------------- delegated change/click handlers ---------------- */
 document.addEventListener('change',e=>{
   const t=e.target;
@@ -1388,11 +1418,11 @@ document.addEventListener('change',e=>{
   if(t.dataset.time){ const x=state.tasks.find(x=>x.id===t.dataset.time); if(x){ x.time=t.value; x.notified={half:false,five:false,done:false,upcoming:false}; } }
   save(); render();
 });
- 
+
 document.addEventListener('click',e=>{
   const selCard=e.target.closest('[data-select]');
   if(selCard){ state.selected=Number(selCard.dataset.select); openUpgradeModal(); save(); render(); return; }
- 
+
   const t=e.target.closest('button')||e.target;
   if(t.id==='signInBtn'){ signInWithGoogle(); }
   if(t.id==='signOutBtn'){ signOutGoogle(); }
@@ -1430,6 +1460,17 @@ document.addEventListener('click',e=>{
   }
   if(t.dataset.timeplus){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus); if(task){ task.durationMin=(task.durationMin||0)+1; } save(); render(); }
   if(t.dataset.timeminus){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus); if(task){ task.durationMin=Math.max(1,(task.durationMin||1)-1); } save(); render(); }
+  if(t.dataset.canceltimer){
+    // Fully stop and clear this timer session (not a pause — no progress is kept).
+    const task=state.tasks.find(x=>x.id===t.dataset.canceltimer);
+    if(task){
+      task.startedAt=null; task.firstStartedAt=null; task.elapsedMs=0; task.extendedFromMin=null;
+      task.awaitingConfirm=false;
+      task.notified={half:false,five:false,done:false,upcoming:task.notified?task.notified.upcoming:false};
+      const qi=confirmQueue.indexOf(task.id); if(qi>-1) confirmQueue.splice(qi,1);
+    }
+    save(); render();
+  }
   if(t.dataset.extendtask){ extendTaskFiveMinutes(t.dataset.extendtask); }
   if(t.dataset.movelater){ moveTaskForLater(t.dataset.movelater); }
   if(t.id==='saveMovedTime'){ saveMovedTime(moveLaterFor); }
@@ -1458,7 +1499,7 @@ document.addEventListener('click',e=>{
   if(t.id==='closeMatchLive'){ closeMatchLive(); }
   if(t.id==='dismissDailyReset'){ state.dailyResetSummary=null; saveLocal(); renderModalRoot(); }
 });
- 
+
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
@@ -1471,7 +1512,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
     if(sc) sc.scrollTop=Math.max(0, nowMin-180);
   }
 }));
- 
+
 /* ---------------- init ---------------- */
 (function init(){
   registerSW();
@@ -1503,6 +1544,10 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
       if(t.awaitingConfirm===undefined) t.awaitingConfirm=false;
       if(t.startedAt===undefined) t.startedAt=null;
     });
+    if(!state.reminders) state.reminders=[];
+    if(state.reminderCheckCount===undefined) state.reminderCheckCount=0;
+    if(state.lastResetDate===undefined) state.lastResetDate=null;
+    if(state.dailyResetSummary===undefined) state.dailyResetSummary=null;
     state.players.forEach((p,i)=>{
       if(!p.name){ p.name=genPlayerName(); p.country=pickCountry(); p.avatarSeed='p'+i+'-'+id(); }
       if(p.rep===undefined) p.rep=Math.floor(Math.random()*4);
@@ -1510,6 +1555,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
       if(!keys.every(k=>k in p.stats)){ p.stats=Object.fromEntries(keys.map(k=>[k, p.stats[k]||0])); }
     });
   }
+  processDailyReset();
   initFirebase();
   render();
 })();
