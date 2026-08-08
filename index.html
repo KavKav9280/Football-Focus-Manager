@@ -243,7 +243,7 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
           <option value="yellow">Yellow — Important</option>
           <option value="blue">Blue — Neither</option>
         </select>
-        <input name="time" type="datetime-local" title="Start time" class="task-time-input">
+        <input name="time" type="time" title="Time of day — repeats daily" class="task-time-input">
         <input name="duration" type="number" min="1" placeholder="Minutes">
         <button class="btn gold">Add</button>
       </form>
@@ -459,7 +459,19 @@ const CPU_PREFIX=['Ironbridge','Vale','Northgate','Castleview','Harrow','Fenwick
 const CPU_SUFFIX=['United','Rovers','Athletic','City','Town','Wanderers','Albion','Rangers'];
 const CPU_POSITIONS=['GK','CB','CB','LB','RB','CM','CM','CAM','RW','LW','ST'];
 function genCpuRoster(baseline){
-  return CPU_POSITIONS.map(pos=>({ pos, name:genPlayerName(), rating:Math.max(65, Math.min(99, baseline + (Math.floor(Math.random()*5)-2))) }));
+  return CPU_POSITIONS.map(pos=>{
+    const keys=statKeysFor(pos), weights=WEIGHTS[pos]||WEIGHTS.CM;
+    const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+    const stats={};
+    keys.forEach(k=>{
+      stats[k]=primary.has(k)
+        ? Math.max(61, Math.min(99, baseline + Math.floor(Math.random()*11)-5)) // primary stats: strictly above 60
+        : Math.max(0, Math.min(90, baseline-25+Math.floor(Math.random()*30)-15)); // secondary stats: free to be lower
+    });
+    const rep=Math.floor(Math.random()*4);
+    const player={pos, name:genPlayerName(), stats, rep};
+    return {...player, rating: rating(player, 65)};
+  });
 }
 function genCpuTeams(n){
   const teams=[], used=new Set();
@@ -470,8 +482,8 @@ function genCpuTeams(n){
     // scaling up toward 95-100 at the top end.
     const baseline=65+Math.floor(Math.random()*33);
     const roster=genCpuRoster(baseline);
-    const rating=Math.max(65, Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length));
-    teams.push({id:id(), name, rating, crestSeed:name, roster});
+    const teamRating=Math.max(65, Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length));
+    teams.push({id:id(), name, rating:teamRating, crestSeed:name, roster});
   }
   return teams;
 }
@@ -518,11 +530,12 @@ let swRegistration=null;
 const $=s=>document.querySelector(s);
 
 /* ---------------- EA-style rating ---------------- */
-function rating(p){
+function rating(p, floor){
+  if(floor===undefined) floor=60; // user's own starter cards baseline at 60
   const w=WEIGHTS[p.pos]||WEIGHTS.CM, keys=statKeysFor(p.pos);
   let sum=0;
   keys.forEach(k=>{ sum += (p.stats[k]||0) * (w[k]||0); });
-  return Math.max(65, Math.min(99, Math.round(sum + (p.rep||0))));
+  return Math.max(floor, Math.min(99, Math.round(sum + (p.rep||0))));
 }
 function ovr(){ return Math.round(state.players.reduce((s,p)=>s+rating(p),0)/11); }
 function levelInfo(x=state.xp){ let level=1,need=10,into=x; while(into>=need){ into-=need; level++; need+=10; } return {level,need,into}; }
@@ -633,32 +646,37 @@ function dailyChecklistStatus(){
 
 /* ---------------- tasks ---------------- */
 function taskElapsedMs(t){ return (t.elapsedMs||0) + (t.startedAt ? Date.now()-t.startedAt : 0); }
+function fmtRemain(t){
+  const remainMin=Math.max(0, (t.durationMin||0)-taskElapsedMs(t)/60000);
+  const mm=Math.floor(remainMin), ss=Math.floor((remainMin-mm)*60);
+  return `${mm}:${String(ss).padStart(2,'0')}`;
+}
 function timerAreaHTML(t){
   if(!t.durationMin || t.done){
-    return `<span class="time"><input type="datetime-local" value="${t.time||''}" data-time="${t.id}" title="Start time"></span>`;
+    return `<span class="time"><input type="time" value="${t.time||''}" data-time="${t.id}" title="Time of day — repeats daily"></span>`;
   }
   if(t.awaitingConfirm){
-    return `<span class="time"><input type="datetime-local" value="${t.time||''}" data-time="${t.id}" title="Start time"></span><span class="time">⏰ confirm below</span>`;
+    return `<span class="time"><input type="time" value="${t.time||''}" data-time="${t.id}" title="Time of day — repeats daily"></span><span class="time">⏰ confirm below</span>`;
   }
   const elapsedMin=taskElapsedMs(t)/60000;
   const isActive = t.startedAt!=null || elapsedMin>0;
   if(!isActive){
-    return `<span class="time"><input type="datetime-local" value="${t.time||''}" data-time="${t.id}" title="Start time"></span><button class="btn small gold" data-starttimer="${t.id}">Start Timer</button>`;
+    return `<span class="time"><input type="time" value="${t.time||''}" data-time="${t.id}" title="Time of day — repeats daily"></span><button class="btn small gold" data-starttimer="${t.id}">Start Timer</button>`;
   }
-  // Active-timer control panel: the static time field is intentionally gone
-  // here — this whole panel replaces it while a session is running/paused.
-  const remainMin=Math.max(0, t.durationMin-elapsedMin);
-  const mm=Math.floor(remainMin), ss=Math.floor((remainMin-mm)*60);
+  // Active-timer control panel replaces the static time field while a
+  // session is running/paused. Capsule order: +1m, +1s, -1s, -1m, bold time,
+  // pause/resume. Dismiss (X) lives outside the capsule, as its own control.
   const pauseResumeBtn = t.startedAt
     ? `<button class="btn small" data-stoptimer="${t.id}" title="Pause">⏸</button>`
     : `<button class="btn small gold" data-starttimer="${t.id}" title="Resume">▶</button>`;
   return `<span class="timer-active-panel">
-    <b>${mm}:${String(ss).padStart(2,'0')}</b>
-    <button class="btn small" data-timeminus="${t.id}" title="Subtract 1 minute">−1m</button>
     <button class="btn small" data-timeplus="${t.id}" title="Add 1 minute">+1m</button>
+    <button class="btn small" data-timeplus1s="${t.id}" title="Add 1 second">+1s</button>
+    <button class="btn small" data-timeminus1s="${t.id}" title="Subtract 1 second">−1s</button>
+    <button class="btn small" data-timeminus="${t.id}" title="Subtract 1 minute">−1m</button>
+    <b data-timerdisplay="${t.id}">${fmtRemain(t)}</b>
     ${pauseResumeBtn}
-    <button class="btn small danger" data-canceltimer="${t.id}" title="Stop and clear this timer session">✕</button>
-  </span>`;
+  </span> <button class="btn small danger" data-canceltimer="${t.id}" title="Stop and clear this timer session">✕</button>`;
 }
 function getSortedSections(){
   const tiers=['red','yellow','blue'];
@@ -683,12 +701,12 @@ function renderTasks(){
           <input class="check" type="checkbox" data-task="${x.id}" ${x.done?'checked':''}>
           <span class="name">${esc(x.name)}</span>
           ${timerAreaHTML(x)}
-          <select class="inline" data-priority="${x.id}">
+          <select class="inline priority-toggle tier-${x.priority}" data-priority="${x.id}">
             <option value="red" ${x.priority==='red'?'selected':''}>Red</option>
             <option value="yellow" ${x.priority==='yellow'?'selected':''}>Yellow</option>
             <option value="blue" ${x.priority==='blue'?'selected':''}>Blue</option>
           </select>
-          <input type="number" class="duration-input" min="1" placeholder="min" value="${x.durationMin||''}" data-duration="${x.id}" title="Timer minutes">
+          <input type="number" class="duration-input" min="1" placeholder="min" value="${x.durationMin?Math.round(x.durationMin):''}" data-duration="${x.id}" title="Timer minutes">
           <button class="btn small" data-taskup="${x.id}" ${xi===0?'disabled':''}>↑</button>
           <button class="btn small" data-taskdown="${x.id}" ${xi===items.length-1?'disabled':''}>↓</button>
           <button class="btn small danger" data-del-task="${x.id}">×</button>
@@ -1459,7 +1477,9 @@ document.addEventListener('click',e=>{
     save(); render();
   }
   if(t.dataset.timeplus){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus); if(task){ task.durationMin=(task.durationMin||0)+1; } save(); render(); }
-  if(t.dataset.timeminus){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus); if(task){ task.durationMin=Math.max(1,(task.durationMin||1)-1); } save(); render(); }
+  if(t.dataset.timeminus){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-1); } save(); render(); }
+  if(t.dataset.timeplus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus1s); if(task){ task.durationMin=(task.durationMin||0)+(1/60); } save(); render(); }
+  if(t.dataset.timeminus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus1s); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-(1/60)); } save(); render(); }
   if(t.dataset.canceltimer){
     // Fully stop and clear this timer session (not a pause — no progress is kept).
     const task=state.tasks.find(x=>x.id===t.dataset.canceltimer);
@@ -1562,4 +1582,3 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
 </script>
 </body>
 </html>
- 
