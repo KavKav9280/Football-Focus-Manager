@@ -1037,9 +1037,21 @@ function incompleteChoiceModalHTML(taskId){
       <h2>Still working on it?</h2>
       <p>"${esc(t.name)}" ran out of time. What now?</p>
       <p><button class="btn gold" data-extendtask="${t.id}">+5 more minutes</button></p>
-      <p><button class="btn" data-movelater="${t.id}">Move for later</button></p>
+      <p><button class="btn" data-movelater="${t.id}">Move for later today</button></p>
+      <p><button class="btn" data-dotomorrow="${t.id}">Do it tomorrow instead</button></p>
     </div>
   </div>`;
+}
+function doItTomorrow(taskId){
+  const t=state.tasks.find(x=>x.id===taskId);
+  if(t){
+    t.startedAt=null; t.firstStartedAt=null; t.elapsedMs=0; t.extendedFromMin=null;
+    t.awaitingConfirm=false; t.done=false;
+    t.notified={half:false,five:false,done:false,upcoming:false};
+    notify('Saved for tomorrow', `"${t.name}" will be ready again tomorrow — no penalty today.`);
+  }
+  incompleteChoiceFor=null;
+  save(); render();
 }
 function moveLaterModalHTML(taskId){
   const t=state.tasks.find(x=>x.id===taskId);
@@ -1426,6 +1438,7 @@ document.addEventListener('keydown',e=>{
 /* ---------------- delegated change/click handlers ---------------- */
 document.addEventListener('change',e=>{
   const t=e.target;
+  let handled=false;
   if(t.id==='habitEntryType'){
     const isNumber=t.value==='number';
     document.getElementById('habitGoalType').classList.toggle('hidden', !isNumber);
@@ -1434,7 +1447,7 @@ document.addEventListener('change',e=>{
   }
   if(t.id==='notifToggle'){
     state.notificationsEnabled=t.checked;
-    saveLocal();
+    save();
     if(t.checked) requestNotifications();
     $('#notifStatus').textContent=notifStatusText();
     return;
@@ -1445,12 +1458,13 @@ document.addEventListener('change',e=>{
       x.done=t.checked;
       if(t.checked){ x.startedAt=null; x.awaitingConfirm=false; }
       addXP(t.checked?REWARDS[x.priority]:-REWARDS[x.priority]);
+      handled=true;
     }
   }
-  if(t.dataset.priority){ const x=state.tasks.find(x=>x.id===t.dataset.priority); if(x) x.priority=t.value; }
+  if(t.dataset.priority){ const x=state.tasks.find(x=>x.id===t.dataset.priority); if(x){ x.priority=t.value; handled=true; } }
   if(t.dataset.duration){
     const x=state.tasks.find(x=>x.id===t.dataset.duration);
-    if(x){ const v=t.value?Number(t.value):null; x.durationMin=v&&v>0?v:null; }
+    if(x){ const v=t.value?Number(t.value):null; x.durationMin=v&&v>0?v:null; handled=true; }
   }
   if(t.dataset.habitvalue||t.dataset.statvalue){
     const hid=t.dataset.habitvalue||t.dataset.statvalue, habit=state.habits.find(x=>x.id===hid);
@@ -1460,11 +1474,12 @@ document.addEventListener('change',e=>{
     entry.done=pass; entry.failed=entry.value!==undefined&&!pass;
     if(pass&&!wasDone) addXP(10);
     if(!pass&&wasDone) addXP(-10);
+    handled=true;
   }
   if(t.dataset.habit||t.dataset.statdone){
     const hid=t.dataset.habit||t.dataset.statdone, habit=state.habits.find(x=>x.id===hid);
     const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
-    if(habit.goalType==='none'&&habit.entryType!=='clarification'&&entry.done!==t.checked){ entry.done=t.checked; entry.failed=false; addXP(t.checked?10:-10); }
+    if(habit.goalType==='none'&&habit.entryType!=='clarification'&&entry.done!==t.checked){ entry.done=t.checked; entry.failed=false; addXP(t.checked?10:-10); handled=true; }
   }
   if(t.dataset.reminder){
     const r=state.reminders.find(x=>x.id===t.dataset.reminder);
@@ -1474,10 +1489,14 @@ document.addEventListener('change',e=>{
         state.reminderCheckCount=(state.reminderCheckCount||0)+1;
         if(state.reminderCheckCount%5===0){ addXP(10); notify('Reminders streak!', '+10 XP for 5 reminders checked off.'); }
       }
+      handled=true;
     }
   }
-  if(t.dataset.time){ const x=state.tasks.find(x=>x.id===t.dataset.time); if(x){ x.time=t.value; x.notified={half:false,five:false,done:false,upcoming:false}; } }
-  save(); render();
+  if(t.dataset.time){ const x=state.tasks.find(x=>x.id===t.dataset.time); if(x){ x.time=t.value; x.notified={half:false,five:false,done:false,upcoming:false}; handled=true; } }
+  // Anything else (like the reschedule time picker before Save is pressed)
+  // is intentionally left alone here — re-rendering on every keystroke was
+  // exactly what wiped the field back to its old value each time.
+  if(handled){ save(); render(); }
 });
 
 document.addEventListener('click',e=>{
