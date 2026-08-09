@@ -410,7 +410,25 @@ async function signInWithGoogle(){
     }
   }
 }
-function signOutGoogle(){ if(auth) auth.signOut(); }
+let unsubscribeCloud=null;
+function startCloudListener(){
+  if(!db||!currentUser||unsubscribeCloud) return;
+  unsubscribeCloud=db.collection('users').doc(currentUser.uid).onSnapshot(snap=>{
+    if(!snap.exists) return;
+    const remote=snap.data();
+    // Only apply if the cloud copy is strictly newer than what we already
+    // have — this is what makes the club created on first sign-in the
+    // master profile: every other device just adopts whatever has the
+    // latest timestamp, instead of fighting over which write "wins".
+    if(remote.updatedAt && remote.updatedAt>(state.updatedAt||0)){
+      state=Object.assign(defaults(), remote);
+      saveLocal(false);
+      render();
+    }
+  }, e=>console.error('Cloud listener error', e));
+}
+function stopCloudListener(){ if(unsubscribeCloud){ unsubscribeCloud(); unsubscribeCloud=null; } }
+function signOutGoogle(){ stopCloudListener(); if(auth) auth.signOut(); }
 async function handleAuthChange(user){
   currentUser=user; render();
   if(user && db){
@@ -418,8 +436,10 @@ async function handleAuthChange(user){
       const ref=db.collection('users').doc(user.uid);
       const snap=await ref.get();
       if(snap.exists){ pendingCloudState=snap.data(); syncChoiceOpen=true; renderModalRoot(); }
-      else{ await ref.set(state); }
+      else{ await ref.set(state); startCloudListener(); }
     }catch(e){ console.error('Cloud check failed', e); }
+  } else {
+    stopCloudListener();
   }
 }
 function pushToCloud(){
@@ -434,7 +454,7 @@ function renderAuthUI(){
   if(!fbConfigured()){ el.innerHTML=`<span class="hint" style="margin:0">☁️ Cloud sync not configured.</span>`; return; }
   if(currentUser){
     const pic=currentUser.photoURL ? `<img src="${currentUser.photoURL}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle" onerror="this.remove()">` : '';
-    el.innerHTML=`${pic} <span>Signed in as <b>${esc(currentUser.displayName||currentUser.email||'Manager')}</b></span> <button class="btn small" id="signOutBtn">Sign out</button>`;
+    el.innerHTML=`${pic} <span>Signed in as <b>${esc(currentUser.displayName||currentUser.email||'Manager')}</b></span> <button class="btn small" id="signOutBtn">Sign out</button> <span class="hint" style="margin:0">${db&&unsubscribeCloud?'☁️ synced live':''}</span>`;
   }
   else{ el.innerHTML=`<button class="btn small gold" id="signInBtn">Sign in with Google</button> <span class="hint" style="margin:0">to sync across devices</span>`; }
 }
@@ -442,7 +462,10 @@ function renderAuthUI(){
 /* ---------------- local persistence ----------------
    Note: localStorage doesn't persist inside Claude.ai's sandboxed preview —
    it works normally once hosted or opened in a real browser. */
-function saveLocal(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ console.warn('localStorage unavailable', e); } }
+function saveLocal(bump){
+  if(bump!==false) state.updatedAt=Date.now();
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ console.warn('localStorage unavailable', e); }
+}
 function loadLocal(){ try{ const raw=localStorage.getItem(KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
 function save(){ saveLocal(); queueCloudSync(); }
 
@@ -517,7 +540,7 @@ function newReminder(name, date, time){
 
 /* ---------------- state ---------------- */
 const defaults=()=>({
-  teamName:null, skippedSignIn:false,
+  teamName:null, skippedSignIn:false, updatedAt:0,
   tasks:[], habits:[], history:{}, reminders:[], reminderCheckCount:0, lastResetDate:null, dailyResetSummary:null,
   notificationsEnabled:false,
   xp:0, points:0,
@@ -714,7 +737,7 @@ function renderTasks(){
             <option value="yellow" ${x.priority==='yellow'?'selected':''}>Yellow</option>
             <option value="blue" ${x.priority==='blue'?'selected':''}>Blue</option>
           </select>
-          <input type="number" class="duration-input" min="1" placeholder="min" value="${x.durationMin?Math.round(x.durationMin):''}" data-duration="${x.id}" title="Timer minutes">
+          ${(x.startedAt!=null||taskElapsedMs(x)/60000>0)&&!x.done ? '' : `<input type="number" class="duration-input" min="1" placeholder="min" value="${x.durationMin?Math.round(x.durationMin):''}" data-duration="${x.id}" title="Timer minutes">`}
           <button class="btn small" data-taskup="${x.id}" ${xi===0?'disabled':''}>↑</button>
           <button class="btn small" data-taskdown="${x.id}" ${xi===items.length-1?'disabled':''}>↓</button>
           <button class="btn small danger" data-del-task="${x.id}">×</button>
@@ -1025,7 +1048,7 @@ function moveLaterModalHTML(taskId){
     <div class="modal-card-lg" style="border-color:var(--gold)">
       <h2>Move "${esc(t.name)}"</h2>
       <p class="hint">Pick a new start time.</p>
-      <input id="moveLaterInput" type="datetime-local" value="${t.time||''}">
+      <input id="moveLaterInput" type="time" value="${t.time||''}">
       <p style="margin-top:14px"><button class="btn gold" id="saveMovedTime">Save</button></p>
     </div>
   </div>`;
@@ -1470,9 +1493,9 @@ document.addEventListener('click',e=>{
   if(t.id==='clubNameSubmit'){ submitClubName(); }
   if(t.id==='overwriteLocalBtn'){
     state=Object.assign(defaults(), pendingCloudState||{});
-    pendingCloudState=null; syncChoiceOpen=false; saveLocal(); render();
+    pendingCloudState=null; syncChoiceOpen=false; saveLocal(false); startCloudListener(); render();
   }
-  if(t.id==='overwriteCloudBtn'){ pushToCloud(); pendingCloudState=null; syncChoiceOpen=false; render(); }
+  if(t.id==='overwriteCloudBtn'){ pushToCloud(); pendingCloudState=null; syncChoiceOpen=false; startCloudListener(); render(); }
   if(t.dataset.delTask){ state.tasks=state.tasks.filter(x=>x.id!==t.dataset.delTask); save(); render(); }
   if(t.dataset.delHabit){ state.habits=state.habits.filter(x=>x.id!==t.dataset.delHabit); save(); render(); }
   if(t.dataset.delReminder){ state.reminders=state.reminders.filter(x=>x.id!==t.dataset.delReminder); save(); render(); }
@@ -1593,11 +1616,22 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
       if(p.rep===undefined) p.rep=Math.floor(Math.random()*4);
       const keys=statKeysFor(p.pos);
       if(!keys.every(k=>k in p.stats)){ p.stats=Object.fromEntries(keys.map(k=>[k, p.stats[k]||0])); }
+      // One-time fix for saves created before starter stats existed: an
+      // all-zero stat block means this player predates that change.
+      if(keys.every(k=>(p.stats[k]||0)===0)){
+        const weights=WEIGHTS[p.pos]||WEIGHTS.CM;
+        const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+        keys.forEach(k=>{ p.stats[k]=primary.has(k) ? 61+Math.floor(Math.random()*15) : Math.floor(Math.random()*60); });
+      }
     });
   }
   processDailyReset();
   initFirebase();
   render();
+})();
+</script>
+</body>
+</html>
 })();
 </script>
 </body>
