@@ -48,7 +48,7 @@ h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
 .task .name,.habit .name{flex:1;min-width:120px}
 .done .name{text-decoration:line-through;color:#6c7567}
 .time{font:12px monospace;background:#eee2bf;padding:5px;border-radius:4px;white-space:nowrap}
-.timer-active-panel{display:inline-flex;align-items:center;gap:4px;background:var(--ink);color:var(--paper);padding:5px 8px;border-radius:6px;font:12px monospace;animation:modalPop .2s ease}
+.timer-active-panel{display:inline-flex;align-items:center;gap:4px;background:var(--ink);color:var(--paper);padding:5px 8px;border-radius:6px;font:12px monospace}
 .timer-active-panel b{font-size:13px}
 .time input{border:0;background:transparent;width:150px;font:12px monospace}
 select.inline{font:12px monospace;padding:5px;border-radius:4px}
@@ -494,8 +494,16 @@ function tierOf(rating){
   return {key:'bronze', label:'Bronze'};
 }
 function newPlayer(pos,i){
+  const keys=statKeysFor(pos), weights=WEIGHTS[pos]||WEIGHTS.CM;
+  const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+  const stats={};
+  keys.forEach(k=>{
+    stats[k]=primary.has(k)
+      ? 61+Math.floor(Math.random()*15) // primary attributes: 61-75, above 60 but not maxed out
+      : Math.floor(Math.random()*60);   // secondary attributes: randomized, strictly below 60
+  });
   return {id:i, pos, name:genPlayerName(), country:pickCountry(), avatarSeed:'p'+i+'-'+id(),
-    rep:Math.floor(Math.random()*4), stats:Object.fromEntries(statKeysFor(pos).map(s=>[s,0]))};
+    rep:Math.floor(Math.random()*4), stats};
 }
 function newTask(name, priority, time, durationMin, targetGoal, goalUnit){
   return {id:id(), name, priority, time, durationMin,
@@ -665,7 +673,7 @@ function timerAreaHTML(t){
   }
   // Active-timer control panel replaces the static time field while a
   // session is running/paused. Capsule order: +1m, +1s, -1s, -1m, bold time,
-  // pause/resume. Dismiss (X) lives outside the capsule, as its own control.
+  // pause/resume.
   const pauseResumeBtn = t.startedAt
     ? `<button class="btn small" data-stoptimer="${t.id}" title="Pause">⏸</button>`
     : `<button class="btn small gold" data-starttimer="${t.id}" title="Resume">▶</button>`;
@@ -676,7 +684,7 @@ function timerAreaHTML(t){
     <button class="btn small" data-timeminus="${t.id}" title="Subtract 1 minute">−1m</button>
     <b data-timerdisplay="${t.id}">${fmtRemain(t)}</b>
     ${pauseResumeBtn}
-  </span> <button class="btn small danger" data-canceltimer="${t.id}" title="Stop and clear this timer session">✕</button>`;
+  </span>`;
 }
 function getSortedSections(){
   const tiers=['red','yellow','blue'];
@@ -768,9 +776,12 @@ function tickTimers(){
     if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
     // upcoming-start reminder, independent of the manual timer
     if(t.time && !t.notified.upcoming){
-      const start=new Date(t.time);
-      if(!isNaN(start.getTime())){
-        const minsUntil=(start-Date.now())/60000;
+      const parts=t.time.split(':');
+      const hh=Number(parts[0]), mm=Number(parts[1]);
+      if(!isNaN(hh) && !isNaN(mm)){
+        const now=new Date();
+        const startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate(),hh,mm,0,0);
+        const minsUntil=(startToday-now)/60000;
         if(minsUntil<=5 && minsUntil>0){ t.notified.upcoming=true; changed=true; notify('Starting soon', `"${t.name}" starts in about 5 minutes.`); }
       }
     }
@@ -786,8 +797,16 @@ function tickTimers(){
       confirmQueue.push(t.id);
     }
   });
-  if(changed) save();
-  if(changed||anyRunning){ renderTasks(); renderSummary(); renderModalRoot(); }
+  if(changed){
+    save(); renderTasks(); renderSummary(); renderModalRoot();
+  } else if(anyRunning){
+    // Real flicker fix: never rebuild the whole task list just for a tick —
+    // only touch the countdown text itself, in place.
+    document.querySelectorAll('[data-timerdisplay]').forEach(el=>{
+      const t=state.tasks.find(x=>x.id===el.dataset.timerdisplay);
+      if(t && t.startedAt) el.textContent=fmtRemain(t);
+    });
+  }
   if(calendarVisible()) renderCalendar();
 }
 setInterval(tickTimers, 1000);
@@ -801,11 +820,10 @@ function fmtHM(mins){
 }
 function taskWindow(t){
   if(!t.time) return null;
-  const start=new Date(t.time);
-  if(isNaN(start.getTime())) return null;
-  const todayStr=start.getFullYear()+'-'+String(start.getMonth()+1).padStart(2,'0')+'-'+String(start.getDate()).padStart(2,'0');
-  if(todayStr!==dayKey()) return null;
-  const scheduledMin=start.getHours()*60+start.getMinutes();
+  const parts=t.time.split(':');
+  const hh=Number(parts[0]), mm=Number(parts[1]);
+  if(isNaN(hh)||isNaN(mm)) return null;
+  const scheduledMin=hh*60+mm;
   let lateMin=0, timerAnchorMin=scheduledMin;
   if(t.firstStartedAt){
     const fs=new Date(t.firstStartedAt);
@@ -813,10 +831,13 @@ function taskWindow(t){
     lateMin=Math.max(0, actualMin-scheduledMin);
     timerAnchorMin=scheduledMin+lateMin;
   }
-  // block length IS the timer: full duration until started, then the live
-  // remaining time, shrinking toward "now" as it counts down.
-  const remainMin=Math.max(0.5, (t.durationMin||30) - taskElapsedMs(t)/60000);
-  const endMin=timerAnchorMin+remainMin;
+  // Fixed shape (Google-Calendar style): the block's length is the task's
+  // planned duration, anchored at the actual start time if it began late.
+  // It does NOT shrink as the timer counts down — only the live text inside
+  // it changes — so the current-time line just glides over a stable block
+  // instead of visually eating into it.
+  const dur=t.durationMin||30;
+  const endMin=timerAnchorMin+dur;
   return {startMin:scheduledMin, dur:endMin-scheduledMin, endMin, lateMin, timerAnchorMin, extendedFromMin:t.extendedFromMin};
 }
 function logTaskProgress(taskId, amount){
@@ -841,8 +862,7 @@ function adjustTargetGoal(taskId, delta){
 }
 function calBlockHTML(t, win){
   const active=t.startedAt!=null;
-  const mm=Math.floor(win.dur), ss=Math.floor((win.dur-mm)*60);
-  const liveHTML=active? `<div class="cal-live">⏱ ${mm}:${String(ss).padStart(2,'0')} left</div>` : '';
+  const liveHTML=active? `<div class="cal-live">⏱ ${fmtRemain(t)} left</div>` : '';
   let goalHTML='';
   if(t.targetGoal!=null){
     const logged=t.loggedValue||0, remaining=Math.max(0,t.targetGoal-logged);
