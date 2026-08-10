@@ -411,6 +411,7 @@ async function signInWithGoogle(){
   }
 }
 let unsubscribeCloud=null;
+let authResolving=false;
 function startCloudListener(){
   if(!db||!currentUser||unsubscribeCloud) return;
   unsubscribeCloud=db.collection('users').doc(currentUser.uid).onSnapshot(snap=>{
@@ -430,16 +431,25 @@ function startCloudListener(){
 function stopCloudListener(){ if(unsubscribeCloud){ unsubscribeCloud(); unsubscribeCloud=null; } }
 function signOutGoogle(){ stopCloudListener(); if(auth) auth.signOut(); }
 async function handleAuthChange(user){
-  currentUser=user; render();
+  currentUser=user;
   if(user && db){
+    // Block on the cloud check before ever rendering the club-name gate —
+    // this was the actual race causing "still asks for club name" on a
+    // second device: without this, render() ran once with no known cloud
+    // profile yet and jumped straight to the name prompt.
+    authResolving=true;
+    render();
     try{
       const ref=db.collection('users').doc(user.uid);
       const snap=await ref.get();
-      if(snap.exists){ pendingCloudState=snap.data(); syncChoiceOpen=true; renderModalRoot(); }
-      else{ await ref.set(state); startCloudListener(); }
-    }catch(e){ console.error('Cloud check failed', e); }
+      authResolving=false;
+      if(snap.exists){ pendingCloudState=snap.data(); syncChoiceOpen=true; render(); }
+      else{ await ref.set(state); startCloudListener(); render(); }
+    }catch(e){ console.error('Cloud check failed', e); authResolving=false; render(); }
   } else {
+    authResolving=false;
     stopCloudListener();
+    render();
   }
 }
 function pushToCloud(){
@@ -601,7 +611,7 @@ function addXP(x){ const before=level(); state.xp=Math.max(0,state.xp+x); const 
 function dayKey(offset=0){ const d=new Date(); d.setDate(d.getDate()+offset); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function processDailyReset(){
   const today=dayKey();
-  if(!state.lastResetDate){ state.lastResetDate=today; saveLocal(); return; }
+  if(!state.lastResetDate){ state.lastResetDate=today; save(); return; }
   if(state.lastResetDate===today) return;
   const yEntries=state.history[state.lastResetDate]||{};
   const missed=[]; let xpLost=0;
@@ -609,10 +619,16 @@ function processDailyReset(){
     const entry=yEntries[h.id];
     if(!entry || !entry.done){ missed.push(h.name); addXP(-10); xpLost+=10; }
   });
+  // Tasks are recurring daily now (no fixed calendar date) — give every
+  // task a fresh, undone state for the new day.
+  state.tasks.forEach(t=>{
+    t.done=false; t.startedAt=null; t.firstStartedAt=null; t.elapsedMs=0; t.extendedFromMin=null;
+    t.awaitingConfirm=false; t.notified={half:false,five:false,done:false,upcoming:false};
+  });
   state.dailyResetSummary={date:state.lastResetDate, missed, xpLost};
   notify('Daily reset', missed.length? `${missed.length} habit(s) reset — ${xpLost} XP lost.` : 'All habits completed yesterday!');
   state.lastResetDate=today;
-  saveLocal();
+  save();
 }
 
 /* ---------------- native notifications ---------------- */
@@ -1128,25 +1144,38 @@ function prematchModalHTML(){
     </div>
   </div>`;
 }
+function loadingModalHTML(){
+  return `<div class="modal-overlay"><div class="modal-card-lg" style="border-color:var(--gold)"><h2>☁️ Checking your cloud profile…</h2><p class="hint">One moment.</p></div></div>`;
+}
 function openUpgradeModal(){ upgradeModalOpen=true; renderModalRoot(); }
 function closeUpgradeModal(){ upgradeModalOpen=false; renderModalRoot(); }
+let lastModalSig=null;
 function renderModalRoot(){
   const root=$('#upgradeModalRoot');
-  if(matchLive){ renderMatchLive(); return; }
-  if(prematchOpen){ root.innerHTML=prematchModalHTML(); return; }
-  if(fbConfigured() && !currentUser && (!state.skippedSignIn || authError)){ root.innerHTML=loginModalHTML(); return; }
+  if(matchLive){ renderMatchLive(); lastModalSig=null; return; }
+  let html='', sig=null;
+  if(prematchOpen){ sig='prematch'; html=prematchModalHTML(); }
+  else if(authResolving){ sig='loading'; html=loadingModalHTML(); }
+  else if(fbConfigured() && !currentUser && (!state.skippedSignIn || authError)){ sig='login:'+authError; html=loginModalHTML(); }
   // Cloud sync choice MUST be resolved before the club-name gate — otherwise
   // a new device always prompts for a brand new club name before it ever
   // gets a chance to offer the existing cloud save, creating a duplicate
   // profile instead of loading the real one.
-  if(syncChoiceOpen){ root.innerHTML=syncChoiceModalHTML(); return; }
-  if(!state.teamName||renamingClub){ root.innerHTML=clubNameModalHTML(); return; }
-  if(state.dailyResetSummary){ root.innerHTML=dailyResetModalHTML(); return; }
-  if(confirmQueue.length>0){ root.innerHTML=confirmModalHTML(confirmQueue[0]); return; }
-  if(incompleteChoiceFor){ root.innerHTML=incompleteChoiceModalHTML(incompleteChoiceFor); return; }
-  if(moveLaterFor){ root.innerHTML=moveLaterModalHTML(moveLaterFor); return; }
-  if(upgradeModalOpen){ root.innerHTML=upgradeModalHTML(); return; }
-  root.innerHTML='';
+  else if(syncChoiceOpen){ sig='sync'; html=syncChoiceModalHTML(); }
+  else if(!state.teamName||renamingClub){ sig='club:'+renamingClub; html=clubNameModalHTML(); }
+  else if(state.dailyResetSummary){ sig='reset'; html=dailyResetModalHTML(); }
+  else if(confirmQueue.length>0){ sig='confirm:'+confirmQueue[0]; html=confirmModalHTML(confirmQueue[0]); }
+  else if(incompleteChoiceFor){ sig='incomplete:'+incompleteChoiceFor; html=incompleteChoiceModalHTML(incompleteChoiceFor); }
+  else if(moveLaterFor){ sig='movelater:'+moveLaterFor; html=moveLaterModalHTML(moveLaterFor); }
+  else if(upgradeModalOpen){ sig='upgrade:'+state.selected; html=upgradeModalHTML(); }
+  else { if(lastModalSig!==null){ root.innerHTML=''; lastModalSig=null; } return; }
+  // Critical fix: if the exact same modal is already showing, don't destroy
+  // and recreate it — that was wiping out whatever the user was mid-typing
+  // (like the reschedule time field) every time an unrelated background
+  // event (a timer tick, another task's notification, etc) called render().
+  if(sig===lastModalSig) return;
+  lastModalSig=sig;
+  root.innerHTML=html;
 }
 
 /* ---------------- matches / season ---------------- */
