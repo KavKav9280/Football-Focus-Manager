@@ -153,6 +153,13 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .pitch-dot.ball{width:8px;height:8px;background:#fff;box-shadow:0 0 4px #000;animation:none;transition:left 2s linear}
 @keyframes dotJitter{0%{margin-left:-4px;margin-top:-3px}100%{margin-left:4px;margin-top:3px}}
 .match-ticker{margin-top:10px;background:#00000055;border-radius:8px;padding:8px 10px;font-size:13px;max-height:100px;overflow-y:auto}
+.mentality-bar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
+.mentality-bar .btn{font-size:11px;padding:6px 8px}
+.standings-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.standings-table th,.standings-table td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--line)}
+.standings-table th{background:#e6d8b4;font-family:Georgia,serif}
+.standings-table td:nth-child(2){text-align:left}
+.standings-table tr.me{background:#fff3c9;font-weight:bold}
 
 .splash-screen{position:fixed;inset:0;background:#f8e6c2;display:flex;align-items:center;justify-content:center;z-index:200;opacity:1;transition:opacity .6s ease}
 .splash-screen.hide{opacity:0;pointer-events:none}
@@ -318,11 +325,12 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 
     <section id="matches" class="tab hidden">
       <h2>Weekly Matches</h2>
-      <p class="hint"><b>What:</b> Your CPU season. <b>Includes:</b> Pre-match lineups, 1 match/day, 38-game season, ≤7-rating-gap coin toss. <b>Rewards:</b> League W/D/L record, top-scorer tracking. <b>Unlocks</b> once today's habits &amp; tasks are done.</p>
+      <p class="hint"><b>What:</b> Your CPU league season. <b>Includes:</b> Pre-match lineups &amp; tactics, live 90-min-in-3-min matches, tiered opponents (65-100 OVR bands), automatic standings. <b>Rewards:</b> League points, W/D/L record, top-scorer tracking. <b>Unlocks</b> once today's habits &amp; tasks are done.</p>
       <div id="seasonRecap"></div>
       <div class="season-status" id="seasonStatus"></div>
       <button id="weekBtn" class="btn gold">Play today's match</button>
       <div id="matchReport"></div>
+      <div id="standingsWrap"></div>
     </section>
   </div>
 
@@ -516,6 +524,19 @@ function genCpuRoster(baseline){
     return {...player, rating: rating(player, 65)};
   });
 }
+const TIERS=[
+  {min:65,max:70,label:'Tier 1 — Bottom League'},
+  {min:70,max:75,label:'Tier 2'},
+  {min:75,max:80,label:'Tier 3'},
+  {min:80,max:85,label:'Tier 4'},
+  {min:85,max:90,label:'Tier 5'},
+  {min:90,max:95,label:'Tier 6'},
+  {min:95,max:101,label:'Top Tier'}
+];
+function tierIndexForRating(r){
+  for(let i=0;i<TIERS.length;i++){ if(r>=TIERS[i].min && r<TIERS[i].max) return i; }
+  return r<TIERS[0].min ? 0 : TIERS.length-1;
+}
 function genCpuTeams(n){
   const teams=[], used=new Set();
   while(teams.length<n){
@@ -526,7 +547,7 @@ function genCpuTeams(n){
     const baseline=65+Math.floor(Math.random()*33);
     const roster=genCpuRoster(baseline);
     const teamRating=Math.max(65, Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length));
-    teams.push({id:id(), name, rating:teamRating, crestSeed:name, roster});
+    teams.push({id:id(), name, rating:teamRating, crestSeed:name, roster, tier:tierIndexForRating(teamRating), wins:0, draws:0, losses:0, gf:0, ga:0, pts:0});
   }
   return teams;
 }
@@ -1150,6 +1171,8 @@ function prematchModalHTML(){
         <div><b>${esc(state.teamName||'Your Club')}</b> (OVR ${ovr()})<div class="roster-strip">${homeList}</div></div>
         <div><b>${esc(opp.name)}</b> (OVR ${opp.rating})<div class="roster-strip">${awayList}</div></div>
       </div>
+      <p class="hint" style="margin-top:14px;margin-bottom:4px">Starting mentality (can switch live during the match too)</p>
+      ${mentalityBarHTML(preMatchMentality,'prematchmentality')}
       <p style="margin-top:16px"><button class="btn gold" id="kickoffBtn">Kickoff ▶</button> <button class="btn" id="cancelPrematch">Cancel</button></p>
     </div>
   </div>`;
@@ -1191,7 +1214,12 @@ function renderModalRoot(){
 /* ---------------- matches / season ---------------- */
 function canPlayToday(){ return state.season.lastPlayDate!==dayKey(); }
 function seasonComplete(){ return state.season.gamesPlayed>=38; }
-function pickOpponent(){ return state.cpuTeams[Math.floor(Math.random()*state.cpuTeams.length)]; }
+function pickOpponent(){
+  const myTier=tierIndexForRating(ovr());
+  const sameTier=state.cpuTeams.filter(t=>t.tier===myTier);
+  const pool=sameTier.length ? sameTier : state.cpuTeams;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
 function getTodayOpponent(){
   if(!state.season.todayOpponent || state.season.todayOpponent.date!==dayKey()){
     const o=pickOpponent();
@@ -1205,103 +1233,162 @@ const REPORTS={
   draw:['A scrappy, even contest.','Chances at both ends, level scoreline.'],
   loss:['A tough afternoon.','Outclassed for large spells.','Missing pieces exposed today.']
 };
-function computeMatchOutcome(){
-  const us=ovr(), opp=getTodayOpponent(), them=opp.rating, gap=us-them;
-  let result;
-  if(Math.random()<0.10) result='draw';
-  else if(Math.abs(gap)<=7) result=Math.random()<0.5?'win':'loss';
-  else result=gap>0?'win':'loss';
-
-  let usScore, themScore;
-  if(result==='win'){ themScore=Math.floor(Math.random()*3); usScore=themScore+1+Math.floor(Math.random()*3); }
-  else if(result==='loss'){ usScore=Math.floor(Math.random()*3); themScore=usScore+1+Math.floor(Math.random()*3); }
-  else { usScore=themScore=Math.floor(Math.random()*3); }
-
+const MENTALITY={
+  attacking:{label:'Attacking', us:1.50, them:1.30},
+  control:{label:'Control', us:1.00, them:1.00},
+  counter:{label:'Counter', us:1.15, them:0.85},
+  contain:{label:'Contain', us:0.80, them:0.65},
+  defensive:{label:'Defensive', us:0.60, them:0.45},
+  overload:{label:'Overload', us:1.85, them:1.60}
+};
+function baseChancePerMin(gap){ return Math.max(0.015, Math.min(0.07, 0.035+gap/2500)); }
+function pickWeightedScorer(){
   const outfield=state.players.filter(p=>p.pos!=='GK');
-  const scorers=[];
-  for(let g=0; g<usScore; g++){
-    const weights=outfield.map(p=>1+p.stats.SHO);
-    const total=weights.reduce((a,b)=>a+b,0);
-    let r=Math.random()*total, chosen=outfield[0];
-    for(let i=0;i<outfield.length;i++){ if(r<weights[i]){ chosen=outfield[i]; break; } r-=weights[i]; }
-    scorers.push(chosen.name);
-  }
-  const text=REPORTS[result][Math.floor(Math.random()*REPORTS[result].length)];
-
-  // Spread each goal across the 90 minutes for the live visualizer, avoiding duplicate minutes.
-  const usedMins=new Set();
-  const pickMin=()=>{ let m; do{ m=3+Math.floor(Math.random()*86); }while(usedMins.has(m)); usedMins.add(m); return m; };
-  const timeline=[];
-  scorers.forEach(name=>timeline.push({min:pickMin(), team:'us', scorer:name}));
-  for(let g=0; g<themScore; g++) timeline.push({min:pickMin(), team:'them', scorer:null});
-  timeline.sort((a,b)=>a.min-b.min);
-
-  return {us, opp, them, gap, result, usScore, themScore, scorers, text, timeline};
+  const weights=outfield.map(p=>1+p.stats.SHO);
+  const total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total, chosen=outfield[0];
+  for(let i=0;i<outfield.length;i++){ if(r<weights[i]){ chosen=outfield[i]; break; } r-=weights[i]; }
+  return chosen;
 }
-function applyMatchResult(outcome){
-  const {opp, result, usScore, themScore, scorers, text, us}=outcome;
+function simulateTierMatchday(){
+  // Advances every OTHER team in the user's current tier by one fixture too,
+  // so the standings table updates for the whole division, not just "You".
+  const myTier=tierIndexForRating(ovr());
+  const teams=state.cpuTeams.filter(t=>t.tier===myTier);
+  const shuffled=[...teams].sort(()=>Math.random()-0.5);
+  for(let i=0;i+1<shuffled.length;i+=2){
+    const a=shuffled[i], b=shuffled[i+1];
+    const gap=a.rating-b.rating;
+    let result;
+    if(Math.random()<0.10) result='draw';
+    else if(Math.abs(gap)<=7) result=Math.random()<0.5?'a':'b';
+    else result=gap>0?'a':'b';
+    let aScore,bScore;
+    if(result==='draw'){ aScore=bScore=Math.floor(Math.random()*3); }
+    else if(result==='a'){ bScore=Math.floor(Math.random()*3); aScore=bScore+1+Math.floor(Math.random()*3); }
+    else { aScore=Math.floor(Math.random()*3); bScore=aScore+1+Math.floor(Math.random()*3); }
+    a.gf=(a.gf||0)+aScore; a.ga=(a.ga||0)+bScore;
+    b.gf=(b.gf||0)+bScore; b.ga=(b.ga||0)+aScore;
+    if(result==='draw'){ a.draws=(a.draws||0)+1; b.draws=(b.draws||0)+1; a.pts=(a.pts||0)+1; b.pts=(b.pts||0)+1; }
+    else if(result==='a'){ a.wins=(a.wins||0)+1; b.losses=(b.losses||0)+1; a.pts=(a.pts||0)+3; }
+    else { b.wins=(b.wins||0)+1; a.losses=(a.losses||0)+1; b.pts=(b.pts||0)+3; }
+  }
+}
+function standingsHTML(){
+  const myTierIdx=tierIndexForRating(ovr());
+  const tierInfo=TIERS[myTierIdx];
+  const teams=state.cpuTeams.filter(t=>t.tier===myTierIdx).map(t=>({
+    name:t.name, p:(t.wins||0)+(t.draws||0)+(t.losses||0), w:t.wins||0, d:t.draws||0, l:t.losses||0, gf:t.gf||0, ga:t.ga||0, pts:t.pts||0, isUser:false
+  }));
+  teams.push({
+    name:state.teamName||'You', p:state.season.gamesPlayed, w:state.season.wins, d:state.season.draws, l:state.season.losses,
+    gf:state.season.goalsFor, ga:state.season.goalsAgainst, pts:state.season.wins*3+state.season.draws, isUser:true
+  });
+  teams.forEach(t=>t.gd=t.gf-t.ga);
+  teams.sort((a,b)=> b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
+  return `<h3 style="margin-top:20px">${esc(tierInfo.label)} Standings <span class="hint" style="margin:0">(OVR ${tierInfo.min}-${tierInfo.max-1})</span></h3>
+  <div style="overflow-x:auto"><table class="standings-table">
+    <tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr>
+    ${teams.map((t,i)=>`<tr class="${t.isUser?'me':''}"><td>${i+1}</td><td>${esc(t.name)}${t.isUser?' (You)':''}</td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.gf}</td><td>${t.ga}</td><td>${t.gd>=0?'+':''}${t.gd}</td><td><b>${t.pts}</b></td></tr>`).join('')}
+  </table></div>`;
+}
+function applyMatchResult(us, opp, result, usScore, themScore, scorers, text){
   scorers.forEach(name=>{ state.season.scorers[name]=(state.season.scorers[name]||0)+1; });
   state.season.gamesPlayed++; state.season.goalsFor+=usScore; state.season.goalsAgainst+=themScore; state.season.lastPlayDate=dayKey();
   if(result==='win') state.season.wins++; else if(result==='loss') state.season.losses++; else state.season.draws++;
   state.matches.unshift({season:state.season.number, game:state.season.gamesPlayed, opponent:opp.name, crestSeed:opp.crestSeed, us:usScore, them:themScore, result, text, scorers, ovr:us, date:dayKey()});
   if(state.matches.length>15) state.matches.length=15;
   state.season.todayOpponent=null;
+  simulateTierMatchday();
   notify('Full time', `${state.teamName||'Your club'} ${usScore}–${themScore} ${opp.name}`);
   save();
 }
 
-/* ---------------- 2D match visualizer ---------------- */
+/* ---------------- 2D match visualizer (minute-by-minute, highlight-only) ---------------- */
 const FORMATION_XY=[[8,50],[20,15],[18,38],[18,62],[20,85],[32,30],[32,50],[32,70],[42,15],[42,85],[44,50]];
-let matchLive=null; // {opp, outcome, minute, events, timerId, done}
+let matchLive=null; // {opp, minute, events, usLive, themLive, scorers, mentality, pUsBase, pThemBase, done, timerId}
 let prematchOpen=false;
+let preMatchMentality='control';
 function openPrematch(){
   if(seasonComplete()||!canPlayToday()||!dailyChecklistStatus().ready) return;
+  preMatchMentality='control';
   prematchOpen=true; renderModalRoot();
 }
 function closePrematch(){ prematchOpen=false; renderModalRoot(); }
+function setPreMatchMentality(m){ preMatchMentality=m; renderModalRoot(); }
 function kickoff(){
-  const outcome=computeMatchOutcome();
+  const us=ovr(), opp=getTodayOpponent(), them=opp.rating, gap=us-them;
   prematchOpen=false;
-  matchLive={opp:outcome.opp, outcome, minute:0, events:['Kickoff!'], usLive:0, themLive:0, done:false};
+  matchLive={
+    opp, minute:0, events:[`0' - Kickoff!`], usLive:0, themLive:0, scorers:[], done:false,
+    mentality:preMatchMentality,
+    pUsBase:baseChancePerMin(gap), pThemBase:baseChancePerMin(-gap)
+  };
   renderModalRoot();
   matchLive.timerId=setInterval(tickMatchClock, 2000); // 90 game-min over 3 real min = 2s/min
+}
+function setLiveMentality(m){ if(matchLive && !matchLive.done){ matchLive.mentality=m; renderMatchLive(); } }
+function simulateOneMinute(playSound){
+  // "Highlight-only" feed: each minute only has a small chance of producing
+  // an event at all — a goal or a chance created — nothing else gets logged.
+  const mod=MENTALITY[matchLive.mentality]||MENTALITY.control;
+  const pUs=matchLive.pUsBase*mod.us, pThem=matchLive.pThemBase*mod.them;
+  if(Math.random()<pUs){
+    if(Math.random()<0.38){
+      matchLive.usLive++;
+      const scorer=pickWeightedScorer();
+      matchLive.scorers.push(scorer.name);
+      matchLive.events.unshift(`${matchLive.minute}' - GOAL! ${esc(scorer.name)} (${matchLive.usLive}-${matchLive.themLive})`);
+      if(playSound) playAlarm();
+    } else {
+      matchLive.events.unshift(`${matchLive.minute}' - Chance Created (${esc(state.teamName||'You')})`);
+    }
+  }
+  if(Math.random()<pThem){
+    if(Math.random()<0.38){
+      matchLive.themLive++;
+      matchLive.events.unshift(`${matchLive.minute}' - GOAL! ${esc(matchLive.opp.name)} (${matchLive.usLive}-${matchLive.themLive})`);
+      if(playSound) playAlarm();
+    } else {
+      matchLive.events.unshift(`${matchLive.minute}' - Chance Created (${esc(matchLive.opp.name)})`);
+    }
+  }
 }
 function tickMatchClock(){
   if(!matchLive) return;
   matchLive.minute++;
-  const {outcome}=matchLive;
-  outcome.timeline.forEach(ev=>{
-    if(ev.min===matchLive.minute){
-      if(ev.team==='us'){ matchLive.usLive++; matchLive.events.unshift(`⚽ GOAL! ${esc(ev.scorer)} scores! (${matchLive.usLive}-${matchLive.themLive})`); }
-      else{ matchLive.themLive++; matchLive.events.unshift(`⚽ ${esc(outcome.opp.name)} score. (${matchLive.usLive}-${matchLive.themLive})`); }
-      playAlarm();
-    }
-  });
+  simulateOneMinute(true);
   if(matchLive.minute>=90){ finishMatch(); return; }
   renderMatchLive();
 }
 function skipToFullTime(){
   if(!matchLive) return;
   clearInterval(matchLive.timerId);
-  matchLive.minute=90; matchLive.usLive=matchLive.outcome.usScore; matchLive.themLive=matchLive.outcome.themScore;
+  while(matchLive.minute<90){ matchLive.minute++; simulateOneMinute(false); }
   finishMatch();
 }
 function finishMatch(){
   if(!matchLive) return;
   clearInterval(matchLive.timerId);
   matchLive.done=true;
-  applyMatchResult(matchLive.outcome);
+  const usScore=matchLive.usLive, themScore=matchLive.themLive;
+  const result=usScore>themScore?'win':usScore<themScore?'loss':'draw';
+  matchLive.text=REPORTS[result][Math.floor(Math.random()*REPORTS[result].length)];
+  applyMatchResult(ovr(), matchLive.opp, result, usScore, themScore, matchLive.scorers, matchLive.text);
   renderMatchLive();
 }
 function closeMatchLive(){ matchLive=null; render(); }
 function dotHTML(x,y,cls,label){
   return `<div class="pitch-dot ${cls}" style="left:${x}%;top:${y}%;animation-delay:${(Math.random()*2).toFixed(2)}s">${label||''}</div>`;
 }
+function mentalityBarHTML(current, dataAttr){
+  return `<div class="mentality-bar">${Object.entries(MENTALITY).map(([key,m])=>
+    `<button class="btn small ${key===current?'gold':''}" data-${dataAttr}="${key}">${m.label}</button>`).join('')}</div>`;
+}
 function renderMatchLive(){
   const root=$('#upgradeModalRoot'); if(!matchLive) return;
-  const {outcome}=matchLive;
   const homeDots=FORMATION_XY.map((c,i)=>dotHTML(c[0],c[1],'home', state.players[i]?state.players[i].pos:'')).join('');
-  const awayDots=FORMATION_XY.map((c,i)=>dotHTML(100-c[0],c[1],'away', outcome.opp.roster&&outcome.opp.roster[i]?outcome.opp.roster[i].pos:'')).join('');
+  const awayDots=FORMATION_XY.map((c,i)=>dotHTML(100-c[0],c[1],'away', matchLive.opp.roster&&matchLive.opp.roster[i]?matchLive.opp.roster[i].pos:'')).join('');
   const ballX=50+Math.sin(matchLive.minute/3)*30;
   const ball=dotHTML(ballX,50,'ball','');
   root.innerHTML=`<div class="modal-overlay">
@@ -1310,12 +1397,13 @@ function renderMatchLive(){
         <span class="mclock">${matchLive.done?'FT':matchLive.minute+"'"}</span>
         <span class="mteam">${esc(state.teamName||'You')}</span>
         <span class="mscore">${matchLive.usLive} - ${matchLive.themLive}</span>
-        <span class="mteam">${esc(outcome.opp.name)}</span>
+        <span class="mteam">${esc(matchLive.opp.name)}</span>
       </div>
       <div class="pitch">${homeDots}${awayDots}${matchLive.done?'':ball}</div>
-      <div class="match-ticker">${matchLive.events.slice(0,4).map(e=>`<div>${e}</div>`).join('')}</div>
+      ${matchLive.done?'':mentalityBarHTML(matchLive.mentality,'livementality')}
+      <div class="match-ticker">${matchLive.events.slice(0,6).map(e=>`<div>${e}</div>`).join('')}</div>
       ${matchLive.done
-        ? `<p style="margin-top:10px">${esc(outcome.text)}</p><p><button class="btn gold" id="closeMatchLive">Continue</button></p>`
+        ? `<p style="margin-top:10px">${esc(matchLive.text)}</p><p><button class="btn gold" id="closeMatchLive">Continue</button></p>`
         : `<p style="margin-top:10px"><button class="btn" id="skipToFullTime">Skip to Full Time</button></p>`}
     </div>
   </div>`;
@@ -1352,6 +1440,7 @@ function renderMatches(){
       <p>${esc(m.text)}</p>
       <p>OVR at kickoff: ${m.ovr}${m.scorers.length?` · Scorers: ${m.scorers.map(esc).join(', ')}`:''}</p>
     </div>`).join('') || '<div class="empty">No matches played yet.</div>';
+  $('#standingsWrap').innerHTML=standingsHTML();
 }
 
 /* ---------------- statistics ---------------- */
@@ -1616,4 +1705,98 @@ document.addEventListener('click',e=>{
     save(); render();
   }
   if(t.id==='kickoffBtn'){ kickoff(); }
-  if(t.id==='cancel
+  if(t.dataset.prematchmentality){ setPreMatchMentality(t.dataset.prematchmentality); }
+  if(t.dataset.livementality){ setLiveMentality(t.dataset.livementality); }
+  if(t.id==='cancelPrematch'){ closePrematch(); }
+  if(t.id==='skipToFullTime'){ skipToFullTime(); }
+  if(t.id==='closeMatchLive'){ closeMatchLive(); }
+  if(t.id==='dismissDailyReset'){ state.dailyResetSummary=null; save(); renderModalRoot(); }
+});
+
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
+  document.querySelectorAll(`[data-tab="${b.dataset.tab}"]`).forEach(x=>x.classList.add('active'));
+  $('#'+b.dataset.tab).classList.remove('hidden');
+  if(b.dataset.tab==='calendar'){
+    renderCalendar();
+    const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
+    const sc=document.querySelector('.cal-scroll');
+    if(sc) sc.scrollTop=Math.max(0, nowMin-180);
+  }
+}));
+
+/* ---------------- init ---------------- */
+(function init(){
+  registerSW();
+  const splashSlot=document.getElementById('splashLogoSlot');
+  if(splashSlot) splashSlot.innerHTML=ffmWordmark(1.6);
+  setTimeout(()=>{
+    const splash=document.getElementById('splashScreen');
+    if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 700); }
+  }, 1400);
+  const loaded=loadLocal();
+  if(loaded){
+    state=Object.assign(defaults(), loaded);
+    if(!state.cpuTeams||!state.cpuTeams.length||!state.cpuTeams[0].roster||!state.cpuTeams[0].roster[0].stats) state.cpuTeams=genCpuTeams(20);
+    state.cpuTeams.forEach(t=>{
+      if(t.tier===undefined) t.tier=tierIndexForRating(t.rating);
+      if(t.wins===undefined) t.wins=0;
+      if(t.draws===undefined) t.draws=0;
+      if(t.losses===undefined) t.losses=0;
+      if(t.gf===undefined) t.gf=0;
+      if(t.ga===undefined) t.ga=0;
+      if(t.pts===undefined) t.pts=0;
+    });
+    if(!state.season) state.season={number:1,gamesPlayed:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,scorers:{},lastPlayDate:null,todayOpponent:null};
+    if(state.season.todayOpponent===undefined) state.season.todayOpponent=null;
+    if(state.season.todayOpponent && !state.season.todayOpponent.roster) state.season.todayOpponent=null;
+    if(!state.history) state.history={};
+    if(state.notificationsEnabled===undefined) state.notificationsEnabled=false;
+    if(state.skippedSignIn===undefined) state.skippedSignIn=false;
+    if(state.selected===undefined) state.selected=state.active||0;
+    state.tasks.forEach(t=>{
+      if(t.durationMin===undefined) t.durationMin=null;
+      if(t.targetGoal===undefined) t.targetGoal=null;
+      if(t.loggedValue===undefined) t.loggedValue=0;
+      if(t.goalUnit===undefined) t.goalUnit='';
+      if(t.elapsedMs===undefined) t.elapsedMs=0;
+      if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
+      if(t.notified.upcoming===undefined) t.notified.upcoming=false;
+      if(t.awaitingConfirm===undefined) t.awaitingConfirm=false;
+      if(t.startedAt===undefined) t.startedAt=null;
+    });
+    if(!state.reminders) state.reminders=[];
+    if(state.reminderCheckCount===undefined) state.reminderCheckCount=0;
+    if(state.lastResetDate===undefined) state.lastResetDate=null;
+    if(state.dailyResetSummary===undefined) state.dailyResetSummary=null;
+    state.players.forEach((p,i)=>{
+      if(!p.name){ p.name=genPlayerName(); p.country=pickCountry(); p.avatarSeed='p'+i+'-'+id(); }
+      if(p.rep===undefined) p.rep=Math.floor(Math.random()*4);
+      const keys=statKeysFor(p.pos);
+      if(!keys.every(k=>k in p.stats)){ p.stats=Object.fromEntries(keys.map(k=>[k, p.stats[k]||0])); }
+      // One-time fix for saves created before starter stats existed: an
+      // all-zero stat block means this player predates that change.
+      if(keys.every(k=>(p.stats[k]||0)===0)){
+        const weights=WEIGHTS[p.pos]||WEIGHTS.CM;
+        const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+        keys.forEach(k=>{ p.stats[k]=primary.has(k) ? 61+Math.floor(Math.random()*15) : 26+Math.floor(Math.random()*34); });
+      } else {
+        // Bump any stat still under the 26 floor from before that rule existed.
+        keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
+      }
+    });
+    (state.cpuTeams||[]).forEach(team=>{
+      (team.roster||[]).forEach(p=>{
+        const keys=statKeysFor(p.pos);
+        if(p.stats) keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
+      });
+    });
+  }
+  processDailyReset();
+  initFirebase();
+  render();
+})();
+</script>
+</body>
+</html>
