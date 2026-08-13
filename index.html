@@ -1304,9 +1304,23 @@ function applyMatchResult(us, opp, result, usScore, themScore, scorers, text){
   save();
 }
 
-/* ---------------- 2D match visualizer (minute-by-minute, highlight-only) ---------------- */
+/* ---------------- 2D match visualizer (event-driven, with commentary) ---------------- */
 const FORMATION_XY=[[8,50],[20,15],[18,38],[18,62],[20,85],[32,30],[32,50],[32,70],[42,15],[42,85],[44,50]];
-let matchLive=null; // {opp, minute, events, usLive, themLive, scorers, mentality, pUsBase, pThemBase, done, timerId}
+const QUIET_LINES=[
+  'Patient build-up play in midfield.',
+  'Tactical jockeying for position.',
+  'A routine throw-in.',
+  'Possession shifts back to the defense.',
+  'A cagey passage of play.',
+  'Both sides probing for an opening.',
+  'The ball is worked out to the wing.',
+  'A tidy passing move fizzles out.',
+  'Nothing doing — reset from the back.',
+  'A firm but fair challenge in midfield.',
+  'The keeper takes his time with the goal kick.',
+  'A crossfield ball finds no one in space.'
+];
+let matchLive=null; // {opp, minute, events:[{min,text,big}], usLive, themLive, scorers, mentality, pUsBase, pThemBase, done, timerId}
 let prematchOpen=false;
 let preMatchMentality='control';
 function openPrematch(){
@@ -1320,46 +1334,78 @@ function kickoff(){
   const us=ovr(), opp=getTodayOpponent(), them=opp.rating, gap=us-them;
   prematchOpen=false;
   matchLive={
-    opp, minute:0, events:[`0' - Kickoff!`], usLive:0, themLive:0, scorers:[], done:false,
+    opp, minute:0, events:[{min:0,text:'Kickoff!',big:true}], usLive:0, themLive:0, scorers:[], done:false,
     mentality:preMatchMentality,
     pUsBase:baseChancePerMin(gap), pThemBase:baseChancePerMin(-gap)
   };
   renderModalRoot();
-  matchLive.timerId=setInterval(tickMatchClock, 2000); // 90 game-min over 3 real min = 2s/min
+  // 90 game-minutes over exactly 2 real-time minutes = 120000ms / 90.
+  matchLive.timerId=setInterval(tickMatchClock, 1333);
 }
-function setLiveMentality(m){ if(matchLive && !matchLive.done){ matchLive.mentality=m; renderMatchLive(); } }
+function setLiveMentality(m){
+  if(!matchLive || matchLive.done) return;
+  matchLive.mentality=m;
+  renderMatchLive(); // full rebuild is fine here — this only happens on an explicit click, not every tick
+}
 function simulateOneMinute(playSound){
-  // "Highlight-only" feed: each minute only has a small chance of producing
-  // an event at all — a goal or a chance created — nothing else gets logged.
   const mod=MENTALITY[matchLive.mentality]||MENTALITY.control;
   const pUs=matchLive.pUsBase*mod.us, pThem=matchLive.pThemBase*mod.them;
+  let hadEvent=false;
+  const push=(text)=>{ matchLive.events.unshift({min:matchLive.minute, text, big:true}); hadEvent=true; };
+
   if(Math.random()<pUs){
-    if(Math.random()<0.38){
+    const roll=Math.random();
+    if(roll<0.36){
       matchLive.usLive++;
       const scorer=pickWeightedScorer();
       matchLive.scorers.push(scorer.name);
-      matchLive.events.unshift(`${matchLive.minute}' - GOAL! ${esc(scorer.name)} (${matchLive.usLive}-${matchLive.themLive})`);
+      push(`GOAL! ${esc(scorer.name)} (${matchLive.usLive}-${matchLive.themLive})`);
       if(playSound) playAlarm();
-    } else {
-      matchLive.events.unshift(`${matchLive.minute}' - Chance Created (${esc(state.teamName||'You')})`);
+    } else if(roll<0.62){
+      push(`Chance Created (${esc(state.teamName||'You')})`);
+    } else if(roll<0.75){
+      push(`Key Save! ${esc(matchLive.opp.name)}'s keeper denies ${esc(state.teamName||'you')}`);
+    } else if(roll<0.80){
+      push(`RED CARD for ${esc(matchLive.opp.name)}!`);
     }
   }
   if(Math.random()<pThem){
-    if(Math.random()<0.38){
+    const roll=Math.random();
+    if(roll<0.36){
       matchLive.themLive++;
-      matchLive.events.unshift(`${matchLive.minute}' - GOAL! ${esc(matchLive.opp.name)} (${matchLive.usLive}-${matchLive.themLive})`);
+      push(`GOAL! ${esc(matchLive.opp.name)} (${matchLive.usLive}-${matchLive.themLive})`);
       if(playSound) playAlarm();
-    } else {
-      matchLive.events.unshift(`${matchLive.minute}' - Chance Created (${esc(matchLive.opp.name)})`);
+    } else if(roll<0.62){
+      push(`Chance Created (${esc(matchLive.opp.name)})`);
+    } else if(roll<0.75){
+      push(`Key Save! Your keeper denies ${esc(matchLive.opp.name)}`);
+    } else if(roll<0.80){
+      push(`RED CARD for ${esc(state.teamName||'you')}!`);
     }
   }
+  if(!hadEvent){
+    // Default "quiet play" state — continuous low-key commentary, never blank.
+    matchLive.events.unshift({min:matchLive.minute, text:QUIET_LINES[Math.floor(Math.random()*QUIET_LINES.length)], big:false});
+  }
+  if(matchLive.events.length>60) matchLive.events.length=60;
 }
+function eventLineHTML(ev){ return `<div class="${ev.big?'hl':''}">${ev.min}' - ${ev.text}</div>`; }
 function tickMatchClock(){
   if(!matchLive) return;
   matchLive.minute++;
   simulateOneMinute(true);
   if(matchLive.minute>=90){ finishMatch(); return; }
-  renderMatchLive();
+  updateLiveDisplay(); // targeted update only — NOT a full rebuild, so the
+                        // mentality buttons stay put and stay clickable
+                        // instead of getting destroyed every tick.
+}
+function updateLiveDisplay(){
+  const clockEl=document.getElementById('liveClock'); if(clockEl) clockEl.textContent=matchLive.done?'FT':matchLive.minute+"'";
+  const scoreEl=document.getElementById('liveScore'); if(scoreEl) scoreEl.textContent=`${matchLive.usLive} - ${matchLive.themLive}`;
+  const ballEl=document.getElementById('liveBall');
+  if(ballEl){ ballEl.style.left=(50+Math.sin(matchLive.minute/3)*30)+'%'; }
+  const tickerEl=document.getElementById('liveTicker');
+  if(tickerEl) tickerEl.innerHTML=matchLive.events.slice(0,10).map(eventLineHTML).join('');
 }
 function skipToFullTime(){
   if(!matchLive) return;
@@ -1378,30 +1424,32 @@ function finishMatch(){
   renderMatchLive();
 }
 function closeMatchLive(){ matchLive=null; render(); }
-function dotHTML(x,y,cls,label){
-  return `<div class="pitch-dot ${cls}" style="left:${x}%;top:${y}%;animation-delay:${(Math.random()*2).toFixed(2)}s">${label||''}</div>`;
+function dotHTML(x,y,cls,label,id){
+  return `<div class="pitch-dot ${cls}" ${id?`id="${id}"`:''} style="left:${x}%;top:${y}%;animation-delay:${(Math.random()*2).toFixed(2)}s">${label||''}</div>`;
 }
 function mentalityBarHTML(current, dataAttr){
   return `<div class="mentality-bar">${Object.entries(MENTALITY).map(([key,m])=>
     `<button class="btn small ${key===current?'gold':''}" data-${dataAttr}="${key}">${m.label}</button>`).join('')}</div>`;
 }
 function renderMatchLive(){
+  // Full rebuild — only called on kickoff, a mentality switch, or full time,
+  // never on the routine per-second tick (that uses updateLiveDisplay()).
   const root=$('#upgradeModalRoot'); if(!matchLive) return;
   const homeDots=FORMATION_XY.map((c,i)=>dotHTML(c[0],c[1],'home', state.players[i]?state.players[i].pos:'')).join('');
   const awayDots=FORMATION_XY.map((c,i)=>dotHTML(100-c[0],c[1],'away', matchLive.opp.roster&&matchLive.opp.roster[i]?matchLive.opp.roster[i].pos:'')).join('');
   const ballX=50+Math.sin(matchLive.minute/3)*30;
-  const ball=dotHTML(ballX,50,'ball','');
+  const ball=dotHTML(ballX,50,'ball','','liveBall');
   root.innerHTML=`<div class="modal-overlay">
     <div class="match-live-card">
       <div class="match-scoreboard">
-        <span class="mclock">${matchLive.done?'FT':matchLive.minute+"'"}</span>
+        <span class="mclock" id="liveClock">${matchLive.done?'FT':matchLive.minute+"'"}</span>
         <span class="mteam">${esc(state.teamName||'You')}</span>
-        <span class="mscore">${matchLive.usLive} - ${matchLive.themLive}</span>
+        <span class="mscore" id="liveScore">${matchLive.usLive} - ${matchLive.themLive}</span>
         <span class="mteam">${esc(matchLive.opp.name)}</span>
       </div>
       <div class="pitch">${homeDots}${awayDots}${matchLive.done?'':ball}</div>
       ${matchLive.done?'':mentalityBarHTML(matchLive.mentality,'livementality')}
-      <div class="match-ticker">${matchLive.events.slice(0,6).map(e=>`<div>${e}</div>`).join('')}</div>
+      <div class="match-ticker" id="liveTicker">${matchLive.events.slice(0,10).map(eventLineHTML).join('')}</div>
       ${matchLive.done
         ? `<p style="margin-top:10px">${esc(matchLive.text)}</p><p><button class="btn gold" id="closeMatchLive">Continue</button></p>`
         : `<p style="margin-top:10px"><button class="btn" id="skipToFullTime">Skip to Full Time</button></p>`}
@@ -1583,220 +1631,4 @@ document.addEventListener('change',e=>{
   if(t.dataset.task){
     const x=state.tasks.find(x=>x.id===t.dataset.task);
     if(x.done!==t.checked){
-      x.done=t.checked;
-      if(t.checked){ x.startedAt=null; x.awaitingConfirm=false; }
-      addXP(t.checked?REWARDS[x.priority]:-REWARDS[x.priority]);
-      handled=true;
-    }
-  }
-  if(t.dataset.priority){ const x=state.tasks.find(x=>x.id===t.dataset.priority); if(x){ x.priority=t.value; handled=true; } }
-  if(t.dataset.duration){
-    const x=state.tasks.find(x=>x.id===t.dataset.duration);
-    if(x){ const v=t.value?Number(t.value):null; x.durationMin=v&&v>0?v:null; handled=true; }
-  }
-  if(t.dataset.habitvalue||t.dataset.statvalue){
-    const hid=t.dataset.habitvalue||t.dataset.statvalue, habit=state.habits.find(x=>x.id===hid);
-    const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
-    entry.value=habit.entryType==='clarification'?(t.value||undefined):(t.value===''?undefined:Number(t.value));
-    const pass=passesGoal(habit,entry.value), wasDone=entry.done;
-    entry.done=pass; entry.failed=entry.value!==undefined&&!pass;
-    if(pass&&!wasDone) addXP(10);
-    if(!pass&&wasDone) addXP(-10);
-    handled=true;
-  }
-  if(t.dataset.habit||t.dataset.statdone){
-    const hid=t.dataset.habit||t.dataset.statdone, habit=state.habits.find(x=>x.id===hid);
-    const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
-    if(habit.goalType==='none'&&habit.entryType!=='clarification'&&entry.done!==t.checked){ entry.done=t.checked; entry.failed=false; addXP(t.checked?10:-10); handled=true; }
-  }
-  if(t.dataset.reminder){
-    const r=state.reminders.find(x=>x.id===t.dataset.reminder);
-    if(r && r.done!==t.checked){
-      r.done=t.checked;
-      if(t.checked){
-        state.reminderCheckCount=(state.reminderCheckCount||0)+1;
-        if(state.reminderCheckCount%5===0){ addXP(10); notify('Reminders streak!', '+10 XP for 5 reminders checked off.'); }
-      }
-      handled=true;
-    }
-  }
-  if(t.dataset.time){ const x=state.tasks.find(x=>x.id===t.dataset.time); if(x){ x.time=t.value; x.notified={half:false,five:false,done:false,upcoming:false}; handled=true; } }
-  // Anything else (like the reschedule time picker before Save is pressed)
-  // is intentionally left alone here — re-rendering on every keystroke was
-  // exactly what wiped the field back to its old value each time.
-  if(handled){ save(); render(); }
-});
-
-document.addEventListener('click',e=>{
-  const selCard=e.target.closest('[data-select]');
-  if(selCard){ state.selected=Number(selCard.dataset.select); openUpgradeModal(); save(); render(); return; }
-
-  const t=e.target.closest('button')||e.target;
-  if(t.id==='signInBtn'){ signInWithGoogle(); }
-  if(t.id==='signOutBtn'){ signOutGoogle(); }
-  if(t.id==='googleSignInBtn'){ signInWithGoogle(); }
-  if(t.id==='skipSignInBtn'){ state.skippedSignIn=true; authError=''; saveLocal(); renderModalRoot(); }
-  if(t.id==='cancelRename'){ renamingClub=false; renderModalRoot(); }
-  if(t.id==='clubNameSubmit'){ submitClubName(); }
-  if(t.id==='overwriteLocalBtn'){
-    state=Object.assign(defaults(), pendingCloudState||{});
-    pendingCloudState=null; syncChoiceOpen=false; saveLocal(false); startCloudListener(); render();
-  }
-  if(t.id==='overwriteCloudBtn'){ pushToCloud(); pendingCloudState=null; syncChoiceOpen=false; startCloudListener(); render(); }
-  if(t.dataset.delTask){ state.tasks=state.tasks.filter(x=>x.id!==t.dataset.delTask); save(); render(); }
-  if(t.dataset.delHabit){ state.habits=state.habits.filter(x=>x.id!==t.dataset.delHabit); save(); render(); }
-  if(t.dataset.delReminder){ state.reminders=state.reminders.filter(x=>x.id!==t.dataset.delReminder); save(); render(); }
-  if(t.dataset.taskup){ moveTask(t.dataset.taskup,-1); }
-  if(t.dataset.taskdown){ moveTask(t.dataset.taskdown,1); }
-  if(t.dataset.goalplus){ adjustTargetGoal(t.dataset.goalplus, 1); }
-  if(t.dataset.goalminus){ adjustTargetGoal(t.dataset.goalminus, -1); }
-  if(t.dataset.goallog){
-    const input=document.querySelector(`input[data-goallogval="${t.dataset.goallog}"]`);
-    const amount=input?Number(input.value):0;
-    if(amount) logTaskProgress(t.dataset.goallog, amount);
-  }
-  if(t.dataset.starttimer){
-    const task=state.tasks.find(x=>x.id===t.dataset.starttimer);
-    if(task){ ensureAudioCtx(); task.startedAt=Date.now(); if(!task.firstStartedAt) task.firstStartedAt=task.startedAt; task.awaitingConfirm=false; notify('Timer started', `"${task.name}" — ${task.durationMin} min countdown.`); }
-    save(); render();
-  }
-  if(t.dataset.stoptimer){
-    // Pause: bank the elapsed time, don't lose progress or reset notifications.
-    const task=state.tasks.find(x=>x.id===t.dataset.stoptimer);
-    if(task){ task.elapsedMs=taskElapsedMs(task); task.startedAt=null; }
-    save(); render();
-  }
-  if(t.dataset.timeplus){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus); if(task){ task.durationMin=(task.durationMin||0)+1; } save(); render(); }
-  if(t.dataset.timeminus){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-1); } save(); render(); }
-  if(t.dataset.timeplus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus1s); if(task){ task.durationMin=(task.durationMin||0)+(1/60); } save(); render(); }
-  if(t.dataset.timeminus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus1s); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-(1/60)); } save(); render(); }
-  if(t.dataset.canceltimer){
-    // Fully stop and clear this timer session (not a pause — no progress is kept).
-    const task=state.tasks.find(x=>x.id===t.dataset.canceltimer);
-    if(task){
-      task.startedAt=null; task.firstStartedAt=null; task.elapsedMs=0; task.extendedFromMin=null;
-      task.awaitingConfirm=false;
-      task.notified={half:false,five:false,done:false,upcoming:task.notified?task.notified.upcoming:false};
-      const qi=confirmQueue.indexOf(task.id); if(qi>-1) confirmQueue.splice(qi,1);
-    }
-    save(); render();
-  }
-  if(t.dataset.extendtask){ extendTaskFiveMinutes(t.dataset.extendtask); }
-  if(t.dataset.movelater){ moveTaskForLater(t.dataset.movelater); }
-  if(t.dataset.dotomorrow){ doItTomorrow(t.dataset.dotomorrow); }
-  if(t.id==='saveMovedTime'){ saveMovedTime(moveLaterFor); }
-  if(t.dataset.stat){
-    const p=state.players[state.selected];
-    if(p&&state.points>0){ p.stats[t.dataset.stat]=Math.min(99,p.stats[t.dataset.stat]+1); state.points--; state.lastUpgrade=`#${state.selected+1} ${p.pos}: ${t.dataset.stat} → ${p.stats[t.dataset.stat]}`; }
-    save(); render();
-  }
-  if(t.id==='openUpgrade'){ openUpgradeModal(); }
-  if(t.id==='closeUpgrade'){ closeUpgradeModal(); }
-  if(t.id==='taskDoneYes'){ completeTaskFromTimer(confirmQueue[0], true); }
-  if(t.id==='taskDoneNo'){ completeTaskFromTimer(confirmQueue[0], false); }
-  if(t.id==='ngpBtn'){
-    const keep={teamName:state.teamName, ngp:(state.ngp||0)+1, cpuTeams:state.cpuTeams, season:state.season, matches:state.matches,
-      tasks:state.tasks, habits:state.habits, history:state.history, notificationsEnabled:state.notificationsEnabled};
-    state=defaults(); Object.assign(state, keep);
-    closeUpgradeModal(); save(); render();
-  }
-  if(t.id==='newSeasonBtn'){
-    state.season={number:state.season.number+1, gamesPlayed:0, wins:0, draws:0, losses:0, goalsFor:0, goalsAgainst:0, scorers:{}, lastPlayDate:null, todayOpponent:null};
-    save(); render();
-  }
-  if(t.id==='kickoffBtn'){ kickoff(); }
-  if(t.dataset.prematchmentality){ setPreMatchMentality(t.dataset.prematchmentality); }
-  if(t.dataset.livementality){ setLiveMentality(t.dataset.livementality); }
-  if(t.id==='cancelPrematch'){ closePrematch(); }
-  if(t.id==='skipToFullTime'){ skipToFullTime(); }
-  if(t.id==='closeMatchLive'){ closeMatchLive(); }
-  if(t.id==='dismissDailyReset'){ state.dailyResetSummary=null; save(); renderModalRoot(); }
-});
-
-document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
-  document.querySelectorAll(`[data-tab="${b.dataset.tab}"]`).forEach(x=>x.classList.add('active'));
-  $('#'+b.dataset.tab).classList.remove('hidden');
-  if(b.dataset.tab==='calendar'){
-    renderCalendar();
-    const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
-    const sc=document.querySelector('.cal-scroll');
-    if(sc) sc.scrollTop=Math.max(0, nowMin-180);
-  }
-}));
-
-/* ---------------- init ---------------- */
-(function init(){
-  registerSW();
-  const splashSlot=document.getElementById('splashLogoSlot');
-  if(splashSlot) splashSlot.innerHTML=ffmWordmark(1.6);
-  setTimeout(()=>{
-    const splash=document.getElementById('splashScreen');
-    if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 700); }
-  }, 1400);
-  const loaded=loadLocal();
-  if(loaded){
-    state=Object.assign(defaults(), loaded);
-    if(!state.cpuTeams||!state.cpuTeams.length||!state.cpuTeams[0].roster||!state.cpuTeams[0].roster[0].stats) state.cpuTeams=genCpuTeams(20);
-    state.cpuTeams.forEach(t=>{
-      if(t.tier===undefined) t.tier=tierIndexForRating(t.rating);
-      if(t.wins===undefined) t.wins=0;
-      if(t.draws===undefined) t.draws=0;
-      if(t.losses===undefined) t.losses=0;
-      if(t.gf===undefined) t.gf=0;
-      if(t.ga===undefined) t.ga=0;
-      if(t.pts===undefined) t.pts=0;
-    });
-    if(!state.season) state.season={number:1,gamesPlayed:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,scorers:{},lastPlayDate:null,todayOpponent:null};
-    if(state.season.todayOpponent===undefined) state.season.todayOpponent=null;
-    if(state.season.todayOpponent && !state.season.todayOpponent.roster) state.season.todayOpponent=null;
-    if(!state.history) state.history={};
-    if(state.notificationsEnabled===undefined) state.notificationsEnabled=false;
-    if(state.skippedSignIn===undefined) state.skippedSignIn=false;
-    if(state.selected===undefined) state.selected=state.active||0;
-    state.tasks.forEach(t=>{
-      if(t.durationMin===undefined) t.durationMin=null;
-      if(t.targetGoal===undefined) t.targetGoal=null;
-      if(t.loggedValue===undefined) t.loggedValue=0;
-      if(t.goalUnit===undefined) t.goalUnit='';
-      if(t.elapsedMs===undefined) t.elapsedMs=0;
-      if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
-      if(t.notified.upcoming===undefined) t.notified.upcoming=false;
-      if(t.awaitingConfirm===undefined) t.awaitingConfirm=false;
-      if(t.startedAt===undefined) t.startedAt=null;
-    });
-    if(!state.reminders) state.reminders=[];
-    if(state.reminderCheckCount===undefined) state.reminderCheckCount=0;
-    if(state.lastResetDate===undefined) state.lastResetDate=null;
-    if(state.dailyResetSummary===undefined) state.dailyResetSummary=null;
-    state.players.forEach((p,i)=>{
-      if(!p.name){ p.name=genPlayerName(); p.country=pickCountry(); p.avatarSeed='p'+i+'-'+id(); }
-      if(p.rep===undefined) p.rep=Math.floor(Math.random()*4);
-      const keys=statKeysFor(p.pos);
-      if(!keys.every(k=>k in p.stats)){ p.stats=Object.fromEntries(keys.map(k=>[k, p.stats[k]||0])); }
-      // One-time fix for saves created before starter stats existed: an
-      // all-zero stat block means this player predates that change.
-      if(keys.every(k=>(p.stats[k]||0)===0)){
-        const weights=WEIGHTS[p.pos]||WEIGHTS.CM;
-        const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
-        keys.forEach(k=>{ p.stats[k]=primary.has(k) ? 61+Math.floor(Math.random()*15) : 26+Math.floor(Math.random()*34); });
-      } else {
-        // Bump any stat still under the 26 floor from before that rule existed.
-        keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
-      }
-    });
-    (state.cpuTeams||[]).forEach(team=>{
-      (team.roster||[]).forEach(p=>{
-        const keys=statKeysFor(p.pos);
-        if(p.stats) keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
-      });
-    });
-  }
-  processDailyReset();
-  initFirebase();
-  render();
-})();
-</script>
-</body>
-</html>
+     
