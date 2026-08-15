@@ -152,7 +152,9 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .pitch-dot.away{background:var(--red);box-shadow:0 0 0 2px #fff}
 .pitch-dot.ball{width:8px;height:8px;background:#fff;box-shadow:0 0 4px #000;animation:none;transition:left 2s linear}
 @keyframes dotJitter{0%{margin-left:-4px;margin-top:-3px}100%{margin-left:4px;margin-top:3px}}
-.match-ticker{margin-top:10px;background:#00000055;border-radius:8px;padding:8px 10px;font-size:13px;max-height:100px;overflow-y:auto}
+.match-ticker{margin-top:10px;background:#00000055;border-radius:8px;padding:8px 10px;font-size:13px;max-height:130px;overflow-y:auto}
+.match-ticker div{padding:2px 0;opacity:.65}
+.match-ticker div.hl{opacity:1;font-weight:bold;color:var(--gold-bright,#e0be4a)}
 .mentality-bar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
 .mentality-bar .btn{font-size:11px;padding:6px 8px}
 .standings-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
@@ -525,30 +527,33 @@ function genCpuRoster(baseline){
   });
 }
 const TIERS=[
-  {min:65,max:70,label:'Tier 1 — Bottom League'},
-  {min:70,max:75,label:'Tier 2'},
-  {min:75,max:80,label:'Tier 3'},
-  {min:80,max:85,label:'Tier 4'},
-  {min:85,max:90,label:'Tier 5'},
-  {min:90,max:95,label:'Tier 6'},
-  {min:95,max:101,label:'Top Tier'}
+  {min:65,max:70,label:'Tier 1 — Bottom League', teamCount:4, matchCount:6},
+  {min:70,max:75,label:'Tier 2', teamCount:5, matchCount:8},
+  {min:75,max:80,label:'Tier 3', teamCount:6, matchCount:10},
+  {min:80,max:85,label:'Tier 4', teamCount:7, matchCount:12},
+  {min:85,max:90,label:'Tier 5', teamCount:8, matchCount:14},
+  {min:90,max:95,label:'Tier 6', teamCount:9, matchCount:16},
+  {min:95,max:101,label:'Top Tier', teamCount:10, matchCount:18}
 ];
 function tierIndexForRating(r){
   for(let i=0;i<TIERS.length;i++){ if(r>=TIERS[i].min && r<TIERS[i].max) return i; }
   return r<TIERS[0].min ? 0 : TIERS.length-1;
 }
-function genCpuTeams(n){
+function genCpuTeams(){
+  // Each tier gets its own properly-sized division, scaling up in both
+  // rating band AND number of teams/matches from Tier 1 to the Top Tier.
   const teams=[], used=new Set();
-  while(teams.length<n){
-    const name=CPU_PREFIX[Math.floor(Math.random()*CPU_PREFIX.length)]+' '+CPU_SUFFIX[Math.floor(Math.random()*CPU_SUFFIX.length)];
-    if(used.has(name)) continue; used.add(name);
-    // Baseline starts at 65 so the weakest teams land in the 65-70 "Tier 1" band,
-    // scaling up toward 95-100 at the top end.
-    const baseline=65+Math.floor(Math.random()*33);
-    const roster=genCpuRoster(baseline);
-    const teamRating=Math.max(65, Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length));
-    teams.push({id:id(), name, rating:teamRating, crestSeed:name, roster, tier:tierIndexForRating(teamRating), wins:0, draws:0, losses:0, gf:0, ga:0, pts:0});
-  }
+  TIERS.forEach((tier, tIdx)=>{
+    for(let i=0;i<tier.teamCount;i++){
+      let name;
+      do{ name=CPU_PREFIX[Math.floor(Math.random()*CPU_PREFIX.length)]+' '+CPU_SUFFIX[Math.floor(Math.random()*CPU_SUFFIX.length)]; }while(used.has(name));
+      used.add(name);
+      const baseline=tier.min+Math.floor(Math.random()*(tier.max-tier.min));
+      const roster=genCpuRoster(baseline);
+      const teamRating=Math.max(tier.min, Math.min(tier.max-1, Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length)));
+      teams.push({id:id(), name, rating:teamRating, crestSeed:name, roster, tier:tIdx, wins:0, draws:0, losses:0, gf:0, ga:0, pts:0});
+    }
+  });
   return teams;
 }
 function tierOf(rating){
@@ -587,7 +592,7 @@ const defaults=()=>({
   xp:0, points:0,
   players:positions.map((pos,i)=>newPlayer(pos,i)),
   selected:0, ngp:0, lastUpgrade:'',
-  cpuTeams:genCpuTeams(20),
+  cpuTeams:genCpuTeams(),
   season:{number:1, gamesPlayed:0, wins:0, draws:0, losses:0, goalsFor:0, goalsAgainst:0, scorers:{}, lastPlayDate:null, todayOpponent:null},
   matches:[]
 });
@@ -1213,7 +1218,7 @@ function renderModalRoot(){
 
 /* ---------------- matches / season ---------------- */
 function canPlayToday(){ return state.season.lastPlayDate!==dayKey(); }
-function seasonComplete(){ return state.season.gamesPlayed>=38; }
+function seasonComplete(){ return state.season.gamesPlayed>=TIERS[tierIndexForRating(ovr())].matchCount; }
 function pickOpponent(){
   const myTier=tierIndexForRating(ovr());
   const sameTier=state.cpuTeams.filter(t=>t.tier===myTier);
@@ -1460,6 +1465,7 @@ function renderMatches(){
   const status=dailyChecklistStatus();
   const opp=getTodayOpponent();
   const us=ovr();
+  const myTier=TIERS[tierIndexForRating(us)];
   const recap=seasonComplete() ? (()=>{
     const scorers=Object.entries(state.season.scorers).sort((a,b)=>b[1]-a[1]).slice(0,5);
     return `<div class="season-recap">
@@ -1471,7 +1477,7 @@ function renderMatches(){
   })() : '';
   $('#seasonRecap').innerHTML=recap;
   $('#seasonStatus').innerHTML=`
-    <div>Season ${state.season.number} · Game ${state.season.gamesPlayed}/38 · ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L</div>
+    <div>${esc(myTier.label)} · Season ${state.season.number} · Game ${state.season.gamesPlayed}/${myTier.matchCount} · ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L</div>
     <div style="margin-top:8px"><b>Today:</b> <img class="cpu-crest" src="${crestUrl(opp.crestSeed)}" alt="">${esc(state.teamName||'Your Club')} (OVR ${us}) vs ${esc(opp.name)} (OVR ${opp.rating})</div>
     ${opp.roster ? `<details style="margin-top:6px"><summary style="cursor:pointer">View ${esc(opp.name)} roster</summary><div class="roster-strip">${opp.roster.map(p=>`<span class="summary-chip">${p.pos} ${esc(p.name)} ${p.rating}</span>`).join('')}</div></details>` : ''}
     <div class="lockmsg" style="margin-top:8px;color:${status.ready?'var(--green)':'var(--red)'}">
@@ -1481,7 +1487,7 @@ function renderMatches(){
   if(seasonComplete()){ btn.disabled=true; btn.textContent='Season complete'; }
   else if(!canPlayToday()){ btn.disabled=true; btn.textContent='Already played today'; }
   else if(!status.ready){ btn.disabled=true; btn.textContent='🔒 Locked'; }
-  else { btn.disabled=false; btn.textContent=`Play today's match (Game ${state.season.gamesPlayed+1}/38)`; }
+  else { btn.disabled=false; btn.textContent=`Play today's match (Game ${state.season.gamesPlayed+1}/${myTier.matchCount})`; }
   $('#matchReport').innerHTML=state.matches.slice(0,5).map(m=>`
     <div class="match">
       <h3><img class="cpu-crest" src="${crestUrl(m.crestSeed)}" alt="">Game ${m.game}: ${esc(state.teamName||'Your club')} ${m.us}–${m.them} ${esc(m.opponent)}</h3>
@@ -1551,7 +1557,7 @@ function renderReminders(){
 function renderSummary(){
   const today=dayKey(), entries=state.history[today]||{};
   $('#summaryTeamName').textContent=state.teamName||'';
-  $('#summaryRecord').textContent=`Lv.${level()} · OVR ${ovr()} · S${state.season.number}: ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L · ${state.season.gamesPlayed}/38`;
+  $('#summaryRecord').textContent=`Lv.${level()} · OVR ${ovr()} · S${state.season.number}: ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L · ${state.season.gamesPlayed}/${TIERS[tierIndexForRating(ovr())].matchCount}`;
   $('#summaryHabits').innerHTML=state.habits.slice(0,8).map(h=>habitRow(h,entries)).join('') || '<div class="empty">No habits yet.</div>';
   $('#summaryTasks').innerHTML=state.tasks.slice(0,8).map(x=>`
     <div class="task ${x.done?'done':''}">
@@ -1631,4 +1637,220 @@ document.addEventListener('change',e=>{
   if(t.dataset.task){
     const x=state.tasks.find(x=>x.id===t.dataset.task);
     if(x.done!==t.checked){
-     
+      x.done=t.checked;
+      if(t.checked){ x.startedAt=null; x.awaitingConfirm=false; }
+      addXP(t.checked?REWARDS[x.priority]:-REWARDS[x.priority]);
+      handled=true;
+    }
+  }
+  if(t.dataset.priority){ const x=state.tasks.find(x=>x.id===t.dataset.priority); if(x){ x.priority=t.value; handled=true; } }
+  if(t.dataset.duration){
+    const x=state.tasks.find(x=>x.id===t.dataset.duration);
+    if(x){ const v=t.value?Number(t.value):null; x.durationMin=v&&v>0?v:null; handled=true; }
+  }
+  if(t.dataset.habitvalue||t.dataset.statvalue){
+    const hid=t.dataset.habitvalue||t.dataset.statvalue, habit=state.habits.find(x=>x.id===hid);
+    const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
+    entry.value=habit.entryType==='clarification'?(t.value||undefined):(t.value===''?undefined:Number(t.value));
+    const pass=passesGoal(habit,entry.value), wasDone=entry.done;
+    entry.done=pass; entry.failed=entry.value!==undefined&&!pass;
+    if(pass&&!wasDone) addXP(10);
+    if(!pass&&wasDone) addXP(-10);
+    handled=true;
+  }
+  if(t.dataset.habit||t.dataset.statdone){
+    const hid=t.dataset.habit||t.dataset.statdone, habit=state.habits.find(x=>x.id===hid);
+    const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
+    if(habit.goalType==='none'&&habit.entryType!=='clarification'&&entry.done!==t.checked){ entry.done=t.checked; entry.failed=false; addXP(t.checked?10:-10); handled=true; }
+  }
+  if(t.dataset.reminder){
+    const r=state.reminders.find(x=>x.id===t.dataset.reminder);
+    if(r && r.done!==t.checked){
+      r.done=t.checked;
+      if(t.checked){
+        state.reminderCheckCount=(state.reminderCheckCount||0)+1;
+        if(state.reminderCheckCount%5===0){ addXP(10); notify('Reminders streak!', '+10 XP for 5 reminders checked off.'); }
+      }
+      handled=true;
+    }
+  }
+  if(t.dataset.time){ const x=state.tasks.find(x=>x.id===t.dataset.time); if(x){ x.time=t.value; x.notified={half:false,five:false,done:false,upcoming:false}; handled=true; } }
+  // Anything else (like the reschedule time picker before Save is pressed)
+  // is intentionally left alone here — re-rendering on every keystroke was
+  // exactly what wiped the field back to its old value each time.
+  if(handled){ save(); render(); }
+});
+
+document.addEventListener('click',e=>{
+  const selCard=e.target.closest('[data-select]');
+  if(selCard){ state.selected=Number(selCard.dataset.select); openUpgradeModal(); save(); render(); return; }
+
+  const t=e.target.closest('button')||e.target;
+  if(t.id==='signInBtn'){ signInWithGoogle(); }
+  if(t.id==='signOutBtn'){ signOutGoogle(); }
+  if(t.id==='googleSignInBtn'){ signInWithGoogle(); }
+  if(t.id==='skipSignInBtn'){ state.skippedSignIn=true; authError=''; saveLocal(); renderModalRoot(); }
+  if(t.id==='cancelRename'){ renamingClub=false; renderModalRoot(); }
+  if(t.id==='clubNameSubmit'){ submitClubName(); }
+  if(t.id==='overwriteLocalBtn'){
+    state=Object.assign(defaults(), pendingCloudState||{});
+    pendingCloudState=null; syncChoiceOpen=false; saveLocal(false); startCloudListener(); render();
+  }
+  if(t.id==='overwriteCloudBtn'){ pushToCloud(); pendingCloudState=null; syncChoiceOpen=false; startCloudListener(); render(); }
+  if(t.dataset.delTask){ state.tasks=state.tasks.filter(x=>x.id!==t.dataset.delTask); save(); render(); }
+  if(t.dataset.delHabit){ state.habits=state.habits.filter(x=>x.id!==t.dataset.delHabit); save(); render(); }
+  if(t.dataset.delReminder){ state.reminders=state.reminders.filter(x=>x.id!==t.dataset.delReminder); save(); render(); }
+  if(t.dataset.taskup){ moveTask(t.dataset.taskup,-1); }
+  if(t.dataset.taskdown){ moveTask(t.dataset.taskdown,1); }
+  if(t.dataset.goalplus){ adjustTargetGoal(t.dataset.goalplus, 1); }
+  if(t.dataset.goalminus){ adjustTargetGoal(t.dataset.goalminus, -1); }
+  if(t.dataset.goallog){
+    const input=document.querySelector(`input[data-goallogval="${t.dataset.goallog}"]`);
+    const amount=input?Number(input.value):0;
+    if(amount) logTaskProgress(t.dataset.goallog, amount);
+  }
+  if(t.dataset.starttimer){
+    const task=state.tasks.find(x=>x.id===t.dataset.starttimer);
+    if(task){ ensureAudioCtx(); task.startedAt=Date.now(); if(!task.firstStartedAt) task.firstStartedAt=task.startedAt; task.awaitingConfirm=false; notify('Timer started', `"${task.name}" — ${task.durationMin} min countdown.`); }
+    save(); render();
+  }
+  if(t.dataset.stoptimer){
+    // Pause: bank the elapsed time, don't lose progress or reset notifications.
+    const task=state.tasks.find(x=>x.id===t.dataset.stoptimer);
+    if(task){ task.elapsedMs=taskElapsedMs(task); task.startedAt=null; }
+    save(); render();
+  }
+  if(t.dataset.timeplus){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus); if(task){ task.durationMin=(task.durationMin||0)+1; } save(); render(); }
+  if(t.dataset.timeminus){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-1); } save(); render(); }
+  if(t.dataset.timeplus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus1s); if(task){ task.durationMin=(task.durationMin||0)+(1/60); } save(); render(); }
+  if(t.dataset.timeminus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus1s); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-(1/60)); } save(); render(); }
+  if(t.dataset.canceltimer){
+    // Fully stop and clear this timer session (not a pause — no progress is kept).
+    const task=state.tasks.find(x=>x.id===t.dataset.canceltimer);
+    if(task){
+      task.startedAt=null; task.firstStartedAt=null; task.elapsedMs=0; task.extendedFromMin=null;
+      task.awaitingConfirm=false;
+      task.notified={half:false,five:false,done:false,upcoming:task.notified?task.notified.upcoming:false};
+      const qi=confirmQueue.indexOf(task.id); if(qi>-1) confirmQueue.splice(qi,1);
+    }
+    save(); render();
+  }
+  if(t.dataset.extendtask){ extendTaskFiveMinutes(t.dataset.extendtask); }
+  if(t.dataset.movelater){ moveTaskForLater(t.dataset.movelater); }
+  if(t.dataset.dotomorrow){ doItTomorrow(t.dataset.dotomorrow); }
+  if(t.id==='saveMovedTime'){ saveMovedTime(moveLaterFor); }
+  if(t.dataset.stat){
+    const p=state.players[state.selected];
+    if(p&&state.points>0){ p.stats[t.dataset.stat]=Math.min(99,p.stats[t.dataset.stat]+1); state.points--; state.lastUpgrade=`#${state.selected+1} ${p.pos}: ${t.dataset.stat} → ${p.stats[t.dataset.stat]}`; }
+    save(); render();
+  }
+  if(t.id==='openUpgrade'){ openUpgradeModal(); }
+  if(t.id==='closeUpgrade'){ closeUpgradeModal(); }
+  if(t.id==='taskDoneYes'){ completeTaskFromTimer(confirmQueue[0], true); }
+  if(t.id==='taskDoneNo'){ completeTaskFromTimer(confirmQueue[0], false); }
+  if(t.id==='ngpBtn'){
+    const keep={teamName:state.teamName, ngp:(state.ngp||0)+1, cpuTeams:state.cpuTeams, season:state.season, matches:state.matches,
+      tasks:state.tasks, habits:state.habits, history:state.history, notificationsEnabled:state.notificationsEnabled};
+    state=defaults(); Object.assign(state, keep);
+    closeUpgradeModal(); save(); render();
+  }
+  if(t.id==='newSeasonBtn'){
+    state.season={number:state.season.number+1, gamesPlayed:0, wins:0, draws:0, losses:0, goalsFor:0, goalsAgainst:0, scorers:{}, lastPlayDate:null, todayOpponent:null};
+    save(); render();
+  }
+  if(t.id==='kickoffBtn'){ kickoff(); }
+  if(t.dataset.prematchmentality){ setPreMatchMentality(t.dataset.prematchmentality); }
+  if(t.dataset.livementality){ setLiveMentality(t.dataset.livementality); }
+  if(t.id==='cancelPrematch'){ closePrematch(); }
+  if(t.id==='skipToFullTime'){ skipToFullTime(); }
+  if(t.id==='closeMatchLive'){ closeMatchLive(); }
+  if(t.id==='dismissDailyReset'){ state.dailyResetSummary=null; save(); renderModalRoot(); }
+});
+
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
+  document.querySelectorAll(`[data-tab="${b.dataset.tab}"]`).forEach(x=>x.classList.add('active'));
+  $('#'+b.dataset.tab).classList.remove('hidden');
+  if(b.dataset.tab==='calendar'){
+    renderCalendar();
+    const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
+    const sc=document.querySelector('.cal-scroll');
+    if(sc) sc.scrollTop=Math.max(0, nowMin-180);
+  }
+}));
+
+/* ---------------- init ---------------- */
+(function init(){
+  registerSW();
+  const splashSlot=document.getElementById('splashLogoSlot');
+  if(splashSlot) splashSlot.innerHTML=ffmWordmark(1.6);
+  setTimeout(()=>{
+    const splash=document.getElementById('splashScreen');
+    if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 700); }
+  }, 1400);
+  const loaded=loadLocal();
+  if(loaded){
+    state=Object.assign(defaults(), loaded);
+    if(!state.cpuTeams||!state.cpuTeams.length||!state.cpuTeams[0].roster||!state.cpuTeams[0].roster[0].stats) state.cpuTeams=genCpuTeams();
+    state.cpuTeams.forEach(t=>{
+      if(t.tier===undefined) t.tier=tierIndexForRating(t.rating);
+      if(t.wins===undefined) t.wins=0;
+      if(t.draws===undefined) t.draws=0;
+      if(t.losses===undefined) t.losses=0;
+      if(t.gf===undefined) t.gf=0;
+      if(t.ga===undefined) t.ga=0;
+      if(t.pts===undefined) t.pts=0;
+    });
+    if(!state.season) state.season={number:1,gamesPlayed:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,scorers:{},lastPlayDate:null,todayOpponent:null};
+    if(state.season.todayOpponent===undefined) state.season.todayOpponent=null;
+    if(state.season.todayOpponent && !state.season.todayOpponent.roster) state.season.todayOpponent=null;
+    if(!state.history) state.history={};
+    if(state.notificationsEnabled===undefined) state.notificationsEnabled=false;
+    if(state.skippedSignIn===undefined) state.skippedSignIn=false;
+    if(state.selected===undefined) state.selected=state.active||0;
+    state.tasks.forEach(t=>{
+      if(t.durationMin===undefined) t.durationMin=null;
+      if(t.targetGoal===undefined) t.targetGoal=null;
+      if(t.loggedValue===undefined) t.loggedValue=0;
+      if(t.goalUnit===undefined) t.goalUnit='';
+      if(t.elapsedMs===undefined) t.elapsedMs=0;
+      if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
+      if(t.notified.upcoming===undefined) t.notified.upcoming=false;
+      if(t.awaitingConfirm===undefined) t.awaitingConfirm=false;
+      if(t.startedAt===undefined) t.startedAt=null;
+    });
+    if(!state.reminders) state.reminders=[];
+    if(state.reminderCheckCount===undefined) state.reminderCheckCount=0;
+    if(state.lastResetDate===undefined) state.lastResetDate=null;
+    if(state.dailyResetSummary===undefined) state.dailyResetSummary=null;
+    state.players.forEach((p,i)=>{
+      if(!p.name){ p.name=genPlayerName(); p.country=pickCountry(); p.avatarSeed='p'+i+'-'+id(); }
+      if(p.rep===undefined) p.rep=Math.floor(Math.random()*4);
+      const keys=statKeysFor(p.pos);
+      if(!keys.every(k=>k in p.stats)){ p.stats=Object.fromEntries(keys.map(k=>[k, p.stats[k]||0])); }
+      // One-time fix for saves created before starter stats existed: an
+      // all-zero stat block means this player predates that change.
+      if(keys.every(k=>(p.stats[k]||0)===0)){
+        const weights=WEIGHTS[p.pos]||WEIGHTS.CM;
+        const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+        keys.forEach(k=>{ p.stats[k]=primary.has(k) ? 61+Math.floor(Math.random()*15) : 26+Math.floor(Math.random()*34); });
+      } else {
+        // Bump any stat still under the 26 floor from before that rule existed.
+        keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
+      }
+    });
+    (state.cpuTeams||[]).forEach(team=>{
+      (team.roster||[]).forEach(p=>{
+        const keys=statKeysFor(p.pos);
+        if(p.stats) keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
+      });
+    });
+  }
+  processDailyReset();
+  initFirebase();
+  render();
+})();
+</script>
+</body>
+</html>
