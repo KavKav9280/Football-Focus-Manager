@@ -151,12 +151,29 @@ input.duration-input{width:60px;font:12px monospace;padding:5px}
 .match-scoreboard .mclock{background:#000;color:#fff;padding:4px 8px;border-radius:6px;font:12px monospace}
 .match-scoreboard .mscore{font-size:20px;background:#fff;color:#111;padding:2px 10px;border-radius:6px}
 .pitch{position:relative;width:100%;aspect-ratio:16/10;background:repeating-linear-gradient(90deg,#2f8f4e,#2f8f4e 8%,#37a05a 8%,#37a05a 16%);border:3px solid #eee;border-radius:8px;overflow:hidden}
-.pitch::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;background:#ffffff88}
-.pitch-dot{position:absolute;width:16px;height:16px;border-radius:50%;transform:translate(-50%,-50%);font:8px monospace;color:#fff;display:flex;align-items:center;justify-content:center;animation:dotJitter 2.4s ease-in-out infinite alternate}
+.pitch.is-highlight{box-shadow:0 0 0 3px #f4d35e,0 0 24px #f4d35e88;filter:saturate(1.12)}
+.pitch-highlight{position:absolute;z-index:5;left:50%;top:8px;transform:translateX(-50%) translateY(-5px);padding:6px 12px;border-radius:20px;background:#101a17eF;border:1px solid #f4d35e;color:#ffe58a;font:700 11px monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none}
+.pitch.is-highlight .pitch-highlight{opacity:1;transform:translateX(-50%) translateY(0);animation:highlightPulse .85s ease-in-out infinite alternate}
+@keyframes highlightPulse{from{box-shadow:0 0 0 0 #f4d35e22}to{box-shadow:0 0 0 5px #f4d35e33}}
+.pitch-dot.ball{z-index:4}
+
+.pitch-markings{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.pitch-dot{z-index:2}
+.match-hud{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}
+.match-hud-stat{background:#ffffff12;border:1px solid #ffffff30;border-radius:8px;padding:8px;text-align:center;font:11px monospace}
+.match-hud-stat b{display:block;font: bold 17px Georgia,serif;margin-top:3px}
+.momentum-wrap{margin:9px 0 12px;font:11px monospace}
+.momentum-track{height:11px;border-radius:20px;background:linear-gradient(90deg,#b84b3d 0 50%,#d9d5c5 50% 50.5%,#377aa4 50.5% 100%);position:relative;overflow:hidden;border:1px solid #ffffff66}
+.momentum-marker{position:absolute;top:-3px;width:4px;height:15px;background:#fff;border:1px solid #17251b;transform:translateX(-50%);border-radius:3px}
+.app-toast{position:fixed;right:16px;bottom:16px;z-index:300;background:#26382c;color:#f3ead2;border:1px solid #c99d20;border-radius:9px;padding:11px 14px;max-width:min(360px,calc(100vw - 32px));box-shadow:0 8px 28px #0005;font:14px Georgia,serif}
+.app-toast b{display:block;margin-bottom:3px}
+@media(max-width:620px){.match-hud{grid-template-columns:repeat(3,minmax(0,1fr))}.match-hud-stat{padding:6px 3px}.match-hud-stat b{font-size:15px}}
+.pitch-dot{position:absolute;width:16px;height:16px;border-radius:50%;transform:translate(-50%,-50%);font:8px monospace;color:#fff;display:flex;align-items:center;justify-content:center;will-change:left,top;transition:left 1.15s cubic-bezier(.22,.72,.25,1),top 1.15s cubic-bezier(.22,.72,.25,1)}
 .pitch-dot.home{background:var(--blue);box-shadow:0 0 0 2px #fff}
 .pitch-dot.away{background:var(--red);box-shadow:0 0 0 2px #fff}
-.pitch-dot.ball{width:8px;height:8px;background:#fff;box-shadow:0 0 4px #000;animation:none;transition:left 2s linear}
-@keyframes dotJitter{0%{margin-left:-4px;margin-top:-3px}100%{margin-left:4px;margin-top:3px}}
+.pitch-dot.ball{width:9px;height:9px;background:#fff;box-shadow:0 0 0 1px #1d2b20,0 0 7px #000;z-index:4;transition:none}
+.pitch-dot.ball::after{content:'';position:absolute;inset:-4px;border:1px solid rgba(255,255,255,.55);border-radius:50%;animation:ballPulse 1.1s ease-out infinite}
+@keyframes ballPulse{0%{transform:scale(.65);opacity:.75}100%{transform:scale(1.5);opacity:0}}
 .match-ticker{margin-top:10px;background:#00000055;border-radius:8px;padding:8px 10px;font-size:13px;max-height:130px;overflow-y:auto}
 .match-ticker div{padding:2px 0;opacity:.65}
 .match-ticker div.hl{opacity:1;font-weight:bold;color:var(--gold-bright,#e0be4a)}
@@ -605,6 +622,7 @@ const defaults=()=>({
 let state=defaults();
 let confirmQueue=[];
 let reminderAlertSig='';
+let pendingDelete=null;
 let incompleteChoiceFor=null;
 let moveLaterFor=null;
 let upgradeModalOpen=false;
@@ -666,10 +684,15 @@ function processDailyReset(){
     const entry=yEntries[h.id];
     if(!entry || !entry.done){ missed.push(h.name); addXP(-10); xpLost+=10; }
   });
-  // Tasks are recurring daily now (no fixed calendar date) — give every
-  // task a fresh, undone state for the new day.
+  // Completed tasks and reminders stay visible (crossed off) for the rest
+  // of their completion day, then are removed at the next daily reset.
+  // Incomplete tasks remain available for the new day with a fresh timer.
+  const completedBeforeToday=item=>item.done && (item.completedDate || state.lastResetDate || today)<today;
+  state.tasks=state.tasks.filter(t=>!completedBeforeToday(t));
+  state.reminders=state.reminders.filter(r=>!completedBeforeToday(r));
   state.tasks.forEach(t=>{
-    t.done=false; t.startedAt=null; t.firstStartedAt=null; t.elapsedMs=0; t.extendedFromMin=null;
+    t.done=false; delete t.completedDate;
+    t.startedAt=null; t.firstStartedAt=null; t.elapsedMs=0; t.extendedFromMin=null;
     t.awaitingConfirm=false; t.notified={half:false,five:false,done:false,upcoming:false};
   });
   state.dailyResetSummary={date:state.lastResetDate, missed, xpLost};
@@ -698,9 +721,16 @@ function requestNotifications(){
 }
 function notify(title, body){
   if(!state.notificationsEnabled) return;
+  // Always show an in-app toast while the app is open.
+  let toast=document.getElementById('appToast');
+  if(!toast){ toast=document.createElement('div'); toast.id='appToast'; toast.className='app-toast'; toast.setAttribute('role','status'); document.body.appendChild(toast); }
+  toast.innerHTML=`<b>${esc(title)}</b>${esc(body)}`;
+  toast.classList.remove('hidden');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer=setTimeout(()=>toast.classList.add('hidden'),6500);
   if(!('Notification' in window) || Notification.permission!=='granted') return;
   try{
-    if(swRegistration && swRegistration.showNotification){ swRegistration.showNotification(title, {body, tag:'focus-manager', renotify:true}); }
+    if(swRegistration && swRegistration.showNotification){ swRegistration.showNotification(title, {body, tag:'focus-manager-'+Date.now(), renotify:true}); }
     else{ new Notification(title, {body}); }
   }catch(e){ console.warn('Notification failed', e); }
 }
@@ -773,10 +803,11 @@ function timerAreaHTML(t){
   </span>`;
 }
 function getSortedSections(){
-  const sections=state.taskSections||[];
-  const active=sections.filter(sec=>state.tasks.some(x=>(x.sectionId||x.priority)===sec.id && !x.done));
-  const inactive=sections.filter(sec=>!active.includes(sec));
-  return [...active,...inactive];
+  const priority={red:0,yellow:1,blue:2};
+  return [...(state.taskSections||[])].sort((a,b)=>{
+    const pa=priority[a.color]??2, pb=priority[b.color]??2;
+    return pa-pb || String(a.name||'').localeCompare(String(b.name||''));
+  });
 }
 function renderTasks(){
   const sections=state.taskSections||[];
@@ -833,7 +864,7 @@ function completeTaskFromTimer(taskId, completed){
   const t=state.tasks[idx];
   confirmQueue.shift();
   if(completed){
-    t.awaitingConfirm=false; t.startedAt=null; t.done=true; addXP(taskReward(t.sectionId||t.priority));
+    t.awaitingConfirm=false; t.startedAt=null; t.done=true; t.completedDate=dayKey(); addXP(taskReward(t.sectionId||t.priority));
     notify('Task complete', `+${taskReward(t.sectionId||t.priority)} XP — "${t.name}" done!`);
     save(); render();
   } else {
@@ -866,7 +897,34 @@ function saveMovedTime(taskId){
   moveLaterFor=null;
   save(); render();
 }
+function checkReminderNotifications(){
+  const now=Date.now();
+  let changed=false;
+  state.reminders.forEach(r=>{
+    if(r.done || !r.date || !r.time) return;
+    const due=new Date(`${r.date}T${r.time}:00`).getTime();
+    if(!Number.isFinite(due)) return;
+    if(!r.notificationState) r.notificationState={oneHour:false,due:false};
+    // The one-hour alert is issued as soon as the one-hour threshold is crossed.
+    if(!r.notificationState.oneHour && now>=due-60*60*1000 && now<due){
+      r.notificationState.oneHour=true; changed=true;
+      notify('Reminder in 1 hour', `${r.name} is due at ${r.time}.`);
+    }
+    // Due alert: one notification on/after the scheduled time, including if
+    // the app was reopened shortly after the due time.
+    if(!r.notificationState.due && now>=due){
+      r.notificationState.due=true; changed=true;
+      notify('Reminder due now', `${r.name} was due at ${r.time}.`);
+    }
+  });
+  if(changed) save();
+}
+
 function tickTimers(){
+  const previousResetDate=state.lastResetDate;
+  processDailyReset();
+  if(previousResetDate!==state.lastResetDate) render();
+  checkReminderNotifications();
   let changed=false, anyRunning=false;
   state.tasks.forEach(t=>{
     if(t.done) return;
@@ -953,7 +1011,7 @@ function logTaskProgress(taskId, amount){
   const wasDone=t.done;
   t.loggedValue=Math.max(0,(t.loggedValue||0)+amount);
   if(!wasDone && t.loggedValue>=t.targetGoal){
-    t.done=true; addXP(taskReward(t.sectionId||t.priority));
+    t.done=true; t.completedDate=dayKey(); addXP(taskReward(t.sectionId||t.priority));
     notify('Goal reached!', `"${t.name}" auto-completed — +${taskReward(t.sectionId||t.priority)} XP`);
   }
   save(); render();
@@ -963,7 +1021,7 @@ function adjustTargetGoal(taskId, delta){
   t.targetGoal=Math.max(1, t.targetGoal+delta);
   const wasDone=t.done;
   if(!wasDone && (t.loggedValue||0)>=t.targetGoal){
-    t.done=true; addXP(taskReward(t.sectionId||t.priority));
+    t.done=true; t.completedDate=dayKey(); addXP(taskReward(t.sectionId||t.priority));
     notify('Goal reached!', `"${t.name}" auto-completed — +${taskReward(t.sectionId||t.priority)} XP`);
   }
   save(); render();
@@ -1107,6 +1165,20 @@ function upgradeModalHTML(){
     </div>
   </div>`;
 }
+function deleteConfirmModalHTML(){
+  if(!pendingDelete) return '';
+  const label=pendingDelete.type==='section'?'this section':pendingDelete.type==='reminder'?'this reminder':'this task';
+  return `<div class="modal-overlay" id="deleteConfirmOverlay"><div class="modal-card-lg" style="border-color:var(--red);max-width:380px"><h2>Are you sure?</h2><p>Do you want to permanently remove ${label}?</p><p><button class="btn danger" id="confirmDeleteYes">Yes</button> <button class="btn" id="confirmDeleteNo">No</button></p></div></div>`;
+}
+function performPendingDelete(){
+  if(!pendingDelete) return;
+  const action=pendingDelete; pendingDelete=null;
+  if(action.type==='task') state.tasks=state.tasks.filter(x=>x.id!==action.id);
+  else if(action.type==='reminder') state.reminders=state.reminders.filter(x=>x.id!==action.id);
+  else if(action.type==='section') deleteTaskSection(action.id);
+  save(); render();
+}
+
 function confirmModalHTML(taskId){
   const t=state.tasks.find(x=>x.id===taskId);
   if(!t) return '';
@@ -1229,7 +1301,8 @@ function renderModalRoot(){
   const root=$('#upgradeModalRoot');
   if(matchLive){ renderMatchLive(); lastModalSig=null; return; }
   let html='', sig=null;
-  if(prematchOpen){ sig='prematch'; html=prematchModalHTML(); }
+  if(pendingDelete){ sig='delete:'+pendingDelete.type+':'+pendingDelete.id; html=deleteConfirmModalHTML(); }
+  else if(prematchOpen){ sig='prematch'; html=prematchModalHTML(); }
   else if(authResolving){ sig='loading'; html=loadingModalHTML(); }
   else if(fbConfigured() && !currentUser && (!state.skippedSignIn || authError)){ sig='login:'+authError; html=loginModalHTML(); }
   // Cloud sync choice MUST be resolved before the club-name gate — otherwise
@@ -1378,8 +1451,13 @@ function kickoff(){
   matchLive={
     opp, minute:0, events:[{min:0,text:'Kickoff!',big:true}], usLive:0, themLive:0, scorers:[], done:false,
     mentality:preMatchMentality,
-    pUsBase:baseChancePerMin(gap), pThemBase:baseChancePerMin(-gap)
+    usShots:0, themShots:0, possessionUsTotal:0, possessionThemTotal:0,
+    pUsBase:baseChancePerMin(gap), pThemBase:baseChancePerMin(-gap),
+    pitchPlayers:{home:FORMATION_XY.map(c=>clampPitchPoint({x:c[0],y:c[1]})),away:FORMATION_XY.map(c=>clampPitchPoint({x:100-c[0],y:c[1]}))}
   };
+  matchLive.ballPosition={x:50,y:35};
+  matchLive.highlightUntil=0;
+  matchLive.currentPassage=createPassage('home','pass','Kickoff!',0);
   renderModalRoot();
   // 90 game-minutes over exactly 2 real-time minutes = 120000ms / 90.
   matchLive.timerId=setInterval(tickMatchClock, 1333);
@@ -1389,47 +1467,190 @@ function setLiveMentality(m){
   matchLive.mentality=m;
   renderMatchLive(); // full rebuild is fine here — this only happens on an explicit click, not every tick
 }
+function clampPitchPoint(point){
+  return {
+    x: Math.max(2, Math.min(98, point.x)),
+    y: Math.max(3, Math.min(67, point.y))
+  };
+}
+function isThreateningMoment(type){
+  return ['chance','shot','save','goal'].includes(type);
+}
+function createPassage(side, type, text, minute){
+  const direction=side==='home'?1:-1;
+  const current=matchLive.ballPosition||{x:50,y:35};
+  const from=clampPitchPoint({x:current.x,y:current.y});
+  let toX, toY;
+  const attackingThreat=isThreateningMoment(type);
+
+  if(type==='goal'||type==='shot'){
+    toX=side==='home'?97:3;
+    toY=32+(Math.random()-.5)*10;
+  }else if(type==='save'){
+    // A saved effort finishes at the goalkeeper's area rather than passing through the net.
+    toX=side==='home'?94:6;
+    toY=35+(Math.random()-.5)*9;
+  }else if(type==='chance'){
+    toX=side==='home'?82+Math.random()*9:18-Math.random()*9;
+    toY=31+(Math.random()-.5)*23;
+  }else if(type==='dribble'){
+    toX=from.x+direction*(13+Math.random()*19);
+    toY=from.y+(Math.random()-.5)*23;
+  }else{
+    // Build-up play can progress, recycle possession, or switch across the pitch.
+    const switchPlay=Math.random()<.22;
+    const recycle=Math.random()<.27;
+    const distance=recycle?(5+Math.random()*12):(8+Math.random()*18);
+    toX=from.x+direction*(recycle?-distance:distance);
+    toY=switchPlay?67-from.y+(Math.random()-.5)*9:from.y+(Math.random()-.5)*17;
+  }
+
+  const to=clampPitchPoint({x:toX,y:toY});
+  const bend=(Math.random()-.5)*(type==='dribble'?25:attackingThreat?15:23);
+  const via=clampPitchPoint({
+    x:(from.x+to.x)/2+direction*(type==='dribble'?5:Math.random()*4),
+    y:(from.y+to.y)/2+bend
+  });
+  const route=type==='shot'||type==='goal'||type==='save'
+    ? 'shot'
+    : type==='chance'?'chance'
+    : type==='dribble'?'dribble'
+    : Math.abs(to.y-from.y)>19?'switch'
+    : to.x*direction>from.x*direction?'build-up':'recycle';
+
+  const passage={
+    min:minute,
+    text,
+    big:attackingThreat,
+    passage:{side,type,route,from,via,to}
+  };
+  matchLive.ballPosition=to;
+  return passage;
+}
 function simulateOneMinute(playSound){
   const mod=MENTALITY[matchLive.mentality]||MENTALITY.control;
   const pUs=matchLive.pUsBase*mod.us, pThem=matchLive.pThemBase*mod.them;
-  let hadEvent=false;
-  const push=(text)=>{ matchLive.events.unshift({min:matchLive.minute, text, big:true}); hadEvent=true; };
+  const usPoss=Math.max(30,Math.min(70,50+(pUs-pThem)*180));
+  matchLive.possessionUsTotal+=usPoss;
+  matchLive.possessionThemTotal+=(100-usPoss);
 
-  if(Math.random()<pUs){
+  const attackChance=Math.min(.92,pUs+pThem);
+  let side=Math.random()<(pUs/Math.max(.0001,pUs+pThem))?'home':'away';
+  let type='pass';
+  let text='';
+  if(Math.random()<attackChance){
     const roll=Math.random();
-    if(roll<0.36){
-      matchLive.usLive++;
-      const scorer=pickWeightedScorer();
-      matchLive.scorers.push(scorer.name);
-      push(`GOAL! ${esc(scorer.name)} (${matchLive.usLive}-${matchLive.themLive})`);
+    if(roll<.055){
+      type='goal';
+      if(side==='home'){
+        matchLive.usShots++;
+        matchLive.usLive++;
+        const scorer=pickWeightedScorer();
+        matchLive.scorers.push(scorer.name);
+        text=`GOAL! ${esc(scorer.name)} (${matchLive.usLive}-${matchLive.themLive})`;
+      }else{
+        matchLive.themShots++;
+        matchLive.themLive++;
+        text=`GOAL! ${esc(matchLive.opp.name)} (${matchLive.usLive}-${matchLive.themLive})`;
+      }
       if(playSound) playAlarm();
-    } else if(roll<0.62){
-      push(`Chance Created (${esc(state.teamName||'You')})`);
-    } else if(roll<0.75){
-      push(`Key Save! ${esc(matchLive.opp.name)}'s keeper denies ${esc(state.teamName||'you')}`);
-    } else if(roll<0.80){
-      push(`RED CARD for ${esc(matchLive.opp.name)}!`);
+    }else if(roll<.25){
+      type='save';
+      if(side==='home'){
+        matchLive.usShots++;
+        text=`Key Save! ${esc(matchLive.opp.name)}'s keeper denies ${esc(state.teamName||'you')}`;
+      }else{
+        matchLive.themShots++;
+        text=`Key Save! Your keeper denies ${esc(matchLive.opp.name)}`;
+      }
+    }else if(roll<.43){
+      type='shot';
+      if(side==='home'){
+        matchLive.usShots++;
+        text=`Shot on target from ${esc(state.teamName||'your side')}!`;
+      }else{
+        matchLive.themShots++;
+        text=`A shot from ${esc(matchLive.opp.name)}!`;
+      }
+    }else if(roll<.63){
+      type='dribble';
+      text=side==='home'
+        ? `${esc(state.teamName||'Your side')} drive forward with the ball.`
+        : `${esc(matchLive.opp.name)} carry the ball into space.`;
+    }else if(roll<.82){
+      type='chance';
+      text=side==='home'
+        ? `Key chance developing for ${esc(state.teamName||'you')}!`
+        : `A dangerous chance is developing for ${esc(matchLive.opp.name)}!`;
+    }else{
+      type='pass';
+      text=side==='home'?'A sharp passing move through midfield.':`${esc(matchLive.opp.name)} move the ball across the pitch.`;
     }
+  }else{
+    const quietIndex=Math.floor(Math.random()*QUIET_LINES.length);
+    text=QUIET_LINES[quietIndex];
+    type=(quietIndex===6||quietIndex===11)?'pass':'shape';
   }
-  if(Math.random()<pThem){
-    const roll=Math.random();
-    if(roll<0.36){
-      matchLive.themLive++;
-      push(`GOAL! ${esc(matchLive.opp.name)} (${matchLive.usLive}-${matchLive.themLive})`);
-      if(playSound) playAlarm();
-    } else if(roll<0.62){
-      push(`Chance Created (${esc(matchLive.opp.name)})`);
-    } else if(roll<0.75){
-      push(`Key Save! Your keeper denies ${esc(matchLive.opp.name)}`);
-    } else if(roll<0.80){
-      push(`RED CARD for ${esc(state.teamName||'you')}!`);
-    }
-  }
-  if(!hadEvent){
-    // Default "quiet play" state — continuous low-key commentary, never blank.
-    matchLive.events.unshift({min:matchLive.minute, text:QUIET_LINES[Math.floor(Math.random()*QUIET_LINES.length)], big:false});
-  }
+
+  const passage=createPassage(side,type,text,matchLive.minute);
+  matchLive.currentPassage=passage;
+  matchLive.events.unshift(passage);
   if(matchLive.events.length>60) matchLive.events.length=60;
+  matchLive.highlightUntil=passage.big?Date.now()+1250:0;
+  updatePlayerTargets(passage.passage);
+}
+function updatePlayerTargets(passage){
+  if(!matchLive) return;
+  const side=passage?passage.side:'home';
+  const focus=passage?passage.to:(matchLive.ballPosition||{x:50,y:35});
+  const home=[],away=[];
+  for(let i=0;i<FORMATION_XY.length;i++){
+    const base=FORMATION_XY[i];
+    const rolePush=i===0?0:i<=4?7:i<=7?14:21;
+    const phase=matchLive.minute*.31+i*1.47;
+    const driftY=Math.sin(phase)*3.4+Math.cos(phase*.73+i)*1.5;
+    const supportY=Math.cos(phase*.57+i*.8)*2.1;
+    // The attacking side pushes beyond halfway; the defending side compresses and tracks back.
+    const homePush=side==='home'?rolePush:-(rolePush*.38+5);
+    const awayPush=side==='away'?-rolePush:(rolePush*.38+5);
+    const homePoint=clampPitchPoint({
+      x:base[0]+homePush+(focus.x-50)*.07+Math.sin(phase+i)*1.4,
+      y:base[1]+driftY+supportY+(focus.y-35)*.045
+    });
+    const awayBase={x:100-base[0],y:base[1]};
+    const awayPoint=clampPitchPoint({
+      x:awayBase.x+awayPush-(focus.x-50)*.07-Math.sin(phase+i)*1.4,
+      y:awayBase.y+driftY+supportY+(focus.y-35)*.045
+    });
+    home.push(homePoint);
+    away.push(awayPoint);
+  }
+  matchLive.pitchPlayers={home,away};
+}
+function animateBallForPassage(passage){
+  const ball=document.getElementById('liveBall');
+  if(!ball||!passage) return;
+  const p=passage.passage||passage;
+  const from=p.from||matchLive.ballPosition||{x:50,y:35};
+  const via=p.via||from;
+  const to=p.to||via;
+  if(ball._motion) ball._motion.cancel();
+  ball.style.left=from.x+'%';
+  ball.style.top=from.y+'%';
+
+  const isThreat=isThreateningMoment(p.type);
+  const duration=p.type==='goal'?1250:p.type==='shot'||p.type==='save'?1120:p.type==='chance'?1050:p.type==='dribble'?980:870;
+  const lift=p.type==='shot'||p.type==='goal'?'-7px':'0px';
+  const keyframes=[
+    {left:from.x+'%',top:from.y+'%',transform:'translate(-50%,-50%) scale(1)'},
+    {left:via.x+'%',top:via.y+'%',transform:'translate(-50%,-50%) scale(1.12)',offset:.48},
+    {left:to.x+'%',top:to.y+'%',transform:`translate(-50%,-50%) translateY(${lift}) scale(${isThreat?1.18:1})`}
+  ];
+  ball._motion=ball.animate(keyframes,{
+    duration,
+    easing:p.type==='shot'||p.type==='goal'?'cubic-bezier(.12,.78,.2,1)':'cubic-bezier(.35,.08,.25,1)',
+    fill:'forwards'
+  });
 }
 function eventLineHTML(ev){ return `<div class="${ev.big?'hl':''}">${ev.min}' - ${ev.text}</div>`; }
 function tickMatchClock(){
@@ -1437,17 +1658,44 @@ function tickMatchClock(){
   matchLive.minute++;
   simulateOneMinute(true);
   if(matchLive.minute>=90){ finishMatch(); return; }
-  updateLiveDisplay(); // targeted update only — NOT a full rebuild, so the
-                        // mentality buttons stay put and stay clickable
-                        // instead of getting destroyed every tick.
+  updateLiveDisplay();
 }
 function updateLiveDisplay(){
-  const clockEl=document.getElementById('liveClock'); if(clockEl) clockEl.textContent=matchLive.done?'FT':matchLive.minute+"'";
-  const scoreEl=document.getElementById('liveScore'); if(scoreEl) scoreEl.textContent=`${matchLive.usLive} - ${matchLive.themLive}`;
+  if(!matchLive) return;
+  const clockEl=document.getElementById('liveClock');
+  if(clockEl) clockEl.textContent=matchLive.done?'FT':matchLive.minute+"'";
+  const scoreEl=document.getElementById('liveScore');
+  if(scoreEl) scoreEl.textContent=`${matchLive.usLive} - ${matchLive.themLive}`;
+
+  const latest=matchLive.currentPassage;
+  const pitch=document.getElementById('livePitch');
+  const banner=document.getElementById('pitchHighlight');
+  const activeHighlight=!!(latest&&latest.big&&Date.now()<(matchLive.highlightUntil||0));
+  if(pitch) pitch.classList.toggle('is-highlight',activeHighlight);
+  if(banner){
+    banner.textContent=activeHighlight
+      ? (latest.passage.type==='goal'?'GOAL':latest.passage.type==='save'?'KEY SAVE':latest.passage.type==='shot'?'SHOT':'KEY CHANCE')
+      : '';
+  }
+
   const ballEl=document.getElementById('liveBall');
-  if(ballEl){ ballEl.style.left=(50+Math.sin(matchLive.minute/3)*30)+'%'; }
+  if(ballEl&&latest) animateBallForPassage(latest);
+
+  const home=matchLive.pitchPlayers&&matchLive.pitchPlayers.home;
+  const away=matchLive.pitchPlayers&&matchLive.pitchPlayers.away;
+  if(home) home.forEach((p,i)=>{
+    const el=document.getElementById('homePlayer'+i);
+    if(el){el.style.left=p.x+'%';el.style.top=p.y+'%';}
+  });
+  if(away) away.forEach((p,i)=>{
+    const el=document.getElementById('awayPlayer'+i);
+    if(el){el.style.left=p.x+'%';el.style.top=p.y+'%';}
+  });
+
   const tickerEl=document.getElementById('liveTicker');
   if(tickerEl) tickerEl.innerHTML=matchLive.events.slice(0,10).map(eventLineHTML).join('');
+  const hud=document.getElementById('liveHud');
+  if(hud) hud.innerHTML=matchHudHTML();
 }
 function skipToFullTime(){
   if(!matchLive) return;
@@ -1467,20 +1715,38 @@ function finishMatch(){
 }
 function closeMatchLive(){ matchLive=null; render(); }
 function dotHTML(x,y,cls,label,id){
-  return `<div class="pitch-dot ${cls}" ${id?`id="${id}"`:''} style="left:${x}%;top:${y}%;animation-delay:${(Math.random()*2).toFixed(2)}s">${label||''}</div>`;
+  const safeLabel=label?esc(label):'';
+  const safeId=id?`id="${id}"`:'';
+  return `<div class="pitch-dot ${cls}" ${safeId} style="left:${x}%;top:${y}%">${safeLabel}</div>`;
 }
 function mentalityBarHTML(current, dataAttr){
   return `<div class="mentality-bar">${Object.entries(MENTALITY).map(([key,m])=>
     `<button class="btn small ${key===current?'gold':''}" data-${dataAttr}="${key}">${m.label}</button>`).join('')}</div>`;
 }
+function matchHudHTML(){
+  const total=matchLive.possessionUsTotal+matchLive.possessionThemTotal;
+  const usPoss=total?Math.round(matchLive.possessionUsTotal/total*100):50;
+  const themPoss=100-usPoss;
+  const momentum=Math.max(0,Math.min(100,50+(matchLive.usShots-matchLive.themShots)*5+(matchLive.usLive-matchLive.themLive)*12));
+  return `<div class="match-hud">
+    <div class="match-hud-stat">POSSESSION<b>${usPoss}% - ${themPoss}%</b></div>
+    <div class="match-hud-stat">SHOTS<b>${matchLive.usShots} - ${matchLive.themShots}</b></div>
+    <div class="match-hud-stat">MATCH TIME<b>${matchLive.minute}'</b></div>
+  </div><div class="momentum-wrap"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>${esc(state.teamName||'You')} momentum</span><span>${esc(matchLive.opp.name)}</span></div><div class="momentum-track"><span class="momentum-marker" style="left:${momentum}%"></span></div></div>`;
+}
+
 function renderMatchLive(){
-  // Full rebuild — only called on kickoff, a mentality switch, or full time,
-  // never on the routine per-second tick (that uses updateLiveDisplay()).
+  // Full rebuild only on kickoff, mentality changes, and full time.
   const root=$('#upgradeModalRoot'); if(!matchLive) return;
-  const homeDots=FORMATION_XY.map((c,i)=>dotHTML(c[0],c[1],'home', state.players[i]?state.players[i].pos:'')).join('');
-  const awayDots=FORMATION_XY.map((c,i)=>dotHTML(100-c[0],c[1],'away', matchLive.opp.roster&&matchLive.opp.roster[i]?matchLive.opp.roster[i].pos:'')).join('');
-  const ballX=50+Math.sin(matchLive.minute/3)*30;
-  const ball=dotHTML(ballX,50,'ball','','liveBall');
+  if(!matchLive.pitchPlayers){
+    const base=FORMATION_XY.map(c=>clampPitchPoint({x:c[0],y:c[1]}));
+    matchLive.pitchPlayers={home:base,away:base.map(p=>({x:100-p.x,y:p.y}))};
+  }
+  const homeDots=matchLive.pitchPlayers.home.map((p,i)=>dotHTML(p.x,p.y,'home',state.players[i]?state.players[i].pos:'','homePlayer'+i)).join('');
+  const awayDots=matchLive.pitchPlayers.away.map((p,i)=>dotHTML(p.x,p.y,'away',matchLive.opp.roster&&matchLive.opp.roster[i]?matchLive.opp.roster[i].pos:'','awayPlayer'+i)).join('');
+  const current=matchLive.currentPassage&&matchLive.currentPassage.passage;
+  const ballPoint=current?current.from:(matchLive.ballPosition||{x:50,y:35});
+  const ball=dotHTML(ballPoint.x,ballPoint.y,'ball','','liveBall');
   root.innerHTML=`<div class="modal-overlay">
     <div class="match-live-card">
       <div class="match-scoreboard">
@@ -1489,7 +1755,8 @@ function renderMatchLive(){
         <span class="mscore" id="liveScore">${matchLive.usLive} - ${matchLive.themLive}</span>
         <span class="mteam">${esc(matchLive.opp.name)}</span>
       </div>
-      <div class="pitch">${homeDots}${awayDots}${matchLive.done?'':ball}</div>
+      <div class="pitch" id="livePitch"><div class="pitch-highlight" id="pitchHighlight"></div><svg class="pitch-markings" viewBox="0 0 100 70" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="0.65" opacity=".9"><rect x="1" y="1" width="98" height="68"/><path d="M50 1V69"/><circle cx="50" cy="35" r="9.15"/><circle cx="50" cy="35" r="0.7" fill="#fff"/><rect x="1" y="13.84" width="16.5" height="42.32"/><rect x="1" y="24.84" width="5.5" height="20.32"/><rect x="82.5" y="13.84" width="16.5" height="42.32"/><rect x="93.5" y="24.84" width="5.5" height="20.32"/><path d="M1 28.5h-1v13h1M99 28.5h1v13h-1"/><circle cx="11" cy="35" r=".65" fill="#fff"/><circle cx="89" cy="35" r=".65" fill="#fff"/></g></svg>${homeDots}${awayDots}${matchLive.done?'':ball}</div>
+      <div id="liveHud">${matchHudHTML()}</div>
       ${matchLive.done?'':mentalityBarHTML(matchLive.mentality,'livementality')}
       <div class="match-ticker" id="liveTicker">${matchLive.events.slice(0,10).map(eventLineHTML).join('')}</div>
       ${matchLive.done
@@ -1497,6 +1764,12 @@ function renderMatchLive(){
         : `<p style="margin-top:10px"><button class="btn" id="skipToFullTime">Skip to Full Time</button></p>`}
     </div>
   </div>`;
+  if(!matchLive.done && matchLive.currentPassage){
+    requestAnimationFrame(()=>{
+      animateBallForPassage(matchLive.currentPassage);
+      updateLiveDisplay();
+    });
+  }
 }
 function renderMatches(){
   const status=dailyChecklistStatus();
@@ -1677,7 +1950,8 @@ document.addEventListener('change',e=>{
     const x=state.tasks.find(x=>x.id===t.dataset.task);
     if(x.done!==t.checked){
       x.done=t.checked;
-      if(t.checked){ x.startedAt=null; x.awaitingConfirm=false; }
+      if(t.checked){ x.completedDate=dayKey(); x.startedAt=null; x.awaitingConfirm=false; }
+      else { delete x.completedDate; }
       addXP(t.checked?taskReward(x.sectionId||x.priority):-taskReward(x.sectionId||x.priority));
       handled=true;
     }
@@ -1707,9 +1981,10 @@ document.addEventListener('change',e=>{
     if(r && r.done!==t.checked){
       r.done=t.checked;
       if(t.checked){
+        r.completedDate=dayKey();
         state.reminderCheckCount=(state.reminderCheckCount||0)+1;
         if(state.reminderCheckCount%5===0){ addXP(10); notify('Reminders streak!', '+10 XP for 5 reminders checked off.'); }
-      }
+      } else { delete r.completedDate; }
       handled=true;
     }
   }
@@ -1736,10 +2011,10 @@ document.addEventListener('click',e=>{
     pendingCloudState=null; syncChoiceOpen=false; saveLocal(false); startCloudListener(); render();
   }
   if(t.id==='overwriteCloudBtn'){ pushToCloud(); pendingCloudState=null; syncChoiceOpen=false; startCloudListener(); render(); }
-  if(t.dataset.delTask){ state.tasks=state.tasks.filter(x=>x.id!==t.dataset.delTask); save(); render(); }
+  if(t.dataset.delTask){ pendingDelete={type:'task',id:t.dataset.delTask}; renderModalRoot(); }
   if(t.dataset.delHabit){ state.habits=state.habits.filter(x=>x.id!==t.dataset.delHabit); save(); render(); }
-  if(t.dataset.delReminder){ state.reminders=state.reminders.filter(x=>x.id!==t.dataset.delReminder); save(); render(); }
-  if(t.dataset.deleteSection){ deleteTaskSection(t.dataset.deleteSection); }
+  if(t.dataset.delReminder){ pendingDelete={type:'reminder',id:t.dataset.delReminder}; renderModalRoot(); }
+  if(t.dataset.deleteSection){ pendingDelete={type:'section',id:t.dataset.deleteSection}; renderModalRoot(); }
   if(t.dataset.taskup){ moveTask(t.dataset.taskup,-1); }
   if(t.dataset.taskdown){ moveTask(t.dataset.taskdown,1); }
   if(t.dataset.goalplus){ adjustTargetGoal(t.dataset.goalplus, 1); }
@@ -1786,6 +2061,8 @@ document.addEventListener('click',e=>{
   }
   if(t.id==='openUpgrade'){ openUpgradeModal(); }
   if(t.id==='closeUpgrade'){ closeUpgradeModal(); }
+  if(t.id==='confirmDeleteYes'){ performPendingDelete(); }
+  if(t.id==='confirmDeleteNo'){ pendingDelete=null; renderModalRoot(); }
   if(t.id==='taskDoneYes'){ completeTaskFromTimer(confirmQueue[0], true); }
   if(t.id==='taskDoneNo'){ completeTaskFromTimer(confirmQueue[0], false); }
   if(t.id==='ngpBtn'){
@@ -1862,6 +2139,8 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()
       if(t.startedAt===undefined) t.startedAt=null;
     });
     if(!state.reminders) state.reminders=[];
+    state.reminders.forEach(r=>{ if(!r.notificationState) r.notificationState={oneHour:false,due:false}; });
+    [...state.tasks,...state.reminders].forEach(item=>{ if(item.done && !item.completedDate) item.completedDate=state.lastResetDate||dayKey(); });
     if(!Array.isArray(state.taskSections)||!state.taskSections.length) state.taskSections=DEFAULT_TASK_SECTIONS.map(x=>({...x}));
     state.taskSections=state.taskSections.map(sec=>({id:sec.id||('section-'+id()),name:sec.name||'Tasks',color:['red','yellow','blue'].includes(sec.color)?sec.color:'blue',xp:[20,40,60].includes(Number(sec.xp))?Number(sec.xp):(REWARDS[sec.color]||20)}));
     state.tasks.forEach(task=>{ if(!task.sectionId) task.sectionId=state.taskSections.some(sec=>sec.id===task.priority)?task.priority:(state.taskSections.find(sec=>sec.color===task.priority)?.id||state.taskSections[0].id); task.priority=task.sectionId; });
