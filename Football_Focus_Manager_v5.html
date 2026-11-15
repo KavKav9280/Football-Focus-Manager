@@ -1,0 +1,2180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#26382c">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiNmOGU2YzIiLz4KICA8dGV4dCB4PSIzMiIgeT0iNDEiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCAnVGltZXMgTmV3IFJvbWFuJywgc2VyaWYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZvbnQtc2l6ZT0iMjIiIGxldHRlci1zcGFjaW5nPSIwLjUiIGZpbGw9IiMxZjRhMzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZGTTwvdGV4dD4KPC9zdmc+Cg==">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAADeklEQVRYhe2X30+bVRjHP+ctpS+0ULpCu1J+zEqpUCdiL9jALWHZMJoZF9xc4i68INHEGO/8B7ww8dJMp1li1GyCXMw43EicIcIItsGwzTg0HQvuB7K0jF/lZZTa9njRFml89WYL9YLvzZtz3uec7+d5zpvn5BVkJacGTevmsjcE8lUJTwJmHq2WQVwRyI9M1fvP5SYFwIO7P7oVQ/Ii0PKITXUlBf2qpr0mvC+sK3Jq0LSV5gBCcjxutnwKIOKzo2+D/GCrzPNJOKxI5ImCmANI3lIENBcMAPYogKWAABVKAc0B2AbYBijKPBJcD44wPJfWCRHU7N7H/uQ1+n6LIXUiFFcLPfXznAnNEAcQVjoOtNFqFtmINPPhIH1hLTMsqaP7YBPVYqMCRmq9XozhIU4ODBEy+OgKtNAVaKGz5C4Xfk9Q6vLy1Pp1Ph64xOd3LBzIvj/UKAlejZAur2GfLULv4CU+HPia90bnSOUIU/fo6z/PqW+/49ToAnXNbmxZNiWXpbXSiVPNjCw2B163k5KFWdaefpl328pQLTuoLy9CAAazjQb3TjxEuWnay/vHfKiqFY/djG+3n11KksnhMSb+zOynTQb5ueoJahXAUEqNs5wS8gA2S3Jv6irfjI3z1ffjXElZqTbnhyWiNzg/9hPnhoe58IcBl00lV2xj/V5ONBaTnp/gi4kVpFziYjDO8x3O3HnnH5/O3MNJ2HjxYAt21hgZGid8K8QP1j10WYVuuA6UwOVt5Ui7ykJtFUsV/4wodjTyUkczhiYHDam/s8+tL/M/y7HqCT65Pco7Z2o48vpzqOs3dAH+owIK9joPj6v65ACGHfUEqnRyKHJzvLOBUqkRdTxDt/Pf98iulizfjxCJZ0baYpTpJReeCtNGdgltgduxJBJIrS5yM6rhcVjIfrfI+DLT82usrtznTszOrvajnLZFMNb6qEiuMD2nkZBA6gEzkRhN7syHKOKzl6VeHyiuDdDTWokhC7g4FaJ3cx+wPMbRzkZ2ZglT0Uk+C80QR1Dpa+cVn2WjvOmFMGfHbhHLLd7UB7IAhVPBW/E2wP8CIFZA/5gCBAvlLqT8VUFwslAAEvGlAFibvXxWwBb/oMhrpsXKNgVAXdV6pKB/K83TKeNh4fcn8m6J9dmRbinEm0gCgM49+FDShOAXmabXtGQ/Lfz+BMBfZZQtRWRclywAAAAASUVORK5CYII=">
+<link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAABZklEQVQ4ja2SSyhEARSGv3ON8RyEyBh3vKOUV1lRYs3CSsleWYuVlI2yU9YWUzZsLSwkLCwUpaQmktf1HEKjO+7MHAvJazOGf/ctvnM6D9G9PXckPzSJMgiUkFhORJl1ezumxb5Ym0JlNEHxa0RHxLbWrV90/hY9N5KXAaTUSF5+y58LuCDKydYSU9suOlt96JNQmXXE3M47p9BU/UBgIYivd4ChqhdWFudZjLcx1teEAS68uUrw+IbQ/T1us4L6vM/sx1/kwUy1WVje5foqyO7lI4eaQ2nqpxEky0d3sx8zN5v0Hyzkt7TTdbHGxGacxko38rEDJeI4xGMOtsdPayHfWIg5Ds+U0d9TS0NNNcXRGLGoQ0RBbGtVb86OOQqDp9ikPk/4yimEb8/Yf8qkrryAbMIcHlwS0gzKq7yIba3rX67wL39wmryu5waiM0nrGAFRVXmxNkZUGAbMhEzBAg2k3RWOvwIYSpY6/UZd2AAAAABJRU5ErkJggg==">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+<title>Football Focus Manager</title>
+<style>
+:root{--bg:#211a14;--paper:#f3ead2;--ink:#26382c;--line:#c8b88c;--gold:#c99d20;--red:#b84b3d;--yellow:#d49e24;--blue:#377aa4;--green:#638c6c;
+  --bronze-a:#e3b587;--bronze-b:#8a5a34;--silver-a:#e7ecef;--silver-b:#9fa6ad;--gold-a:#f6d97a;--gold-b:#c99d20;--plat-a:#dff7f2;--plat-b:#57c2b3;}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#3b2b20,var(--bg) 55%);color:var(--ink);font:16px Georgia,serif;padding:24px 12px 60px}
+.book{max-width:960px;margin:auto;background:var(--paper);padding:26px;border-radius:14px;box-shadow:0 18px 48px #0008;min-height:750px}
+h1,h2,h3{font-family:Georgia,serif;margin:0 0 8px}
+.subtitle,.hint{color:#5a6657;font-style:italic;margin:0 0 10px}
+#welcomeRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+#accountBar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#eadfbe;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px}
+.top-xp{background:var(--ink);color:var(--paper);border-radius:9px;padding:11px 14px;margin:15px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.top-xp .xp{flex:1;max-width:420px;min-width:140px}
+.tabs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:2px solid var(--line);margin-bottom:20px;scrollbar-width:thin}
+.tabs button{white-space:nowrap;flex-shrink:0}
+.tabs button,.btn{border:0;border-radius:7px;padding:9px 13px;cursor:pointer;font:600 14px Georgia,serif;background:var(--ink);color:var(--paper);transition:transform .12s ease,background .15s ease,box-shadow .15s ease}
+.tabs button:hover,.btn:hover{box-shadow:0 3px 10px #0003}
+.tabs button:active,.btn:active{transform:scale(.95)}
+.tabs button{transition:background .25s ease,color .25s ease,transform .12s ease}
+.tabs button{border-radius:8px 8px 0 0;background:#ded1ae;color:var(--ink)}
+.tabs button.active{background:var(--ink);color:var(--paper);box-shadow:0 3px 0 var(--gold) inset}
+.btn.gold{background:var(--gold);color:#241b12}
+.btn.small{padding:6px 9px;font-size:12px}
+.btn.danger{background:var(--red)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.hidden{display:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.panel{background:#eadfbe;border:1px solid var(--line);padding:16px;border-radius:10px}
+.form{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.form input,.form select{border:1px solid var(--line);border-radius:6px;padding:9px;background:#fffaf0;color:var(--ink);font:14px Georgia,serif}
+.form input[type=text]{flex:1;min-width:180px}
+.form input[name=duration]{width:110px}
+.task-time-input{max-width:190px}
+.tier{border-left:7px solid;padding:10px 12px;margin:12px 0;background:#fff9e9;border-radius:5px}
+.tier.red{border-color:var(--red)}.tier.yellow{border-color:var(--yellow)}.tier.blue{border-color:var(--blue)}
+.tier h3{font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.task,.habit{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line);flex-wrap:wrap}
+.task:first-of-type,.habit:first-of-type{border-top:0}
+.task .name,.habit .name{flex:1;min-width:120px}
+.done .name{text-decoration:line-through;color:#6c7567}
+.reminder-due{border-left:5px solid var(--red);padding-left:8px;background:#fff0ec}
+.reminder-due .time{background:#f7d2cc;color:#8f2119}
+.section-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.section-tools input,.section-tools select{border:1px solid var(--line);border-radius:6px;padding:8px;background:#fffaf0;color:var(--ink);font:14px Georgia,serif}
+.time{font:12px monospace;background:#eee2bf;padding:5px;border-radius:4px;white-space:nowrap}
+.timer-active-panel{display:inline-flex;align-items:center;gap:4px;background:var(--ink);color:var(--paper);padding:5px 8px;border-radius:6px;font:12px monospace}
+.timer-active-panel b{font-size:13px}
+.time input{border:0;background:transparent;width:150px;font:12px monospace}
+select.inline{font:12px monospace;padding:5px;border-radius:4px}
+input.duration-input{width:60px;font:12px monospace;padding:5px}
+.goal-input{width:66px;padding:5px!important}
+.check{width:21px;height:21px;accent-color:var(--green)}
+.empty{color:#687064;font-style:italic;padding:7px 0}
+.xp{height:12px;background:#dac99c;border-radius:10px;overflow:hidden;border:1px solid #bda878}
+.xp i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0%;transition:width .6s cubic-bezier(.22,1,.36,1)}
+.score{font-weight:bold;color:var(--gold)}
+
+.avatar{width:54px;height:54px;border-radius:50%;background:#eee2bf;object-fit:cover;border:2px solid #00000022;flex-shrink:0}
+.avatar.lg{width:96px;height:96px}
+.flag{font-size:16px;margin-left:2px}
+.cpu-crest{width:34px;height:34px;border-radius:8px;background:#eee2bf;vertical-align:middle;margin-right:6px}
+
+.squad{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.player{background:#fff9e9;border:2px solid #bda878;padding:11px;border-radius:8px;min-height:150px;text-align:center;transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s ease;cursor:pointer}
+.player:hover{transform:translateY(-3px);box-shadow:0 8px 18px #0002}
+.player.active{box-shadow:0 0 0 3px #f3d36a}
+.player.tier-bronze{border-color:var(--bronze-b)}
+.player.tier-silver{border-color:var(--silver-b)}
+.player.tier-gold{border-color:var(--gold-b)}
+.player.tier-platinum{border-color:var(--plat-b)}
+.player .num{font:11px monospace;color:#8a6a2f}
+.player .rating{font-size:26px;font-weight:bold;color:#9b6d15;margin-top:4px}
+.pname{font-weight:bold;font-size:13px;margin-top:2px}
+.tier-badge{font:10px monospace;text-transform:uppercase;letter-spacing:.5px;opacity:.75}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;font:12px monospace;margin:8px 0}
+.statControls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.statControls button{background:#e6d8b4;color:var(--ink);border:1px solid #bda878;border-radius:6px;padding:9px;cursor:pointer;font-weight:bold}
+.current-player-mini{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+
+.modal-overlay{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;z-index:80;padding:16px;animation:overlayFade .2s ease}
+.modal-card-lg{background:var(--paper);border-radius:16px;padding:22px;max-width:420px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px #0008;text-align:center;border:4px solid;animation:modalPop .28s cubic-bezier(.22,1,.36,1)}
+@keyframes overlayFade{0%{opacity:0}100%{opacity:1}}
+@keyframes modalPop{0%{opacity:0;transform:scale(.9) translateY(10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.modal-card-lg.tier-bronze{border-color:var(--bronze-b);background:linear-gradient(160deg,#fff9e9,var(--bronze-a))}
+.modal-card-lg.tier-silver{border-color:var(--silver-b);background:linear-gradient(160deg,#fff9e9,var(--silver-a))}
+.modal-card-lg.tier-gold{border-color:var(--gold-b);background:linear-gradient(160deg,#fff9e9,var(--gold-a))}
+.modal-card-lg.tier-platinum{border-color:var(--plat-b);background:linear-gradient(160deg,#fff9e9,var(--plat-a))}
+.upgrade-face{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:10px}
+.pname-lg{font-weight:bold;font-size:19px}
+.upgrade-title{letter-spacing:1px;font-weight:bold;font-size:12px;opacity:.8}
+.upgrade-rating{font-size:54px;font-weight:bold;line-height:1;color:#241b12;text-shadow:0 2px #fff8}
+.upgrade-banner{background:#26382c;color:#f3ead2;border-radius:8px;padding:9px;margin:12px 0;font-weight:bold;animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(.9);opacity:.2}100%{transform:scale(1);opacity:1}}
+.modal-card-lg input[type=text]{width:100%;margin-top:6px}
+
+.match{background:#26382c;color:#f3ead2;padding:15px;border-radius:9px;margin-top:14px}
+.match p{margin:5px 0}
+.season-status{background:#eadfbe;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.season-status .lockmsg{font-weight:bold}
+.season-recap{background:#26382c;color:#f3ead2;padding:18px;border-radius:10px;margin-bottom:16px}
+.season-recap h3{margin-top:0}
+.chart{width:100%;height:130px;display:block;background:#fff9e9;border:1px solid var(--line);border-radius:6px;margin:7px 0 15px}
+.chart-label{font-size:13px;color:#5a6657}
+
+.summary-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.summary-col{background:#eadfbe;border:1px solid var(--line);border-radius:10px;padding:14px}
+.summary-col h3{display:flex;justify-content:space-between;align-items:center;font-size:15px}
+.summary-squad-strip{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.summary-chip{font:11px monospace;padding:5px 8px;border-radius:6px;border:2px solid #bda878;background:#fff9e9}
+.summary-chip.tier-bronze{border-color:var(--bronze-b)}
+.summary-chip.tier-silver{border-color:var(--silver-b)}
+.summary-chip.tier-gold{border-color:var(--gold-b)}
+.summary-chip.tier-platinum{border-color:var(--plat-b)}
+.summary-chip.active{box-shadow:0 0 0 2px #f3d36a}
+
+.cal-scroll{max-height:640px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;background:#fff9e9;position:relative}
+.cal-grid{position:relative;height:1440px}
+.cal-hour{position:absolute;left:0;right:0;height:60px;border-top:1px dashed #d8cba0;font:11px monospace;color:#7d7360;padding:2px 0 0 6px;box-sizing:border-box}
+.cal-reminder{position:absolute;left:80px;right:10px;min-height:22px;z-index:4;background:#f7d2cc;border-left:5px solid var(--red);padding:3px 7px;border-radius:4px;font:12px monospace;color:#7c2119;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.cal-reminder.done{text-decoration:line-through;opacity:.55}
+.cal-now{position:absolute;left:60px;right:0;height:2px;background:var(--red);z-index:6}
+.cal-now::before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--red)}
+.cal-block{position:absolute;left:66px;right:8px;border-radius:6px;padding:4px 8px;font-size:12px;overflow:hidden;border-left:5px solid;background:#fffef8;box-shadow:0 1px 3px #0002;z-index:2;transition:height .5s linear,top .5s linear}
+.cal-block.tier-red{border-color:var(--red);background:#fbe8e3}
+.cal-block.tier-yellow{border-color:var(--yellow);background:#fbf1dc}
+.cal-block.tier-blue{border-color:var(--blue);background:#e3edf3}
+.cal-block.active{box-shadow:0 0 0 2px var(--gold),0 2px 8px #0004;z-index:3}
+.cal-block.done{opacity:.55}
+.cal-block.done .cal-block-title{text-decoration:line-through}
+.cal-block-title{font-weight:bold}
+.cal-block-time{font:10px monospace;color:#6c6252}
+.cal-live{font:11px monospace;font-weight:bold;color:var(--red)}
+.cal-goal{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:3px;font:10px monospace}
+.cal-goal input{width:52px;padding:2px!important}
+.cal-empty{padding:16px;color:#687064;font-style:italic}
+.roster-strip{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.cal-seg-purple{position:absolute;left:0;right:0;top:0;background:#7a4fb0;opacity:.35;z-index:1}
+.cal-seg-green{position:absolute;left:0;right:0;background:var(--green);opacity:.35;z-index:1}
+
+.match-live-card{background:#0e2b1a;border-radius:16px;padding:16px;max-width:460px;width:100%;box-shadow:0 20px 60px #0008;color:#f3ead2;animation:modalPop .28s cubic-bezier(.22,1,.36,1)}
+.match-scoreboard{display:flex;align-items:center;justify-content:center;gap:10px;font-family:Georgia,serif;font-weight:bold;margin-bottom:10px;flex-wrap:wrap}
+.match-scoreboard .mclock{background:#000;color:#fff;padding:4px 8px;border-radius:6px;font:12px monospace}
+.match-scoreboard .mscore{font-size:20px;background:#fff;color:#111;padding:2px 10px;border-radius:6px}
+.pitch{position:relative;width:100%;aspect-ratio:16/10;background:repeating-linear-gradient(90deg,#2f8f4e,#2f8f4e 8%,#37a05a 8%,#37a05a 16%);border:3px solid #eee;border-radius:8px;overflow:hidden}
+.pitch.is-highlight{box-shadow:0 0 0 3px #f4d35e,0 0 24px #f4d35e88;filter:saturate(1.12)}
+.pitch-highlight{position:absolute;z-index:5;left:50%;top:8px;transform:translateX(-50%) translateY(-5px);padding:6px 12px;border-radius:20px;background:#101a17eF;border:1px solid #f4d35e;color:#ffe58a;font:700 11px monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none}
+.pitch.is-highlight .pitch-highlight{opacity:1;transform:translateX(-50%) translateY(0);animation:highlightPulse .85s ease-in-out infinite alternate}
+@keyframes highlightPulse{from{box-shadow:0 0 0 0 #f4d35e22}to{box-shadow:0 0 0 5px #f4d35e33}}
+.pitch-dot.ball{z-index:4}
+
+.pitch-markings{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.pitch-dot{z-index:2}
+.match-hud{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0}
+.match-hud-stat{background:#ffffff12;border:1px solid #ffffff30;border-radius:8px;padding:8px;text-align:center;font:11px monospace}
+.match-hud-stat b{display:block;font: bold 17px Georgia,serif;margin-top:3px}
+.momentum-wrap{margin:9px 0 12px;font:11px monospace}
+.momentum-track{height:11px;border-radius:20px;background:linear-gradient(90deg,#b84b3d 0 50%,#d9d5c5 50% 50.5%,#377aa4 50.5% 100%);position:relative;overflow:hidden;border:1px solid #ffffff66}
+.momentum-marker{position:absolute;top:-3px;width:4px;height:15px;background:#fff;border:1px solid #17251b;transform:translateX(-50%);border-radius:3px}
+.app-toast{position:fixed;right:16px;bottom:16px;z-index:300;background:#26382c;color:#f3ead2;border:1px solid #c99d20;border-radius:9px;padding:11px 14px;max-width:min(360px,calc(100vw - 32px));box-shadow:0 8px 28px #0005;font:14px Georgia,serif}
+.app-toast b{display:block;margin-bottom:3px}
+@media(max-width:620px){.match-hud{grid-template-columns:repeat(3,minmax(0,1fr))}.match-hud-stat{padding:6px 3px}.match-hud-stat b{font-size:15px}}
+.pitch-dot{position:absolute;width:16px;height:16px;border-radius:50%;transform:translate(-50%,-50%);font:8px monospace;color:#fff;display:flex;align-items:center;justify-content:center;will-change:left,top;transition:left 1.15s cubic-bezier(.22,.72,.25,1),top 1.15s cubic-bezier(.22,.72,.25,1)}
+.pitch-dot.home{background:var(--blue);box-shadow:0 0 0 2px #fff}
+.pitch-dot.away{background:var(--red);box-shadow:0 0 0 2px #fff}
+.pitch-dot.ball{width:9px;height:9px;background:#fff;box-shadow:0 0 0 1px #1d2b20,0 0 7px #000;z-index:4;transition:none}
+.pitch-dot.ball::after{content:'';position:absolute;inset:-4px;border:1px solid rgba(255,255,255,.55);border-radius:50%;animation:ballPulse 1.1s ease-out infinite}
+@keyframes ballPulse{0%{transform:scale(.65);opacity:.75}100%{transform:scale(1.5);opacity:0}}
+.match-ticker{margin-top:10px;background:#00000055;border-radius:8px;padding:8px 10px;font-size:13px;max-height:130px;overflow-y:auto}
+.match-ticker div{padding:2px 0;opacity:.65}
+.match-ticker div.hl{opacity:1;font-weight:bold;color:var(--gold-bright,#e0be4a)}
+.mentality-bar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px}
+.mentality-bar .btn{font-size:11px;padding:6px 8px}
+.standings-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.standings-table th,.standings-table td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--line)}
+.standings-table th{background:#e6d8b4;font-family:Georgia,serif}
+.standings-table td:nth-child(2){text-align:left}
+.standings-table tr.me{background:#fff3c9;font-weight:bold}
+
+.splash-screen{position:fixed;inset:0;background:#f8e6c2;display:flex;align-items:center;justify-content:center;z-index:200;opacity:1;transition:opacity .6s ease}
+.splash-screen.hide{opacity:0;pointer-events:none}
+
+@media(max-width:620px){
+  .book{padding:18px}
+  .grid{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr}
+  .statControls{grid-template-columns:repeat(2,1fr)}
+  body{padding:10px 6px 40px;font-size:15px}
+  h1{font-size:22px}
+  .btn,.tabs button{padding:11px 14px;font-size:14px}
+  .task,.habit{gap:6px}
+  .task .name,.habit .name{min-width:100%;order:-1;margin-bottom:2px}
+  .form input,.form select{min-width:0;flex:1 1 45%}
+  .modal-card-lg{padding:16px}
+  .match-scoreboard{font-size:13px}
+  .squad{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+}
+</style>
+</head>
+<body>
+<div id="splashScreen" class="splash-screen"><div id="splashLogoSlot"></div></div>
+<main class="book">
+  <div id="brandRow" style="display:flex;align-items:center;gap:8px">
+    <span id="headerLogo" style="font-family:Georgia,'Times New Roman',serif;font-weight:700;color:#1f4a34;letter-spacing:1px;font-size:22px;background:#f8e6c2;border-radius:6px;padding:2px 8px;border:1px solid var(--line)">FFM</span>
+    <h1 style="margin:0">Football Focus Manager</h1>
+  </div>
+  <div id="welcomeRow">
+    <p class="subtitle" id="welcomeLine" style="margin:0"></p>
+    <button class="btn small hidden" id="renameClubBtn">✏️ Rename</button>
+  </div>
+
+  <div id="accountBar"></div>
+
+  <div id="appBody">
+    <div class="top-xp">
+      <b id="topLevel">Manager Level 1</b>
+      <span id="topXp">0 / 100 XP</span>
+      <div class="xp"><i id="topXpFill"></i></div>
+    </div>
+
+    <nav class="tabs">
+      <button class="active" data-tab="summary">Summary</button>
+      <button data-tab="tasks">Tasks</button>
+      <button data-tab="calendar">Calendar</button>
+      <button data-tab="habits">Habits</button>
+      <button data-tab="statistics">Statistics</button>
+      <button data-tab="squad">Squad</button>
+      <button data-tab="matches">Weekly Matches</button>
+    </nav>
+
+    <section id="summary" class="tab">
+      <h2>Summary</h2>
+      <p class="hint"><b>What:</b> Your daily dashboard. <b>Includes:</b> Habits, tasks, reminders, and squad at a glance. <b>Rewards:</b> None here — jump into a tab to earn XP.</p>
+      <div class="summary-head">
+        <div><b id="summaryTeamName"></b><div class="hint" id="summaryRecord" style="margin:0"></div></div>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-col">
+          <h3>Habits <button class="btn small" data-tab="habits">Open</button></h3>
+          <div id="summaryHabits"></div>
+        </div>
+        <div class="summary-col">
+          <h3>Tasks <button class="btn small" data-tab="tasks">Open</button></h3>
+          <div id="summaryTasks"></div>
+        </div>
+      </div>
+      <div class="summary-col" style="margin-top:16px">
+        <h3>Reminders <button class="btn small" data-tab="tasks">Open</button></h3>
+        <div id="summaryReminders"></div>
+      </div>
+      <div class="summary-col" style="margin-top:16px">
+        <h3>Squad <button class="btn small" data-tab="squad">Open</button></h3>
+        <div class="summary-squad-strip" id="summarySquad"></div>
+      </div>
+    </section>
+
+    <section id="tasks" class="tab hidden">
+      <h2>Tasks / Reminders</h2>
+      <p class="hint"><b>Tasks:</b> Custom sections, live timers and calendar sync. <b>Reminders:</b> Name, date and time, with an automatic red alert within 48 hours. <b>Rewards:</b> Section XP and +10 XP for every 5 reminders checked off.</p>
+      <p><label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="notifToggle" class="check"> <b>🔔 Notifications</b></label> <span class="hint" id="notifStatus" style="margin:0"></span></p>
+      <form id="taskForm" class="form">
+        <input name="name" type="text" placeholder="What needs doing?" required>
+        <select name="priority" id="taskSectionSelect"></select>
+        <input name="time" type="time" title="Time of day — repeats daily" class="task-time-input">
+        <input name="duration" type="number" min="1" placeholder="Minutes">
+        <button class="btn gold">Add task</button>
+      </form>
+      <div class="section-tools">
+        <b>Manage sections</b>
+        <form id="sectionForm" class="section-tools" style="margin:0">
+          <input name="name" type="text" placeholder="Section name" required maxlength="32">
+          <select name="color" aria-label="Section colour"><option value="red">Red theme</option><option value="yellow">Yellow theme</option><option value="blue">Blue theme</option></select>
+          <select name="xp" aria-label="XP reward"><option value="60">60 XP</option><option value="40" selected>40 XP</option><option value="20">20 XP</option></select>
+          <button class="btn small">Create section</button>
+        </form>
+      </div>
+      <div id="taskLists"></div>
+      <h3 style="margin-top:22px">Reminders</h3>
+      <form id="reminderForm" class="form">
+        <input name="name" type="text" placeholder="Reminder name" required>
+        <input name="date" type="date" required>
+        <input name="time" type="time" required>
+        <button class="btn gold">Add reminder</button>
+      </form>
+      <div id="reminderList"></div>
+    </section>
+
+    <section id="calendar" class="tab hidden">
+      <h2>Calendar</h2>
+      <p class="hint"><b>What:</b> Live timeline of today's tasks. <b>Includes:</b> Real-time blocks; late starts show <span style="color:#7a4fb0;font-weight:bold">purple</span>, early starts &amp; extensions show <span style="color:var(--green);font-weight:bold">green</span>. <b>Rewards:</b> None — visual only.</p>
+      <div class="cal-scroll"><div class="cal-grid" id="calGrid"></div></div>
+    </section>
+
+    <section id="habits" class="tab hidden">
+      <h2>Daily Habits</h2>
+      <p class="hint"><b>What:</b> Recurring daily goals. <b>Includes:</b> Tick, numeric-goal, or Yes/No tracking. <b>Rewards:</b> +10 XP done · −10 XP if missed at daily reset.</p>
+      <form id="habitForm" class="form">
+        <input name="name" type="text" placeholder="New habit name…" required>
+        <select name="entryType" id="habitEntryType">
+          <option value="number">Number</option>
+          <option value="clarification">Clarification (Yes / No)</option>
+        </select>
+        <select name="goalType" id="habitGoalType">
+          <option value="none">No goal (tick)</option>
+          <option value="min">At least</option>
+          <option value="max">At most</option>
+          <option value="equal">Equal to</option>
+        </select>
+        <input name="target" type="number" min="0" placeholder="Number" id="habitTarget">
+        <input name="unit" type="text" placeholder="Unit">
+        <button class="btn gold">Add</button>
+      </form>
+      <div class="grid">
+        <div class="panel"><h3>To complete</h3><div id="habitOpen"></div></div>
+        <div class="panel"><h3>Finished</h3><div id="habitDone"></div></div>
+      </div>
+    </section>
+
+    <section id="statistics" class="tab hidden">
+      <h2>Statistics</h2>
+      <p class="hint"><b>What:</b> Your habit history. <b>Includes:</b> Today's log plus 7-day trend charts. <b>Rewards:</b> None — tracking only.</p>
+      <div class="panel"><h3 id="statsDate"></h3><div id="statsToday"></div></div>
+      <div class="panel" style="margin-top:16px"><h3>Last 7 days</h3><div id="statsHistory"></div></div>
+    </section>
+
+    <section id="squad" class="tab hidden">
+      <h2>Your Squad</h2>
+      <p class="hint"><b>What:</b> Your 11-player squad. <b>Includes:</b> 1 GK · 2 RB · 3-4 CB · 5 LB · 6-8 CM · 9 RW · 10 LW · 11 ST. <b>Rewards:</b> 2 upgrade points per level, spend on any player.</p>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+          <div><b id="managerLevel">Manager Level 1</b><div class="hint" id="xpText" style="margin:0">0 / 100 XP</div></div>
+          <div class="score" id="teamOverall">Team OVR 0</div>
+        </div>
+        <div class="xp"><i id="xpFill"></i></div>
+      </div>
+      <p class="hint" id="playerInstruction"></p>
+      <div id="statPanel" class="panel"></div>
+      <h3 style="margin-top:20px">Starting XI</h3>
+      <div class="squad" id="squadList"></div>
+    </section>
+
+    <section id="matches" class="tab hidden">
+      <h2>Weekly Matches</h2>
+      <p class="hint"><b>What:</b> Your CPU league season. <b>Includes:</b> Pre-match lineups &amp; tactics, live 90-min-in-3-min matches, tiered opponents (65-100 OVR bands), automatic standings. <b>Rewards:</b> League points, W/D/L record, top-scorer tracking. <b>Unlocks</b> once today's habits &amp; tasks are done.</p>
+      <div id="seasonRecap"></div>
+      <div class="season-status" id="seasonStatus"></div>
+      <button id="weekBtn" class="btn gold">Play today's match</button>
+      <div id="matchReport"></div>
+      <div id="standingsWrap"></div>
+    </section>
+  </div>
+
+  <div id="upgradeModalRoot"></div>
+</main>
+
+<!-- Firebase (activates once firebaseConfig below has your own project's keys) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const KEY='focus-manager-v7';
+const positions=['GK','RB','CB','CB','LB','CM','CM','CM','RW','LW','ST']; // 1..11, back to front
+const OUTFIELD_STATS=['PAC','SHO','PAS','DRI','DEF','PHY'];
+const GK_STATS=['DIV','HAN','KIC','REF','SPD','POS'];
+function statKeysFor(pos){ return pos==='GK'?GK_STATS:OUTFIELD_STATS; }
+const REWARDS={red:60,yellow:40,blue:20};
+const DEFAULT_TASK_SECTIONS=[{id:'red',name:'Red — Urgent & Important',color:'red',xp:60},{id:'yellow',name:'Yellow — Important',color:'yellow',xp:40},{id:'blue',name:'Blue — Neither',color:'blue',xp:20}];
+
+/* EA-style position weightings (sum to 1 per position) */
+const WEIGHTS={
+  ST:{SHO:.30,PAC:.25,DRI:.20,PAS:.10,PHY:.10,DEF:.05},
+  RW:{PAC:.30,DRI:.25,PAS:.20,SHO:.10,PHY:.10,DEF:.05},
+  LW:{PAC:.30,DRI:.25,PAS:.20,SHO:.10,PHY:.10,DEF:.05},
+  CM:{PAS:.35,DRI:.20,PAC:.15,PHY:.15,DEF:.10,SHO:.05},
+  LB:{PAC:.30,DEF:.25,PHY:.15,PAS:.15,DRI:.10,SHO:.05},
+  RB:{PAC:.30,DEF:.25,PHY:.15,PAS:.15,DRI:.10,SHO:.05},
+  CB:{DEF:.35,PHY:.25,PAC:.20,PAS:.10,DRI:.05,SHO:.05},
+  GK:{REF:.30,DIV:.20,POS:.20,HAN:.15,KIC:.10,SPD:.05}
+};
+const KEY_STATS_LABEL={
+  ST:'SHO, PAC, DRI', RW:'PAC, DRI, PAS', LW:'PAC, DRI, PAS',
+  CM:'PAS, DEF, PHY', LB:'PAC, DEF, PHY/PAS', RB:'PAC, DEF, PHY/PAS',
+  CB:'DEF, PHY, PAC', GK:'REF, DIV/POS, HAN'
+};
+
+/* =========================================================================
+   FIREBASE CONFIG — Focus Football Manager project. */
+const firebaseConfig = {
+  apiKey: "AIzaSyBacv7swmmf-YVRNuqY9WmutvykMlMOamI",
+  authDomain: "focus-football-manager-635c1.firebaseapp.com",
+  projectId: "focus-football-manager-635c1",
+  storageBucket: "focus-football-manager-635c1.firebasestorage.app",
+  messagingSenderId: "974080048484",
+  appId: "1:974080048484:web:b46529290f3701b5254e71",
+  measurementId: "G-T6JBFSMCPC"
+};
+function fbConfigured(){ return firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('YOUR_'); }
+let fbApp=null, auth=null, db=null, currentUser=null, pendingCloudState=null, syncChoiceOpen=false, cloudSyncTimer=null, authError='';
+function initFirebase(){
+  if(!fbConfigured()) return false;
+  if(fbApp) return true;
+  if(typeof firebase==='undefined') return false;
+  try{
+    fbApp=firebase.initializeApp(firebaseConfig);
+    auth=firebase.auth();
+    db=firebase.firestore();
+    auth.onAuthStateChanged(handleAuthChange);
+    auth.getRedirectResult().catch(e=>showAuthError(e)); // catches errors from a completed redirect sign-in
+    return true;
+  }catch(e){ console.error('Firebase init failed', e); return false; }
+}
+function showAuthError(err){
+  console.error('Sign-in error', err);
+  const code=err&&err.code||'';
+  if(code==='auth/unauthorized-domain') authError="This site's domain isn't authorized in Firebase yet — add it under Authentication → Settings → Authorized domains in the Firebase console.";
+  else if(code==='auth/popup-blocked') authError='Your browser blocked the sign-in popup. Allow popups for this site and try again.';
+  else if(code==='auth/popup-closed-by-user'||code==='auth/cancelled-popup-request') authError=''; // user just closed it, not a real error
+  else if(code==='auth/operation-not-supported-in-this-environment'||code==='auth/web-storage-unsupported') authError="Google sign-in isn't supported inside this embedded preview. Open the hosted page directly in a normal browser tab instead.";
+  else authError=(err&&err.message)||'Sign-in failed. Please try again.';
+  renderModalRoot();
+}
+async function signInWithGoogle(){
+  if(!initFirebase()){ authError="Cloud sync isn't configured — add your Firebase keys to firebaseConfig in the code."; renderModalRoot(); return; }
+  authError='';
+  const provider=new firebase.auth.GoogleAuthProvider();
+  try{
+    await auth.signInWithPopup(provider);
+  }catch(err){
+    // Popups are blocked in a lot of embedded/preview contexts — fall back to a full-page redirect.
+    if(err && (err.code==='auth/popup-blocked'||err.code==='auth/operation-not-supported-in-this-environment'||err.code==='auth/cancelled-popup-request')){
+      try{ await auth.signInWithRedirect(provider); }catch(err2){ showAuthError(err2); }
+    } else {
+      showAuthError(err);
+    }
+  }
+}
+let unsubscribeCloud=null;
+let authResolving=false;
+function startCloudListener(){
+  if(!db||!currentUser||unsubscribeCloud) return;
+  unsubscribeCloud=db.collection('users').doc(currentUser.uid).onSnapshot(snap=>{
+    if(!snap.exists) return;
+    const remote=snap.data();
+    // Only apply if the cloud copy is strictly newer than what we already
+    // have — this is what makes the club created on first sign-in the
+    // master profile: every other device just adopts whatever has the
+    // latest timestamp, instead of fighting over which write "wins".
+    if(remote.updatedAt && remote.updatedAt>(state.updatedAt||0)){
+      state=Object.assign(defaults(), remote);
+      saveLocal(false);
+      render();
+    }
+  }, e=>console.error('Cloud listener error', e));
+}
+function stopCloudListener(){ if(unsubscribeCloud){ unsubscribeCloud(); unsubscribeCloud=null; } }
+function signOutGoogle(){ stopCloudListener(); if(auth) auth.signOut(); }
+async function handleAuthChange(user){
+  currentUser=user;
+  if(user && db){
+    // Block on the cloud check before ever rendering the club-name gate —
+    // this is what fixes "still asks for club name" on a second device:
+    // without this, render() ran once with no known cloud profile yet and
+    // jumped straight to the name prompt before the check finished.
+    authResolving=true;
+    render();
+    try{
+      const ref=db.collection('users').doc(user.uid);
+      // Hard timeout: a stalled/blocked network request must never leave
+      // the app stuck on "checking your cloud profile" forever — fall back
+      // to local-only mode instead if the cloud can't be reached in time.
+      const snap=await Promise.race([
+        ref.get(),
+        new Promise((_,reject)=>setTimeout(()=>reject(new Error('cloud-timeout')), 8000))
+      ]);
+      authResolving=false;
+      if(snap.exists){ pendingCloudState=snap.data(); syncChoiceOpen=true; render(); }
+      else{ ref.set(state).catch(e=>console.error('Initial cloud push failed', e)); startCloudListener(); render(); }
+    }catch(e){
+      console.error('Cloud check failed or timed out — continuing in local mode', e);
+      authResolving=false;
+      render();
+    }
+  } else {
+    authResolving=false;
+    stopCloudListener();
+    render();
+  }
+}
+function pushToCloud(){
+  if(!currentUser||!db) return;
+  db.collection('users').doc(currentUser.uid).set(state).catch(e=>console.error('Cloud push failed', e));
+}
+function queueCloudSync(){ if(!currentUser) return; clearTimeout(cloudSyncTimer); cloudSyncTimer=setTimeout(pushToCloud, 1500); }
+window.addEventListener('beforeunload', ()=>{ if(currentUser) pushToCloud(); });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && currentUser) pushToCloud(); });
+function renderAuthUI(){
+  const el=document.getElementById('accountBar'); if(!el) return;
+  if(!fbConfigured()){ el.innerHTML=`<span class="hint" style="margin:0">☁️ Cloud sync not configured.</span>`; return; }
+  if(currentUser){
+    const pic=currentUser.photoURL ? `<img src="${currentUser.photoURL}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle" onerror="this.remove()">` : '';
+    el.innerHTML=`${pic} <span>Signed in as <b>${esc(currentUser.displayName||currentUser.email||'Manager')}</b></span> <button class="btn small" id="signOutBtn">Sign out</button> <span class="hint" style="margin:0">${db&&unsubscribeCloud?'☁️ synced live':''}</span>`;
+  }
+  else{ el.innerHTML=`<button class="btn small gold" id="signInBtn">Sign in with Google</button> <span class="hint" style="margin:0">to sync across devices</span>`; }
+}
+
+/* ---------------- local persistence ----------------
+   Note: localStorage doesn't persist inside Claude.ai's sandboxed preview —
+   it works normally once hosted or opened in a real browser. */
+function saveLocal(bump){
+  if(bump!==false) state.updatedAt=Date.now();
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){ console.warn('localStorage unavailable', e); }
+}
+function loadLocal(){ try{ const raw=localStorage.getItem(KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
+function save(){ saveLocal(); queueCloudSync(); }
+
+/* ---------------- generators ---------------- */
+function id(){ return Date.now()+Math.random().toString(16).slice(2); }
+const FIRST=['Marcus','Leo','Kian','Theo','Jamal','Noah','Ezra','Finn','Malik','Rio','Andre','Diego','Kofi','Mateo','Yusuf','Owen','Bruno','Sami','Hugo','Enzo'];
+const LAST=['Bell','Osei','Farrow','Nakamura','Silva','Novak','Ashby','Reyes','Dubois','Hartley','Vance','Okafor','Lindqvist','Moreno','Steiner','Achebe','Larsen','Petrov','Marsh','Colon'];
+function genPlayerName(){ return FIRST[Math.floor(Math.random()*FIRST.length)]+' '+LAST[Math.floor(Math.random()*LAST.length)]; }
+const COUNTRIES=[{c:'🇧🇷',n:'Brazil'},{c:'🇫🇷',n:'France'},{c:'🇩🇪',n:'Germany'},{c:'🏴',n:'England'},{c:'🇪🇸',n:'Spain'},{c:'🇮🇹',n:'Italy'},{c:'🇳🇬',n:'Nigeria'},{c:'🇦🇷',n:'Argentina'},{c:'🇵🇹',n:'Portugal'},{c:'🇯🇵',n:'Japan'},{c:'🇸🇪',n:'Sweden'},{c:'🇳🇱',n:'Netherlands'},{c:'🇲🇦',n:'Morocco'},{c:'🇰🇷',n:'South Korea'},{c:'🇭🇷',n:'Croatia'},{c:'🇨🇴',n:'Colombia'},{c:'🇬🇭',n:'Ghana'},{c:'🇺🇸',n:'USA'},{c:'🇧🇪',n:'Belgium'},{c:'🇸🇳',n:'Senegal'}];
+function pickCountry(){ return COUNTRIES[Math.floor(Math.random()*COUNTRIES.length)]; }
+function avatarUrl(seed){ return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`; }
+function crestUrl(seed){ return `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(seed)}`; }
+const CPU_PREFIX=['Ironbridge','Vale','Northgate','Castleview','Harrow','Fenwick','Blackmoor','Riverside','Kingsley','Ashford','Thornwood','Millbrook','Greystone','Hollowfield','Eastwick','Sutton','Rosewood','Draycott','Halden','Marlowe'];
+const CPU_SUFFIX=['United','Rovers','Athletic','City','Town','Wanderers','Albion','Rangers'];
+const CPU_POSITIONS=['GK','CB','CB','LB','RB','CM','CM','CAM','RW','LW','ST'];
+function genCpuRoster(baseline){
+  return CPU_POSITIONS.map(pos=>{
+    const keys=statKeysFor(pos), weights=WEIGHTS[pos]||WEIGHTS.CM;
+    const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+    const stats={};
+    keys.forEach(k=>{
+      stats[k]=primary.has(k)
+        ? Math.max(61, Math.min(99, baseline + Math.floor(Math.random()*11)-5)) // primary stats: strictly above 60
+        : Math.max(26, Math.min(90, baseline-25+Math.floor(Math.random()*30)-15)); // secondary stats: still above 25, but free to sit well below 60
+    });
+    const rep=Math.floor(Math.random()*4);
+    const player={pos, name:genPlayerName(), stats, rep};
+    return {...player, rating: rating(player, 65)};
+  });
+}
+const TIERS=[
+  {min:65,max:70,label:'Tier 1 — Bottom League', teamCount:4, matchCount:6},
+  {min:70,max:75,label:'Tier 2', teamCount:5, matchCount:8},
+  {min:75,max:80,label:'Tier 3', teamCount:6, matchCount:10},
+  {min:80,max:85,label:'Tier 4', teamCount:7, matchCount:12},
+  {min:85,max:90,label:'Tier 5', teamCount:8, matchCount:14},
+  {min:90,max:95,label:'Tier 6', teamCount:9, matchCount:16},
+  {min:95,max:101,label:'Top Tier', teamCount:10, matchCount:18}
+];
+function tierIndexForRating(r){
+  for(let i=0;i<TIERS.length;i++){ if(r>=TIERS[i].min && r<TIERS[i].max) return i; }
+  return r<TIERS[0].min ? 0 : TIERS.length-1;
+}
+function genCpuTeams(){
+  // Each tier gets its own properly-sized division, scaling up in both
+  // rating band AND number of teams/matches from Tier 1 to the Top Tier.
+  const teams=[], used=new Set();
+  TIERS.forEach((tier, tIdx)=>{
+    for(let i=0;i<tier.teamCount;i++){
+      let name;
+      do{ name=CPU_PREFIX[Math.floor(Math.random()*CPU_PREFIX.length)]+' '+CPU_SUFFIX[Math.floor(Math.random()*CPU_SUFFIX.length)]; }while(used.has(name));
+      used.add(name);
+      const baseline=tier.min+Math.floor(Math.random()*(tier.max-tier.min));
+      const roster=genCpuRoster(baseline);
+      const teamRating=Math.max(tier.min, Math.min(tier.max-1, Math.round(roster.reduce((s,p)=>s+p.rating,0)/roster.length)));
+      teams.push({id:id(), name, rating:teamRating, crestSeed:name, roster, tier:tIdx, wins:0, draws:0, losses:0, gf:0, ga:0, pts:0});
+    }
+  });
+  return teams;
+}
+function tierOf(rating){
+  if(rating>=90) return {key:'platinum', label:'Platinum'};
+  if(rating>=80) return {key:'gold', label:'Gold'};
+  if(rating>=70) return {key:'silver', label:'Silver'};
+  return {key:'bronze', label:'Bronze'};
+}
+function newPlayer(pos,i){
+  const keys=statKeysFor(pos), weights=WEIGHTS[pos]||WEIGHTS.CM;
+  const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+  const stats={};
+  keys.forEach(k=>{
+    stats[k]=primary.has(k)
+      ? 61+Math.floor(Math.random()*15) // primary attributes: 61-75, above 60 but not maxed out
+      : 26+Math.floor(Math.random()*34); // secondary attributes: randomized, above 25 but still below 60
+  });
+  return {id:i, pos, name:genPlayerName(), country:pickCountry(), avatarSeed:'p'+i+'-'+id(),
+    rep:Math.floor(Math.random()*4), stats};
+}
+function newTask(name, priority, time, durationMin, targetGoal, goalUnit){
+  return {id:id(), name, priority, time, durationMin,
+    targetGoal, goalUnit:goalUnit||'', loggedValue:0,
+    done:false, startedAt:null, firstStartedAt:null, elapsedMs:0, extendedFromMin:null,
+    notified:{half:false,five:false,done:false,upcoming:false}, awaitingConfirm:false, awaitingExtend:false};
+}
+function newReminder(name, date, time){
+  return {id:id(), name, date, time, done:false};
+}
+
+/* ---------------- state ---------------- */
+const defaults=()=>({
+  teamName:null, skippedSignIn:false, updatedAt:0,
+  tasks:[], taskSections:DEFAULT_TASK_SECTIONS.map(x=>({...x})), habits:[], history:{}, reminders:[], reminderCheckCount:0, lastResetDate:null, dailyResetSummary:null,
+  notificationsEnabled:false,
+  xp:0, points:0,
+  players:positions.map((pos,i)=>newPlayer(pos,i)),
+  selected:0, ngp:0, lastUpgrade:'',
+  cpuTeams:genCpuTeams(),
+  season:{number:1, gamesPlayed:0, wins:0, draws:0, losses:0, goalsFor:0, goalsAgainst:0, scorers:{}, lastPlayDate:null, todayOpponent:null},
+  matches:[]
+});
+let state=defaults();
+let confirmQueue=[];
+let reminderAlertSig='';
+let pendingDelete=null;
+let incompleteChoiceFor=null;
+let moveLaterFor=null;
+let upgradeModalOpen=false;
+let renamingClub=false;
+let audioCtx=null;
+let swRegistration=null;
+const $=s=>document.querySelector(s);
+
+/* ---------------- EA-style rating ---------------- */
+function rating(p, floor){
+  if(floor===undefined) floor=60; // user's own starter cards baseline at 60
+  const w=WEIGHTS[p.pos]||WEIGHTS.CM, keys=statKeysFor(p.pos);
+  let sum=0;
+  keys.forEach(k=>{ sum += (p.stats[k]||0) * (w[k]||0); });
+  return Math.max(floor, Math.min(99, Math.round(sum + (p.rep||0))));
+}
+function ovr(){ return Math.round(state.players.reduce((s,p)=>s+rating(p),0)/11); }
+function levelInfo(x=state.xp){ let level=1,need=10,into=x; while(into>=need){ into-=need; level++; need+=10; } return {level,need,into}; }
+function level(){ return levelInfo().level; }
+function esc(v){ const d=document.createElement('div'); d.textContent=v==null?'':String(v); return d.innerHTML; }
+function escAttr(v){ return esc(v).replace(/\\/g,'&#92;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;').replace(/`/g,'&#96;'); }
+function taskSection(id){ return (state.taskSections||[]).find(x=>x.id===id) || (state.taskSections||[])[0] || DEFAULT_TASK_SECTIONS[0]; }
+function taskReward(priority){ const section=taskSection(priority); return Number(section?.xp)||REWARDS[section?.color]||20; }
+function taskColor(priority){ return taskSection(priority)?.color || 'blue'; }
+function logoSVG(size){
+  size=size||48;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="50" cy="50" r="46" fill="#f3ead2" stroke="#26382c" stroke-width="4"/>
+    <circle cx="50" cy="50" r="34" fill="#ffffff" stroke="#26382c" stroke-width="3"/>
+    <polygon points="50,28 61,36 57,49 43,49 39,36" fill="#26382c"/>
+    <polygon points="50,28 39,36 32,27 41,18 59,18 68,27 61,36" fill="none" stroke="#26382c" stroke-width="2.2"/>
+    <polygon points="43,49 34,58 24,54 27,40 39,36" fill="none" stroke="#26382c" stroke-width="2.2"/>
+    <polygon points="57,49 66,58 76,54 73,40 61,36" fill="none" stroke="#26382c" stroke-width="2.2"/>
+    <circle cx="76" cy="76" r="19" fill="#c99d20" stroke="#f3ead2" stroke-width="3"/>
+    <path d="M68 76 l6 6 l13 -15" fill="none" stroke="#26382c" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+/* The FFM wordmark — matches the brand logo (cream bg, deep green serif type). */
+function ffmWordmark(scale, withBg){
+  scale=scale||1;
+  const bg=withBg? `background:#f8e6c2;border-radius:${10*scale}px;padding:${18*scale}px ${10*scale}px;` : '';
+  return `<div style="text-align:center;${bg}">
+    <div style="font-family:Georgia,'Times New Roman',serif;font-weight:700;color:#1f4a34;letter-spacing:${5*scale}px;font-size:${68*scale}px;line-height:1">FFM</div>
+    <div style="font-family:Georgia,serif;letter-spacing:${4*scale}px;font-size:${13*scale}px;color:#1f4a34;text-transform:uppercase;margin-top:${8*scale}px">Football Focus Manager</div>
+    <div style="width:${140*scale}px;height:2px;background:#1f4a34;margin:${12*scale}px auto"></div>
+    <div style="font-family:Georgia,serif;letter-spacing:${2.5*scale}px;font-size:${10.5*scale}px;color:#1f4a34;text-transform:uppercase">Plan. Focus. Develop. Win.</div>
+  </div>`;
+}
+function dt(v){ return v? new Date(v).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : 'No time'; }
+function addXP(x){ const before=level(); state.xp=Math.max(0,state.xp+x); const gained=level()-before; if(gained>0) state.points+=gained*2; }
+function dayKey(offset=0){ const d=new Date(); d.setDate(d.getDate()+offset); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function processDailyReset(){
+  const today=dayKey();
+  if(!state.lastResetDate){ state.lastResetDate=today; save(); return; }
+  if(state.lastResetDate===today) return;
+  const yEntries=state.history[state.lastResetDate]||{};
+  const missed=[]; let xpLost=0;
+  state.habits.forEach(h=>{
+    const entry=yEntries[h.id];
+    if(!entry || !entry.done){ missed.push(h.name); addXP(-10); xpLost+=10; }
+  });
+  // Completed tasks and reminders stay visible (crossed off) for the rest
+  // of their completion day, then are removed at the next daily reset.
+  // Incomplete tasks remain available for the new day with a fresh timer.
+  const completedBeforeToday=item=>item.done && (item.completedDate || state.lastResetDate || today)<today;
+  state.tasks=state.tasks.filter(t=>!completedBeforeToday(t));
+  state.reminders=state.reminders.filter(r=>!completedBeforeToday(r));
+  state.tasks.forEach(t=>{
+    t.done=false; delete t.completedDate;
+    t.startedAt=null; t.firstStartedAt=null; t.elapsedMs=0; t.extendedFromMin=null;
+    t.awaitingConfirm=false; t.notified={half:false,five:false,done:false,upcoming:false};
+  });
+  state.dailyResetSummary={date:state.lastResetDate, missed, xpLost};
+  notify('Daily reset', missed.length? `${missed.length} habit(s) reset — ${xpLost} XP lost.` : 'All habits completed yesterday!');
+  state.lastResetDate=today;
+  save();
+}
+
+/* ---------------- native notifications ---------------- */
+function registerSW(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(reg=>{ swRegistration=reg; }).catch(()=>{});
+  }
+}
+function notifStatusText(){
+  if(!('Notification' in window)) return 'not supported';
+  if(!state.notificationsEnabled) return 'off';
+  if(Notification.permission==='granted') return 'on ✔';
+  if(Notification.permission==='denied') return 'blocked in browser settings';
+  return 'awaiting permission…';
+}
+function requestNotifications(){
+  if(!('Notification' in window)){ alert('Notifications are not supported in this browser.'); return; }
+  registerSW();
+  Notification.requestPermission().then(()=>render());
+}
+function notify(title, body){
+  if(!state.notificationsEnabled) return;
+  // Always show an in-app toast while the app is open.
+  let toast=document.getElementById('appToast');
+  if(!toast){ toast=document.createElement('div'); toast.id='appToast'; toast.className='app-toast'; toast.setAttribute('role','status'); document.body.appendChild(toast); }
+  toast.innerHTML=`<b>${esc(title)}</b>${esc(body)}`;
+  toast.classList.remove('hidden');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer=setTimeout(()=>toast.classList.add('hidden'),6500);
+  if(!('Notification' in window) || Notification.permission!=='granted') return;
+  try{
+    if(swRegistration && swRegistration.showNotification){ swRegistration.showNotification(title, {body, tag:'focus-manager-'+Date.now(), renotify:true}); }
+    else{ new Notification(title, {body}); }
+  }catch(e){ console.warn('Notification failed', e); }
+}
+function ensureAudioCtx(){
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+  }catch(e){}
+  return audioCtx;
+}
+function playAlarm(){
+  const ctx=ensureAudioCtx(); if(!ctx) return;
+  try{
+    let t=ctx.currentTime;
+    for(let i=0;i<3;i++){
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=880;
+      o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.3,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
+      o.start(t); o.stop(t+0.3);
+      t+=0.35;
+    }
+  }catch(e){}
+}
+
+/* ---------------- daily completion gate ---------------- */
+function dailyChecklistStatus(){
+  const today=dayKey(), entries=state.history[today]||{};
+  const totalHabits=state.habits.length;
+  const doneHabits=state.habits.filter(h=>(entries[h.id]||{}).done).length;
+  const totalTasks=state.tasks.length;
+  const doneTasks=state.tasks.filter(t=>t.done).length;
+  const habitsComplete=totalHabits===0||doneHabits===totalHabits;
+  const tasksComplete=totalTasks===0||doneTasks===totalTasks;
+  return {totalHabits,doneHabits,totalTasks,doneTasks,ready:habitsComplete&&tasksComplete};
+}
+
+/* ---------------- tasks ---------------- */
+function taskElapsedMs(t){ return (t.elapsedMs||0) + (t.startedAt ? Date.now()-t.startedAt : 0); }
+function fmtRemain(t){
+  const remainMin=Math.max(0, (t.durationMin||0)-taskElapsedMs(t)/60000);
+  const mm=Math.floor(remainMin), ss=Math.floor((remainMin-mm)*60);
+  return `${mm}:${String(ss).padStart(2,'0')}`;
+}
+function timerAreaHTML(t){
+  if(!t.durationMin || t.done){
+    return `<span class="time"><input type="time" value="${escAttr(t.time||'')}" data-time="${escAttr(t.id)}" title="Time of day — repeats daily"></span>`;
+  }
+  if(t.awaitingConfirm){
+    return `<span class="time"><input type="time" value="${escAttr(t.time||'')}" data-time="${escAttr(t.id)}" title="Time of day — repeats daily"></span><span class="time">⏰ confirm below</span>`;
+  }
+  const elapsedMin=taskElapsedMs(t)/60000;
+  const isActive = t.startedAt!=null || elapsedMin>0;
+  if(!isActive){
+    return `<span class="time"><input type="time" value="${escAttr(t.time||'')}" data-time="${escAttr(t.id)}" title="Time of day — repeats daily"></span><button class="btn small gold" data-starttimer="${t.id}">Start Timer</button>`;
+  }
+  // Active-timer control panel replaces the static time field while a
+  // session is running/paused. Capsule order: +1m, +1s, -1s, -1m, bold time,
+  // pause/resume.
+  const pauseResumeBtn = t.startedAt
+    ? `<button class="btn small" data-stoptimer="${t.id}" title="Pause">⏸</button>`
+    : `<button class="btn small gold" data-starttimer="${t.id}" title="Resume">▶</button>`;
+  return `<span class="timer-active-panel">
+    <button class="btn small" data-timeplus="${t.id}" title="Add 1 minute">+1m</button>
+    <button class="btn small" data-timeplus1s="${t.id}" title="Add 1 second">+1s</button>
+    <button class="btn small" data-timeminus1s="${t.id}" title="Subtract 1 second">−1s</button>
+    <button class="btn small" data-timeminus="${t.id}" title="Subtract 1 minute">−1m</button>
+    <b data-timerdisplay="${t.id}">${fmtRemain(t)}</b>
+    ${pauseResumeBtn}
+  </span>`;
+}
+function getSortedSections(){
+  const priority={red:0,yellow:1,blue:2};
+  return [...(state.taskSections||[])].sort((a,b)=>{
+    const pa=priority[a.color]??2, pb=priority[b.color]??2;
+    return pa-pb || String(a.name||'').localeCompare(String(b.name||''));
+  });
+}
+function renderTasks(){
+  const sections=state.taskSections||[];
+  const toggleEl=document.getElementById('notifToggle');
+  if(toggleEl) toggleEl.checked=!!state.notificationsEnabled;
+  $('#notifStatus').textContent=notifStatusText();
+  const select=$('#taskSectionSelect');
+  if(select){
+    const previous=select.value;
+    select.innerHTML=sections.map(sec=>`<option value="${escAttr(sec.id)}">${esc(sec.name)} · ${sec.xp} XP</option>`).join('');
+    if(sections.some(sec=>sec.id===previous)) select.value=previous;
+  }
+  $('#taskLists').innerHTML=getSortedSections().map(sec=>{
+    const items=state.tasks.filter(x=>(x.sectionId||x.priority)===sec.id);
+    return `<div class="tier ${escAttr(sec.color)}">
+      <h3><span>${esc(sec.name)} <span class="score">+${Number(sec.xp)||20} XP</span></span><button class="btn small danger" data-delete-section="${escAttr(sec.id)}" title="Delete section" ${sections.length<=1?'disabled':''}>Remove section</button></h3>
+      ${items.map((x,xi)=>`
+        <div class="task ${x.done?'done':''}">
+          <input class="check" type="checkbox" data-task="${escAttr(x.id)}" ${x.done?'checked':''}>
+          <span class="name">${esc(x.name)}</span>
+          ${timerAreaHTML(x)}
+          <select class="inline priority-toggle tier-${escAttr(taskColor(x.sectionId||x.priority))}" data-priority="${escAttr(x.id)}">
+            ${sections.map(option=>`<option value="${escAttr(option.id)}" ${(x.sectionId||x.priority)===option.id?'selected':''}>${esc(option.name)}</option>`).join('')}
+          </select>
+          ${(x.startedAt!=null||taskElapsedMs(x)/60000>0)&&!x.done ? '' : `<input type="number" class="duration-input" min="1" placeholder="min" value="${escAttr(x.durationMin?Math.round(x.durationMin):'')}" data-duration="${escAttr(x.id)}" title="Timer minutes">`}
+          <button class="btn small" data-taskup="${escAttr(x.id)}" ${xi===0?'disabled':''}>↑</button>
+          <button class="btn small" data-taskdown="${escAttr(x.id)}" ${xi===items.length-1?'disabled':''}>↓</button>
+          <button class="btn small danger" data-del-task="${escAttr(x.id)}">×</button>
+        </div>`).join('') || '<div class="empty">No tasks in this section.</div>'}
+    </div>`;
+  }).join('') || '<div class="empty">Create a section to organise your tasks.</div>';
+}
+function addTaskSection(name,color,xp){
+  const section={id:'section-'+id(),name:name.trim(),color:['red','yellow','blue'].includes(color)?color:'blue',xp:[20,40,60].includes(Number(xp))?Number(xp):20};
+  state.taskSections.push(section); save(); render();
+}
+function deleteTaskSection(sectionId){
+  if(state.taskSections.length<=1) return;
+  const replacement=state.taskSections.find(x=>x.id!==sectionId);
+  state.tasks.forEach(task=>{ if((task.sectionId||task.priority)===sectionId){task.sectionId=replacement.id;task.priority=replacement.id;} });
+  state.taskSections=state.taskSections.filter(x=>x.id!==sectionId); save(); render();
+}
+function moveTask(taskId,dir){
+  const list=state.tasks, t=list.find(x=>x.id===taskId); if(!t) return;
+  const sib=list.map((x,i)=>({x,i})).filter(o=>o.x.priority===t.priority);
+  const pos=sib.findIndex(o=>o.x.id===taskId), swap=pos+dir;
+  if(swap<0||swap>=sib.length) return;
+  const iA=sib[pos].i, iB=sib[swap].i;
+  [list[iA],list[iB]]=[list[iB],list[iA]];
+  save(); render();
+}
+function completeTaskFromTimer(taskId, completed){
+  const idx=state.tasks.findIndex(x=>x.id===taskId); if(idx===-1){ confirmQueue.shift(); render(); return; }
+  const t=state.tasks[idx];
+  confirmQueue.shift();
+  if(completed){
+    t.awaitingConfirm=false; t.startedAt=null; t.done=true; t.completedDate=dayKey(); addXP(taskReward(t.sectionId||t.priority));
+    notify('Task complete', `+${taskReward(t.sectionId||t.priority)} XP — "${t.name}" done!`);
+    save(); render();
+  } else {
+    incompleteChoiceFor=taskId;
+    render();
+  }
+}
+function extendTaskFiveMinutes(taskId){
+  const t=state.tasks.find(x=>x.id===taskId); if(!t) return;
+  const now=new Date();
+  if(t.extendedFromMin==null) t.extendedFromMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  t.durationMin=(t.durationMin||0)+5;
+  t.awaitingConfirm=false; t.notified.done=false;
+  incompleteChoiceFor=null;
+  notify('+5 minutes added', `"${t.name}" now has 5 more minutes.`);
+  save(); render();
+}
+function moveTaskForLater(taskId){
+  incompleteChoiceFor=null; moveLaterFor=taskId; render();
+}
+function saveMovedTime(taskId){
+  const input=document.getElementById('moveLaterInput');
+  const t=state.tasks.find(x=>x.id===taskId);
+  if(t && input && input.value){
+    t.time=input.value; t.startedAt=null; t.firstStartedAt=null; t.elapsedMs=0; t.extendedFromMin=null;
+    t.done=false; t.awaitingConfirm=false;
+    t.notified={half:false,five:false,done:false,upcoming:false};
+    notify('Task moved', `"${t.name}" rescheduled.`);
+  }
+  moveLaterFor=null;
+  save(); render();
+}
+function checkReminderNotifications(){
+  const now=Date.now();
+  let changed=false;
+  state.reminders.forEach(r=>{
+    if(r.done || !r.date || !r.time) return;
+    const due=new Date(`${r.date}T${r.time}:00`).getTime();
+    if(!Number.isFinite(due)) return;
+    if(!r.notificationState) r.notificationState={oneHour:false,due:false};
+    // The one-hour alert is issued as soon as the one-hour threshold is crossed.
+    if(!r.notificationState.oneHour && now>=due-60*60*1000 && now<due){
+      r.notificationState.oneHour=true; changed=true;
+      notify('Reminder in 1 hour', `${r.name} is due at ${r.time}.`);
+    }
+    // Due alert: one notification on/after the scheduled time, including if
+    // the app was reopened shortly after the due time.
+    if(!r.notificationState.due && now>=due){
+      r.notificationState.due=true; changed=true;
+      notify('Reminder due now', `${r.name} was due at ${r.time}.`);
+    }
+  });
+  if(changed) save();
+}
+
+function tickTimers(){
+  const previousResetDate=state.lastResetDate;
+  processDailyReset();
+  if(previousResetDate!==state.lastResetDate) render();
+  checkReminderNotifications();
+  let changed=false, anyRunning=false;
+  state.tasks.forEach(t=>{
+    if(t.done) return;
+    if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
+    // upcoming-start reminder, independent of the manual timer
+    if(t.time && !t.notified.upcoming){
+      const parts=t.time.split(':');
+      const hh=Number(parts[0]), mm=Number(parts[1]);
+      if(!isNaN(hh) && !isNaN(mm)){
+        const now=new Date();
+        const startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate(),hh,mm,0,0);
+        const minsUntil=(startToday-now)/60000;
+        if(minsUntil<=5 && minsUntil>0){ t.notified.upcoming=true; changed=true; notify('Starting soon', `"${t.name}" starts in about 5 minutes.`); }
+      }
+    }
+    if(!t.durationMin || t.awaitingConfirm || !t.startedAt) return;
+    anyRunning=true;
+    const elapsedMin=taskElapsedMs(t)/60000;
+    if(!t.notified.half && elapsedMin/t.durationMin>=0.5){ t.notified.half=true; notify('Halfway there', `"${t.name}" is 50% through its timer.`); changed=true; }
+    const remaining=t.durationMin-elapsedMin;
+    if(!t.notified.five && remaining<=5 && remaining>0){ t.notified.five=true; notify('5 minutes left', `"${t.name}" is almost up.`); changed=true; }
+    if(!t.notified.done && remaining<=0){
+      t.notified.done=true; t.awaitingConfirm=true; changed=true;
+      playAlarm(); notify("Time's up!", `"${t.name}" — open the app to confirm.`);
+      confirmQueue.push(t.id);
+    }
+  });
+  if(changed){
+    save(); renderTasks(); renderSummary(); renderModalRoot();
+  } else if(anyRunning){
+    // Real flicker fix: never rebuild the whole task list just for a tick —
+    // only touch the countdown text itself, in place.
+    document.querySelectorAll('[data-timerdisplay]').forEach(el=>{
+      const t=state.tasks.find(x=>x.id===el.dataset.timerdisplay);
+      if(t && t.startedAt) el.textContent=fmtRemain(t);
+    });
+  }
+  const alertSig=state.reminders.filter(r=>!r.done&&reminderIsDueSoon(r)).map(r=>r.id).sort().join('|');
+  if(alertSig!==reminderAlertSig){ reminderAlertSig=alertSig; renderReminders(); renderSummary(); }
+  if(calendarVisible()) renderCalendar();
+}
+setInterval(tickTimers, 1000);
+
+/* ---------------- calendar (timer-driven day view) ---------------- */
+function calendarVisible(){ const sec=document.getElementById('calendar'); return sec && !sec.classList.contains('hidden'); }
+function fmtHM(mins){
+  let h=Math.floor(mins/60)%24, m=Math.round(mins%60);
+  const ap=h>=12?'PM':'AM'; let h12=h%12; if(h12===0) h12=12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ap}`;
+}
+function taskWindow(t){
+  if(!t.time) return null;
+  const parts=t.time.split(':');
+  const hh=Number(parts[0]), mm=Number(parts[1]);
+  if(isNaN(hh)||isNaN(mm)) return null;
+  const scheduledMin=hh*60+mm;
+  let lateMin=0, earlyMin=0, timerAnchorMin=scheduledMin, blockStartMin=scheduledMin;
+  if(t.firstStartedAt){
+    const fs=new Date(t.firstStartedAt);
+    const actualMin=fs.getHours()*60+fs.getMinutes()+fs.getSeconds()/60;
+    if(actualMin>scheduledMin){
+      lateMin=actualMin-scheduledMin;
+      timerAnchorMin=scheduledMin+lateMin;
+      blockStartMin=scheduledMin;
+    } else if(actualMin<scheduledMin){
+      // Started early: the block now begins at the actual start time, and the
+      // gap up to the originally scheduled time renders as a green segment.
+      earlyMin=scheduledMin-actualMin;
+      timerAnchorMin=actualMin;
+      blockStartMin=actualMin;
+    }
+  }
+  // Fixed shape (Google-Calendar style): the block's length is the task's
+  // planned duration, anchored at the actual start time if it began early or
+  // late. It does NOT shrink as the timer counts down — only the live text
+  // inside it changes — so the current-time line just glides over a stable
+  // block instead of visually eating into it.
+  const dur=t.durationMin||30;
+  const endMin=timerAnchorMin+dur;
+  return {startMin:blockStartMin, dur:endMin-blockStartMin, endMin, lateMin, earlyMin, scheduledMin, timerAnchorMin, extendedFromMin:t.extendedFromMin};
+}
+function logTaskProgress(taskId, amount){
+  const t=state.tasks.find(x=>x.id===taskId); if(!t||t.targetGoal==null||!amount) return;
+  const wasDone=t.done;
+  t.loggedValue=Math.max(0,(t.loggedValue||0)+amount);
+  if(!wasDone && t.loggedValue>=t.targetGoal){
+    t.done=true; t.completedDate=dayKey(); addXP(taskReward(t.sectionId||t.priority));
+    notify('Goal reached!', `"${t.name}" auto-completed — +${taskReward(t.sectionId||t.priority)} XP`);
+  }
+  save(); render();
+}
+function adjustTargetGoal(taskId, delta){
+  const t=state.tasks.find(x=>x.id===taskId); if(!t||t.targetGoal==null) return;
+  t.targetGoal=Math.max(1, t.targetGoal+delta);
+  const wasDone=t.done;
+  if(!wasDone && (t.loggedValue||0)>=t.targetGoal){
+    t.done=true; t.completedDate=dayKey(); addXP(taskReward(t.sectionId||t.priority));
+    notify('Goal reached!', `"${t.name}" auto-completed — +${taskReward(t.sectionId||t.priority)} XP`);
+  }
+  save(); render();
+}
+function calBlockHTML(t, win){
+  const active=t.startedAt!=null;
+  const liveHTML=active? `<div class="cal-live">⏱ ${fmtRemain(t)} left</div>` : '';
+  let goalHTML='';
+  if(t.targetGoal!=null){
+    const logged=t.loggedValue||0, remaining=Math.max(0,t.targetGoal-logged);
+    goalHTML=`<div class="cal-goal">
+      <span>${logged}/${t.targetGoal} ${esc(t.goalUnit||'')} (${remaining} left)</span>
+      <button class="btn small" data-goalminus="${t.id}">−</button>
+      <button class="btn small" data-goalplus="${t.id}">+</button>
+      <input type="number" data-goallogval="${t.id}" placeholder="log">
+      <button class="btn small gold" data-goallog="${t.id}">Add</button>
+    </div>`;
+  }
+  const blockHeight=Math.max(win.dur,18);
+  // Purple: the gap between the scheduled start and when the timer actually started late.
+  const purpleHTML = win.lateMin>0 ? `<div class="cal-seg-purple" style="height:${(win.lateMin/win.dur)*blockHeight}px" title="Started ${Math.round(win.lateMin)} min late"></div>` : '';
+  // Green (early): the gap between the actual early start and the originally scheduled time.
+  const earlyGreenHTML = win.earlyMin>0 ? `<div class="cal-seg-green" style="top:0;height:${(win.earlyMin/win.dur)*blockHeight}px" title="Started ${Math.round(win.earlyMin)} min early"></div>` : '';
+  // Green (extension): time added on top via "+5 minutes", from the moment it was requested to the (current) end.
+  let greenHTML='';
+  if(win.extendedFromMin!=null){
+    const greenTop=Math.max(0, win.extendedFromMin-win.startMin);
+    const greenHeightMin=Math.max(0, win.dur-greenTop);
+    if(greenHeightMin>0) greenHTML=`<div class="cal-seg-green" style="top:${(greenTop/win.dur)*blockHeight}px;height:${(greenHeightMin/win.dur)*blockHeight}px" title="Extended time"></div>`;
+  }
+  return `<div class="cal-block tier-${t.priority} ${active?'active':''} ${t.done?'done':''}" style="top:${win.startMin}px;height:${blockHeight}px;">
+    ${purpleHTML}${earlyGreenHTML}${greenHTML}
+    <div class="cal-block-title" style="position:relative;z-index:2">${esc(t.name)}${t.done?' ✓':''}</div>
+    <div class="cal-block-time" style="position:relative;z-index:2">${fmtHM(win.startMin)} – ${fmtHM(win.endMin)}</div>
+    <div style="position:relative;z-index:2">${liveHTML}${goalHTML}</div>
+  </div>`;
+}
+function renderCalendar(){
+  const grid=document.getElementById('calGrid'); if(!grid) return;
+  const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
+  let hoursHTML='';
+  for(let h=0;h<24;h++){ hoursHTML+=`<div class="cal-hour" style="top:${h*60}px">${fmtHM(h*60)}</div>`; }
+  const blocks=state.tasks.map(t=>{ const win=taskWindow(t); return win?calBlockHTML(t,win):''; }).join('');
+  const todayReminders=state.reminders.filter(r=>r.date===dayKey());
+  const reminderBlocks=todayReminders.map(r=>{const parts=(r.time||'00:00').split(':').map(Number);const mins=(parts[0]||0)*60+(parts[1]||0);return `<div class="cal-reminder ${r.done?'done':''}" style="top:${mins}px" title="Reminder: ${escAttr(r.name)}">🔔 ${esc(r.name)} · ${esc(r.time||'')}</div>`;}).join('');
+  grid.innerHTML=hoursHTML+`<div class="cal-now" style="top:${nowMin}px"></div>`+blocks+reminderBlocks
+    + (state.tasks.some(t=>taskWindow(t))||todayReminders.length ? '' : '<div class="cal-empty" style="position:absolute;top:0;left:70px">No tasks or reminders scheduled today yet.</div>');
+}
+
+/* ---------------- habits ---------------- */
+function passesGoal(h,value){
+  if(h.entryType==='clarification') return value==='Yes';
+  if(!h.goalType||h.goalType==='none') return false;
+  const n=Number(value);
+  return h.goalType==='min'?n>=h.target:h.goalType==='max'?n<=h.target:n===h.target;
+}
+function goalText(h){
+  if(h.entryType==='clarification') return 'Log Yes or No';
+  const symbols={min:'≥',max:'≤',equal:'='};
+  return h.goalType==='none' ? 'Tick when done' : `Goal ${symbols[h.goalType]} ${h.target} ${esc(h.unit||'')}`;
+}
+function logControl(h,entry,attr){
+  return h.entryType==='clarification'
+    ? `<select data-${attr}="${h.id}"><option value="">Log…</option><option ${entry.value==='Yes'?'selected':''}>Yes</option><option ${entry.value==='No'?'selected':''}>No</option></select>`
+    : `<input class="goal-input" type="number" data-${attr}="${h.id}" value="${entry.value??''}" placeholder="Log">`;
+}
+function progressMessage(h, entry){
+  let percent=0;
+  if(h.entryType==='number' && h.goalType==='min' && h.target){
+    percent=Math.min(100, ((Number(entry.value)||0)/h.target)*100);
+  }
+  if(percent>95) return 'You are so close!';
+  if(percent>=50) return "You're getting pretty close.";
+  if(percent>=5) return 'Not quite there!';
+  return 'Hurry Up!';
+}
+function habitRow(x,entries){
+  const entry=entries[x.id]||{};
+  const goal=(x.goalType&&x.goalType!=='none')||x.entryType==='clarification';
+  const detail=goal? `<span class="time">${goalText(x)}</span>${logControl(x,entry,'habitvalue')}` : '';
+  return `<div class="habit ${entry.done?'done':entry.failed?'fail':''}">
+    <input class="check" type="checkbox" data-habit="${x.id}" ${entry.done?'checked':''} ${goal?'disabled':''}>
+    <span class="name">${esc(x.name)}</span>${detail}
+    <span class="score">${entry.done?'Done':entry.failed?progressMessage(x,entry):''}</span>
+    <button class="btn small danger" data-del-habit="${x.id}">×</button>
+  </div>`;
+}
+function renderHabits(){
+  const entries=state.history[dayKey()]||{};
+  $('#habitOpen').innerHTML=state.habits.filter(x=>!(entries[x.id]||{}).done).map(x=>habitRow(x,entries)).join('') || '<div class="empty">Nothing waiting today.</div>';
+  $('#habitDone').innerHTML=state.habits.filter(x=>(entries[x.id]||{}).done).map(x=>habitRow(x,entries)).join('') || '<div class="empty">None yet today.</div>';
+}
+
+/* ---------------- squad / upgrade modal ---------------- */
+function squadCardHTML(p,i){
+  const r=rating(p), tier=tierOf(r), keys=statKeysFor(p.pos);
+  return `<article class="player tier-${tier.key} ${i===state.selected?'active':''}" data-select="${i}">
+    <div class="num">#${i+1} ${p.pos}</div>
+    <img class="avatar" src="${avatarUrl(p.avatarSeed)}" alt="">
+    <div class="pname">${esc(p.name)} <span class="flag">${p.country.c}</span></div>
+    <div class="rating">${r}</div>
+    <div class="tier-badge">${tier.label} · Rep +${p.rep}</div>
+    <div class="stats">${keys.map(s=>`<span>${s} ${p.stats[s]}</span>`).join('')}</div>
+  </article>`;
+}
+function renderSquad(){
+  const p=state.players[state.selected], progress=levelInfo(), r=rating(p), tier=tierOf(r);
+  $('#managerLevel').textContent=`Manager Level ${level()}`;
+  $('#xpText').textContent=`${progress.into} / ${progress.need} XP to next level`;
+  $('#xpFill').style.width=(progress.into/progress.need*100)+'%';
+  $('#teamOverall').textContent=`Team OVR ${ovr()}`;
+  $('#playerInstruction').textContent=`Selected: #${state.selected+1} ${p.pos} — ${p.name}`;
+  $('#statPanel').innerHTML=`
+    <div class="current-player-mini">
+      <img class="avatar" src="${avatarUrl(p.avatarSeed)}" alt="">
+      <div><b>${esc(p.name)}</b> <span class="flag">${p.country.c}</span><br>
+      <small>#${state.selected+1} ${p.pos} · ${tier.label} · OVR ${r} · Rep +${p.rep}</small><br>
+      <small class="hint" style="margin:0">Key stats: ${KEY_STATS_LABEL[p.pos]||''}</small></div>
+    </div>
+    ${state.lastUpgrade?`<div class="upgrade-banner">⚡ ${esc(state.lastUpgrade)}</div>`:''}
+    <p>${state.points} point${state.points===1?'':'s'} to spend (shared across the squad)</p>
+    <button class="btn gold" id="openUpgrade">Open Upgrade Card</button>
+    <button class="btn" id="ngpBtn">New Game Plus</button>
+  `;
+  $('#squadList').innerHTML=state.players.map((pl,i)=>squadCardHTML(pl,i)).join('');
+}
+function upgradeModalHTML(){
+  const p=state.players[state.selected], r=rating(p), tier=tierOf(r), keys=statKeysFor(p.pos);
+  return `<div class="modal-overlay" id="upgradeOverlay">
+    <div class="modal-card-lg tier-${tier.key}">
+      <div class="upgrade-face">
+        <img class="avatar lg" src="${avatarUrl(p.avatarSeed)}" alt="">
+        <div class="pname-lg">${esc(p.name)} <span class="flag">${p.country.c}</span></div>
+        <div class="upgrade-title">#${state.selected+1} ${p.pos} · ${tier.label} · Rep +${p.rep}</div>
+        <div class="upgrade-rating">${r}</div>
+      </div>
+      <div class="stats">${keys.map(s=>`<span>${s} ${p.stats[s]}</span>`).join('')}</div>
+      <p>${state.points} point${state.points===1?'':'s'} to spend</p>
+      <div class="statControls">${keys.map(s=>`<button data-stat="${s}">↑ ${s}<br><small>${p.stats[s]} → ${p.stats[s]+1}</small></button>`).join('')}</div>
+      <p style="margin-top:14px"><button class="btn" id="closeUpgrade">Close</button></p>
+    </div>
+  </div>`;
+}
+function deleteConfirmModalHTML(){
+  if(!pendingDelete) return '';
+  const label=pendingDelete.type==='section'?'this section':pendingDelete.type==='reminder'?'this reminder':'this task';
+  return `<div class="modal-overlay" id="deleteConfirmOverlay"><div class="modal-card-lg" style="border-color:var(--red);max-width:380px"><h2>Are you sure?</h2><p>Do you want to permanently remove ${label}?</p><p><button class="btn danger" id="confirmDeleteYes">Yes</button> <button class="btn" id="confirmDeleteNo">No</button></p></div></div>`;
+}
+function performPendingDelete(){
+  if(!pendingDelete) return;
+  const action=pendingDelete; pendingDelete=null;
+  if(action.type==='task') state.tasks=state.tasks.filter(x=>x.id!==action.id);
+  else if(action.type==='reminder') state.reminders=state.reminders.filter(x=>x.id!==action.id);
+  else if(action.type==='section') deleteTaskSection(action.id);
+  save(); render();
+}
+
+function confirmModalHTML(taskId){
+  const t=state.tasks.find(x=>x.id===taskId);
+  if(!t) return '';
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      <h2>⏰ Time's up!</h2>
+      <p>Did you finish "${esc(t.name)}"?</p>
+      <p><button class="btn gold" id="taskDoneYes">Yes</button> <button class="btn danger" id="taskDoneNo">Not yet</button></p>
+    </div>
+  </div>`;
+}
+function incompleteChoiceModalHTML(taskId){
+  const t=state.tasks.find(x=>x.id===taskId);
+  if(!t) return '';
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      <h2>Still working on it?</h2>
+      <p>"${esc(t.name)}" ran out of time. What now?</p>
+      <p><button class="btn gold" data-extendtask="${t.id}">+5 more minutes</button></p>
+      <p><button class="btn" data-movelater="${t.id}">Move for later today</button></p>
+      <p><button class="btn" data-dotomorrow="${t.id}">Do it tomorrow instead</button></p>
+    </div>
+  </div>`;
+}
+function doItTomorrow(taskId){
+  const t=state.tasks.find(x=>x.id===taskId);
+  if(t){
+    t.startedAt=null; t.firstStartedAt=null; t.elapsedMs=0; t.extendedFromMin=null;
+    t.awaitingConfirm=false; t.done=false;
+    t.notified={half:false,five:false,done:false,upcoming:false};
+    notify('Saved for tomorrow', `"${t.name}" will be ready again tomorrow — no penalty today.`);
+  }
+  incompleteChoiceFor=null;
+  save(); render();
+}
+function moveLaterModalHTML(taskId){
+  const t=state.tasks.find(x=>x.id===taskId);
+  if(!t) return '';
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      <h2>Move "${esc(t.name)}"</h2>
+      <p class="hint">Pick a new start time.</p>
+      <input id="moveLaterInput" type="time" value="${escAttr(t.time||'')}">
+      <p style="margin-top:14px"><button class="btn gold" id="saveMovedTime">Save</button></p>
+    </div>
+  </div>`;
+}
+function syncChoiceModalHTML(){
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      <h2>☁️ Cloud save found</h2>
+      <p>Which copy should win?</p>
+      <p><button class="btn gold" id="overwriteLocalBtn">Use Cloud Save</button></p>
+      <p><button class="btn" id="overwriteCloudBtn">Use Local Data</button></p>
+    </div>
+  </div>`;
+}
+function clubNameModalHTML(){
+  const existing=state.teamName;
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      <h2>⚽ ${existing?'Rename your club':'Name your club'}</h2>
+      <p class="hint">Saved on this device — asked once.</p>
+      <input id="clubNameInput" type="text" placeholder="e.g. Riverside FC" maxlength="30" value="${escAttr(existing||'')}" autofocus>
+      <p style="margin-top:14px">
+        <button class="btn gold" id="clubNameSubmit">${existing?'Save':'Start Career'}</button>
+        ${existing?'<button class="btn" id="cancelRename">Cancel</button>':''}
+      </p>
+    </div>
+  </div>`;
+}
+function loginModalHTML(){
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--gold)">
+      ${ffmWordmark(0.55)}
+      <p class="hint" style="margin-top:14px">Sign in with Google to sync your club across devices.</p>
+      ${authError?`<p style="color:var(--red);font-size:13px;font-weight:bold">${esc(authError)}</p>`:''}
+      <p><button class="btn gold" id="googleSignInBtn">🔵 Sign in with Google</button></p>
+      <p><button class="btn" id="skipSignInBtn">Continue without signing in</button></p>
+    </div>
+  </div>`;
+}
+function dailyResetModalHTML(){
+  const s=state.dailyResetSummary;
+  if(!s) return '';
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="border-color:var(--red)">
+      <h2>📋 Daily Reset</h2>
+      <p>${s.missed.length? `${s.missed.length} habit${s.missed.length===1?'':'s'} weren't completed yesterday and reset: ${s.missed.map(esc).join(', ')}.` : 'All habits were completed yesterday — nice work!'}</p>
+      ${s.xpLost>0?`<p style="color:var(--red);font-weight:bold">−${s.xpLost} XP</p>`:''}
+      <p><button class="btn gold" id="dismissDailyReset">Got it</button></p>
+    </div>
+  </div>`;
+}
+function prematchModalHTML(){
+  const opp=getTodayOpponent();
+  const homeList=state.players.map(p=>`<span class="summary-chip">${p.pos} ${esc(p.name)} ${rating(p)}</span>`).join('');
+  const awayList=(opp.roster||[]).map(p=>`<span class="summary-chip">${p.pos} ${esc(p.name)} ${p.rating}</span>`).join('');
+  return `<div class="modal-overlay">
+    <div class="modal-card-lg" style="max-width:520px">
+      <h2>Kickoff: ${esc(state.teamName||'Your Club')} vs ${esc(opp.name)}</h2>
+      <p class="hint">Formation 4-3-3 both sides</p>
+      <div style="display:flex;gap:16px;text-align:left;flex-wrap:wrap;justify-content:center">
+        <div><b>${esc(state.teamName||'Your Club')}</b> (OVR ${ovr()})<div class="roster-strip">${homeList}</div></div>
+        <div><b>${esc(opp.name)}</b> (OVR ${opp.rating})<div class="roster-strip">${awayList}</div></div>
+      </div>
+      <p class="hint" style="margin-top:14px;margin-bottom:4px">Starting mentality (can switch live during the match too)</p>
+      ${mentalityBarHTML(preMatchMentality,'prematchmentality')}
+      <p style="margin-top:16px"><button class="btn gold" id="kickoffBtn">Kickoff ▶</button> <button class="btn" id="cancelPrematch">Cancel</button></p>
+    </div>
+  </div>`;
+}
+function loadingModalHTML(){
+  return `<div class="modal-overlay"><div class="modal-card-lg" style="border-color:var(--gold)"><h2>☁️ Checking your cloud profile…</h2><p class="hint">One moment.</p></div></div>`;
+}
+function openUpgradeModal(){ upgradeModalOpen=true; renderModalRoot(); }
+function closeUpgradeModal(){ upgradeModalOpen=false; renderModalRoot(); }
+let lastModalSig=null;
+function renderModalRoot(){
+  const root=$('#upgradeModalRoot');
+  if(matchLive){ renderMatchLive(); lastModalSig=null; return; }
+  let html='', sig=null;
+  if(pendingDelete){ sig='delete:'+pendingDelete.type+':'+pendingDelete.id; html=deleteConfirmModalHTML(); }
+  else if(prematchOpen){ sig='prematch'; html=prematchModalHTML(); }
+  else if(authResolving){ sig='loading'; html=loadingModalHTML(); }
+  else if(fbConfigured() && !currentUser && (!state.skippedSignIn || authError)){ sig='login:'+authError; html=loginModalHTML(); }
+  // Cloud sync choice MUST be resolved before the club-name gate — otherwise
+  // a new device always prompts for a brand new club name before it ever
+  // gets a chance to offer the existing cloud save, creating a duplicate
+  // profile instead of loading the real one.
+  else if(syncChoiceOpen){ sig='sync'; html=syncChoiceModalHTML(); }
+  else if(!state.teamName||renamingClub){ sig='club:'+renamingClub; html=clubNameModalHTML(); }
+  else if(state.dailyResetSummary){ sig='reset'; html=dailyResetModalHTML(); }
+  else if(confirmQueue.length>0){ sig='confirm:'+confirmQueue[0]; html=confirmModalHTML(confirmQueue[0]); }
+  else if(incompleteChoiceFor){ sig='incomplete:'+incompleteChoiceFor; html=incompleteChoiceModalHTML(incompleteChoiceFor); }
+  else if(moveLaterFor){ sig='movelater:'+moveLaterFor; html=moveLaterModalHTML(moveLaterFor); }
+  else if(upgradeModalOpen){ const player=state.players[state.selected]; sig='upgrade:'+state.selected+':'+state.points+':'+(player?JSON.stringify(player.stats):''); html=upgradeModalHTML(); }
+  else { if(lastModalSig!==null){ root.innerHTML=''; lastModalSig=null; } return; }
+  // Critical fix: if the exact same modal is already showing, don't destroy
+  // and recreate it — that was wiping out whatever the user was mid-typing
+  // (like the reschedule time field) every time an unrelated background
+  // event (a timer tick, another task's notification, etc) called render().
+  if(sig===lastModalSig) return;
+  lastModalSig=sig;
+  root.innerHTML=html;
+}
+
+/* ---------------- matches / season ---------------- */
+function canPlayToday(){ return state.season.lastPlayDate!==dayKey(); }
+function seasonComplete(){ return state.season.gamesPlayed>=TIERS[tierIndexForRating(ovr())].matchCount; }
+function pickOpponent(){
+  const myTier=tierIndexForRating(ovr());
+  const sameTier=state.cpuTeams.filter(t=>t.tier===myTier);
+  const pool=sameTier.length ? sameTier : state.cpuTeams;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function getTodayOpponent(){
+  if(!state.season.todayOpponent || state.season.todayOpponent.date!==dayKey()){
+    const o=pickOpponent();
+    state.season.todayOpponent={id:o.id,name:o.name,rating:o.rating,crestSeed:o.crestSeed,roster:o.roster,date:dayKey()};
+    save();
+  }
+  return state.season.todayOpponent;
+}
+const REPORTS={
+  win:['A dominant display.','Clinical in front of goal.','The new signings are paying off.'],
+  draw:['A scrappy, even contest.','Chances at both ends, level scoreline.'],
+  loss:['A tough afternoon.','Outclassed for large spells.','Missing pieces exposed today.']
+};
+const MENTALITY={
+  attacking:{label:'Attacking', us:1.50, them:1.30, shift:9},
+  control:{label:'Control', us:1.00, them:1.00, shift:0},
+  counter:{label:'Counter', us:1.15, them:0.85, shift:-3},
+  contain:{label:'Contain', us:0.80, them:0.65, shift:-6},
+  defensive:{label:'Defensive', us:0.60, them:0.45, shift:-12},
+  overload:{label:'Overload', us:1.85, them:1.60, shift:14}
+};
+function baseChancePerMin(gap){ return Math.max(0.015, Math.min(0.07, 0.035+gap/2500)); }
+function pickWeightedScorer(){
+  const outfield=state.players.filter(p=>p.pos!=='GK');
+  const weights=outfield.map(p=>1+p.stats.SHO);
+  const total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total, chosen=outfield[0];
+  for(let i=0;i<outfield.length;i++){ if(r<weights[i]){ chosen=outfield[i]; break; } r-=weights[i]; }
+  return chosen;
+}
+function simulateTierMatchday(){
+  // Advances every OTHER team in the user's current tier by one fixture too,
+  // so the standings table updates for the whole division, not just "You".
+  const myTier=tierIndexForRating(ovr());
+  const teams=state.cpuTeams.filter(t=>t.tier===myTier);
+  const shuffled=[...teams].sort(()=>Math.random()-0.5);
+  for(let i=0;i+1<shuffled.length;i+=2){
+    const a=shuffled[i], b=shuffled[i+1];
+    const gap=a.rating-b.rating;
+    let result;
+    if(Math.random()<0.10) result='draw';
+    else if(Math.abs(gap)<=7) result=Math.random()<0.5?'a':'b';
+    else result=gap>0?'a':'b';
+    let aScore,bScore;
+    if(result==='draw'){ aScore=bScore=Math.floor(Math.random()*3); }
+    else if(result==='a'){ bScore=Math.floor(Math.random()*3); aScore=bScore+1+Math.floor(Math.random()*3); }
+    else { aScore=Math.floor(Math.random()*3); bScore=aScore+1+Math.floor(Math.random()*3); }
+    a.gf=(a.gf||0)+aScore; a.ga=(a.ga||0)+bScore;
+    b.gf=(b.gf||0)+bScore; b.ga=(b.ga||0)+aScore;
+    if(result==='draw'){ a.draws=(a.draws||0)+1; b.draws=(b.draws||0)+1; a.pts=(a.pts||0)+1; b.pts=(b.pts||0)+1; }
+    else if(result==='a'){ a.wins=(a.wins||0)+1; b.losses=(b.losses||0)+1; a.pts=(a.pts||0)+3; }
+    else { b.wins=(b.wins||0)+1; a.losses=(a.losses||0)+1; b.pts=(b.pts||0)+3; }
+  }
+}
+function standingsHTML(){
+  const myTierIdx=tierIndexForRating(ovr());
+  const tierInfo=TIERS[myTierIdx];
+  const teams=state.cpuTeams.filter(t=>t.tier===myTierIdx).map(t=>({
+    name:t.name, p:(t.wins||0)+(t.draws||0)+(t.losses||0), w:t.wins||0, d:t.draws||0, l:t.losses||0, gf:t.gf||0, ga:t.ga||0, pts:t.pts||0, isUser:false
+  }));
+  teams.push({
+    name:state.teamName||'You', p:state.season.gamesPlayed, w:state.season.wins, d:state.season.draws, l:state.season.losses,
+    gf:state.season.goalsFor, ga:state.season.goalsAgainst, pts:state.season.wins*3+state.season.draws, isUser:true
+  });
+  teams.forEach(t=>t.gd=t.gf-t.ga);
+  teams.sort((a,b)=> b.pts-a.pts || b.gd-a.gd || b.gf-a.gf);
+  return `<h3 style="margin-top:20px">${esc(tierInfo.label)} Standings <span class="hint" style="margin:0">(OVR ${tierInfo.min}-${tierInfo.max-1})</span></h3>
+  <div style="overflow-x:auto"><table class="standings-table">
+    <tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr>
+    ${teams.map((t,i)=>`<tr class="${t.isUser?'me':''}"><td>${i+1}</td><td>${esc(t.name)}${t.isUser?' (You)':''}</td><td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.gf}</td><td>${t.ga}</td><td>${t.gd>=0?'+':''}${t.gd}</td><td><b>${t.pts}</b></td></tr>`).join('')}
+  </table></div>`;
+}
+function applyMatchResult(us, opp, result, usScore, themScore, scorers, text){
+  scorers.forEach(name=>{ state.season.scorers[name]=(state.season.scorers[name]||0)+1; });
+  state.season.gamesPlayed++; state.season.goalsFor+=usScore; state.season.goalsAgainst+=themScore; state.season.lastPlayDate=dayKey();
+  if(result==='win') state.season.wins++; else if(result==='loss') state.season.losses++; else state.season.draws++;
+  state.matches.unshift({season:state.season.number, game:state.season.gamesPlayed, opponent:opp.name, crestSeed:opp.crestSeed, us:usScore, them:themScore, result, text, scorers, ovr:us, date:dayKey()});
+  if(state.matches.length>15) state.matches.length=15;
+  state.season.todayOpponent=null;
+  simulateTierMatchday();
+  notify('Full time', `${state.teamName||'Your club'} ${usScore}–${themScore} ${opp.name}`);
+  save();
+}
+
+/* ---------------- 2D match visualizer (event-driven, with commentary) ---------------- */
+const FORMATION_XY=[[8,50],[20,15],[18,38],[18,62],[20,85],[32,30],[32,50],[32,70],[42,15],[42,85],[44,50]];
+const QUIET_LINES=[
+  'Patient build-up play in midfield.',
+  'Tactical jockeying for position.',
+  'A routine throw-in.',
+  'Possession shifts back to the defense.',
+  'A cagey passage of play.',
+  'Both sides probing for an opening.',
+  'The ball is worked out to the wing.',
+  'A tidy passing move fizzles out.',
+  'Nothing doing — reset from the back.',
+  'A firm but fair challenge in midfield.',
+  'The keeper takes his time with the goal kick.',
+  'A crossfield ball finds no one in space.'
+];
+let matchLive=null; // {opp, minute, events:[{min,text,big}], usLive, themLive, scorers, mentality, pUsBase, pThemBase, done, timerId}
+let prematchOpen=false;
+let preMatchMentality='control';
+function openPrematch(){
+  if(seasonComplete()||!canPlayToday()||!dailyChecklistStatus().ready) return;
+  preMatchMentality='control';
+  prematchOpen=true; renderModalRoot();
+}
+function closePrematch(){ prematchOpen=false; renderModalRoot(); }
+function setPreMatchMentality(m){ preMatchMentality=m; renderModalRoot(); }
+function kickoff(){
+  const us=ovr(), opp=getTodayOpponent(), them=opp.rating, gap=us-them;
+  prematchOpen=false;
+  matchLive={
+    opp, minute:0, events:[{min:0,text:'Kickoff!',big:true}], usLive:0, themLive:0, scorers:[], done:false,
+    mentality:preMatchMentality,
+    usShots:0, themShots:0, possessionUsTotal:0, possessionThemTotal:0,
+    pUsBase:baseChancePerMin(gap), pThemBase:baseChancePerMin(-gap),
+    pitchPlayers:{home:FORMATION_XY.map(c=>clampPitchPoint({x:c[0],y:c[1]})),away:FORMATION_XY.map(c=>clampPitchPoint({x:100-c[0],y:c[1]}))}
+  };
+  matchLive.ballPosition={x:50,y:35};
+  matchLive.highlightUntil=0;
+  matchLive.currentPassage=createPassage('home','pass','Kickoff!',0);
+  renderModalRoot();
+  // 90 game-minutes over exactly 2 real-time minutes = 120000ms / 90.
+  matchLive.timerId=setInterval(tickMatchClock, 1333);
+}
+function setLiveMentality(m){
+  if(!matchLive || matchLive.done) return;
+  matchLive.mentality=m;
+  renderMatchLive(); // full rebuild is fine here — this only happens on an explicit click, not every tick
+}
+function clampPitchPoint(point){
+  return {
+    x: Math.max(2, Math.min(98, point.x)),
+    y: Math.max(3, Math.min(67, point.y))
+  };
+}
+function isThreateningMoment(type){
+  return ['chance','shot','save','goal'].includes(type);
+}
+function createPassage(side, type, text, minute){
+  const direction=side==='home'?1:-1;
+  const current=matchLive.ballPosition||{x:50,y:35};
+  const from=clampPitchPoint({x:current.x,y:current.y});
+  let toX, toY;
+  const attackingThreat=isThreateningMoment(type);
+
+  if(type==='goal'||type==='shot'){
+    toX=side==='home'?97:3;
+    toY=32+(Math.random()-.5)*10;
+  }else if(type==='save'){
+    // A saved effort finishes at the goalkeeper's area rather than passing through the net.
+    toX=side==='home'?94:6;
+    toY=35+(Math.random()-.5)*9;
+  }else if(type==='chance'){
+    toX=side==='home'?82+Math.random()*9:18-Math.random()*9;
+    toY=31+(Math.random()-.5)*23;
+  }else if(type==='dribble'){
+    toX=from.x+direction*(13+Math.random()*19);
+    toY=from.y+(Math.random()-.5)*23;
+  }else{
+    // Build-up play can progress, recycle possession, or switch across the pitch.
+    const switchPlay=Math.random()<.22;
+    const recycle=Math.random()<.27;
+    const distance=recycle?(5+Math.random()*12):(8+Math.random()*18);
+    toX=from.x+direction*(recycle?-distance:distance);
+    toY=switchPlay?67-from.y+(Math.random()-.5)*9:from.y+(Math.random()-.5)*17;
+  }
+
+  const to=clampPitchPoint({x:toX,y:toY});
+  const bend=(Math.random()-.5)*(type==='dribble'?25:attackingThreat?15:23);
+  const via=clampPitchPoint({
+    x:(from.x+to.x)/2+direction*(type==='dribble'?5:Math.random()*4),
+    y:(from.y+to.y)/2+bend
+  });
+  const route=type==='shot'||type==='goal'||type==='save'
+    ? 'shot'
+    : type==='chance'?'chance'
+    : type==='dribble'?'dribble'
+    : Math.abs(to.y-from.y)>19?'switch'
+    : to.x*direction>from.x*direction?'build-up':'recycle';
+
+  const passage={
+    min:minute,
+    text,
+    big:attackingThreat,
+    passage:{side,type,route,from,via,to}
+  };
+  matchLive.ballPosition=to;
+  return passage;
+}
+function simulateOneMinute(playSound){
+  const mod=MENTALITY[matchLive.mentality]||MENTALITY.control;
+  const pUs=matchLive.pUsBase*mod.us, pThem=matchLive.pThemBase*mod.them;
+  const usPoss=Math.max(30,Math.min(70,50+(pUs-pThem)*180));
+  matchLive.possessionUsTotal+=usPoss;
+  matchLive.possessionThemTotal+=(100-usPoss);
+
+  const attackChance=Math.min(.92,pUs+pThem);
+  let side=Math.random()<(pUs/Math.max(.0001,pUs+pThem))?'home':'away';
+  let type='pass';
+  let text='';
+  if(Math.random()<attackChance){
+    const roll=Math.random();
+    if(roll<.055){
+      type='goal';
+      if(side==='home'){
+        matchLive.usShots++;
+        matchLive.usLive++;
+        const scorer=pickWeightedScorer();
+        matchLive.scorers.push(scorer.name);
+        text=`GOAL! ${esc(scorer.name)} (${matchLive.usLive}-${matchLive.themLive})`;
+      }else{
+        matchLive.themShots++;
+        matchLive.themLive++;
+        text=`GOAL! ${esc(matchLive.opp.name)} (${matchLive.usLive}-${matchLive.themLive})`;
+      }
+      if(playSound) playAlarm();
+    }else if(roll<.25){
+      type='save';
+      if(side==='home'){
+        matchLive.usShots++;
+        text=`Key Save! ${esc(matchLive.opp.name)}'s keeper denies ${esc(state.teamName||'you')}`;
+      }else{
+        matchLive.themShots++;
+        text=`Key Save! Your keeper denies ${esc(matchLive.opp.name)}`;
+      }
+    }else if(roll<.43){
+      type='shot';
+      if(side==='home'){
+        matchLive.usShots++;
+        text=`Shot on target from ${esc(state.teamName||'your side')}!`;
+      }else{
+        matchLive.themShots++;
+        text=`A shot from ${esc(matchLive.opp.name)}!`;
+      }
+    }else if(roll<.63){
+      type='dribble';
+      text=side==='home'
+        ? `${esc(state.teamName||'Your side')} drive forward with the ball.`
+        : `${esc(matchLive.opp.name)} carry the ball into space.`;
+    }else if(roll<.82){
+      type='chance';
+      text=side==='home'
+        ? `Key chance developing for ${esc(state.teamName||'you')}!`
+        : `A dangerous chance is developing for ${esc(matchLive.opp.name)}!`;
+    }else{
+      type='pass';
+      text=side==='home'?'A sharp passing move through midfield.':`${esc(matchLive.opp.name)} move the ball across the pitch.`;
+    }
+  }else{
+    const quietIndex=Math.floor(Math.random()*QUIET_LINES.length);
+    text=QUIET_LINES[quietIndex];
+    type=(quietIndex===6||quietIndex===11)?'pass':'shape';
+  }
+
+  const passage=createPassage(side,type,text,matchLive.minute);
+  matchLive.currentPassage=passage;
+  matchLive.events.unshift(passage);
+  if(matchLive.events.length>60) matchLive.events.length=60;
+  matchLive.highlightUntil=passage.big?Date.now()+1250:0;
+  updatePlayerTargets(passage.passage);
+}
+function updatePlayerTargets(passage){
+  if(!matchLive) return;
+  const side=passage?passage.side:'home';
+  const focus=passage?passage.to:(matchLive.ballPosition||{x:50,y:35});
+  const home=[],away=[];
+  for(let i=0;i<FORMATION_XY.length;i++){
+    const base=FORMATION_XY[i];
+    const rolePush=i===0?0:i<=4?7:i<=7?14:21;
+    const phase=matchLive.minute*.31+i*1.47;
+    const driftY=Math.sin(phase)*3.4+Math.cos(phase*.73+i)*1.5;
+    const supportY=Math.cos(phase*.57+i*.8)*2.1;
+    // The attacking side pushes beyond halfway; the defending side compresses and tracks back.
+    const homePush=side==='home'?rolePush:-(rolePush*.38+5);
+    const awayPush=side==='away'?-rolePush:(rolePush*.38+5);
+    const homePoint=clampPitchPoint({
+      x:base[0]+homePush+(focus.x-50)*.07+Math.sin(phase+i)*1.4,
+      y:base[1]+driftY+supportY+(focus.y-35)*.045
+    });
+    const awayBase={x:100-base[0],y:base[1]};
+    const awayPoint=clampPitchPoint({
+      x:awayBase.x+awayPush-(focus.x-50)*.07-Math.sin(phase+i)*1.4,
+      y:awayBase.y+driftY+supportY+(focus.y-35)*.045
+    });
+    home.push(homePoint);
+    away.push(awayPoint);
+  }
+  matchLive.pitchPlayers={home,away};
+}
+function animateBallForPassage(passage){
+  const ball=document.getElementById('liveBall');
+  if(!ball||!passage) return;
+  const p=passage.passage||passage;
+  const from=p.from||matchLive.ballPosition||{x:50,y:35};
+  const via=p.via||from;
+  const to=p.to||via;
+  if(ball._motion) ball._motion.cancel();
+  ball.style.left=from.x+'%';
+  ball.style.top=from.y+'%';
+
+  const isThreat=isThreateningMoment(p.type);
+  const duration=p.type==='goal'?1250:p.type==='shot'||p.type==='save'?1120:p.type==='chance'?1050:p.type==='dribble'?980:870;
+  const lift=p.type==='shot'||p.type==='goal'?'-7px':'0px';
+  const keyframes=[
+    {left:from.x+'%',top:from.y+'%',transform:'translate(-50%,-50%) scale(1)'},
+    {left:via.x+'%',top:via.y+'%',transform:'translate(-50%,-50%) scale(1.12)',offset:.48},
+    {left:to.x+'%',top:to.y+'%',transform:`translate(-50%,-50%) translateY(${lift}) scale(${isThreat?1.18:1})`}
+  ];
+  ball._motion=ball.animate(keyframes,{
+    duration,
+    easing:p.type==='shot'||p.type==='goal'?'cubic-bezier(.12,.78,.2,1)':'cubic-bezier(.35,.08,.25,1)',
+    fill:'forwards'
+  });
+}
+function eventLineHTML(ev){ return `<div class="${ev.big?'hl':''}">${ev.min}' - ${ev.text}</div>`; }
+function tickMatchClock(){
+  if(!matchLive) return;
+  matchLive.minute++;
+  simulateOneMinute(true);
+  if(matchLive.minute>=90){ finishMatch(); return; }
+  updateLiveDisplay();
+}
+function updateLiveDisplay(){
+  if(!matchLive) return;
+  const clockEl=document.getElementById('liveClock');
+  if(clockEl) clockEl.textContent=matchLive.done?'FT':matchLive.minute+"'";
+  const scoreEl=document.getElementById('liveScore');
+  if(scoreEl) scoreEl.textContent=`${matchLive.usLive} - ${matchLive.themLive}`;
+
+  const latest=matchLive.currentPassage;
+  const pitch=document.getElementById('livePitch');
+  const banner=document.getElementById('pitchHighlight');
+  const activeHighlight=!!(latest&&latest.big&&Date.now()<(matchLive.highlightUntil||0));
+  if(pitch) pitch.classList.toggle('is-highlight',activeHighlight);
+  if(banner){
+    banner.textContent=activeHighlight
+      ? (latest.passage.type==='goal'?'GOAL':latest.passage.type==='save'?'KEY SAVE':latest.passage.type==='shot'?'SHOT':'KEY CHANCE')
+      : '';
+  }
+
+  const ballEl=document.getElementById('liveBall');
+  if(ballEl&&latest) animateBallForPassage(latest);
+
+  const home=matchLive.pitchPlayers&&matchLive.pitchPlayers.home;
+  const away=matchLive.pitchPlayers&&matchLive.pitchPlayers.away;
+  if(home) home.forEach((p,i)=>{
+    const el=document.getElementById('homePlayer'+i);
+    if(el){el.style.left=p.x+'%';el.style.top=p.y+'%';}
+  });
+  if(away) away.forEach((p,i)=>{
+    const el=document.getElementById('awayPlayer'+i);
+    if(el){el.style.left=p.x+'%';el.style.top=p.y+'%';}
+  });
+
+  const tickerEl=document.getElementById('liveTicker');
+  if(tickerEl) tickerEl.innerHTML=matchLive.events.slice(0,10).map(eventLineHTML).join('');
+  const hud=document.getElementById('liveHud');
+  if(hud) hud.innerHTML=matchHudHTML();
+}
+function skipToFullTime(){
+  if(!matchLive) return;
+  clearInterval(matchLive.timerId);
+  while(matchLive.minute<90){ matchLive.minute++; simulateOneMinute(false); }
+  finishMatch();
+}
+function finishMatch(){
+  if(!matchLive) return;
+  clearInterval(matchLive.timerId);
+  matchLive.done=true;
+  const usScore=matchLive.usLive, themScore=matchLive.themLive;
+  const result=usScore>themScore?'win':usScore<themScore?'loss':'draw';
+  matchLive.text=REPORTS[result][Math.floor(Math.random()*REPORTS[result].length)];
+  applyMatchResult(ovr(), matchLive.opp, result, usScore, themScore, matchLive.scorers, matchLive.text);
+  renderMatchLive();
+}
+function closeMatchLive(){ matchLive=null; render(); }
+function dotHTML(x,y,cls,label,id){
+  const safeLabel=label?esc(label):'';
+  const safeId=id?`id="${id}"`:'';
+  return `<div class="pitch-dot ${cls}" ${safeId} style="left:${x}%;top:${y}%">${safeLabel}</div>`;
+}
+function mentalityBarHTML(current, dataAttr){
+  return `<div class="mentality-bar">${Object.entries(MENTALITY).map(([key,m])=>
+    `<button class="btn small ${key===current?'gold':''}" data-${dataAttr}="${key}">${m.label}</button>`).join('')}</div>`;
+}
+function matchHudHTML(){
+  const total=matchLive.possessionUsTotal+matchLive.possessionThemTotal;
+  const usPoss=total?Math.round(matchLive.possessionUsTotal/total*100):50;
+  const themPoss=100-usPoss;
+  const momentum=Math.max(0,Math.min(100,50+(matchLive.usShots-matchLive.themShots)*5+(matchLive.usLive-matchLive.themLive)*12));
+  return `<div class="match-hud">
+    <div class="match-hud-stat">POSSESSION<b>${usPoss}% - ${themPoss}%</b></div>
+    <div class="match-hud-stat">SHOTS<b>${matchLive.usShots} - ${matchLive.themShots}</b></div>
+    <div class="match-hud-stat">MATCH TIME<b>${matchLive.minute}'</b></div>
+  </div><div class="momentum-wrap"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>${esc(state.teamName||'You')} momentum</span><span>${esc(matchLive.opp.name)}</span></div><div class="momentum-track"><span class="momentum-marker" style="left:${momentum}%"></span></div></div>`;
+}
+
+function renderMatchLive(){
+  // Full rebuild only on kickoff, mentality changes, and full time.
+  const root=$('#upgradeModalRoot'); if(!matchLive) return;
+  if(!matchLive.pitchPlayers){
+    const base=FORMATION_XY.map(c=>clampPitchPoint({x:c[0],y:c[1]}));
+    matchLive.pitchPlayers={home:base,away:base.map(p=>({x:100-p.x,y:p.y}))};
+  }
+  const homeDots=matchLive.pitchPlayers.home.map((p,i)=>dotHTML(p.x,p.y,'home',state.players[i]?state.players[i].pos:'','homePlayer'+i)).join('');
+  const awayDots=matchLive.pitchPlayers.away.map((p,i)=>dotHTML(p.x,p.y,'away',matchLive.opp.roster&&matchLive.opp.roster[i]?matchLive.opp.roster[i].pos:'','awayPlayer'+i)).join('');
+  const current=matchLive.currentPassage&&matchLive.currentPassage.passage;
+  const ballPoint=current?current.from:(matchLive.ballPosition||{x:50,y:35});
+  const ball=dotHTML(ballPoint.x,ballPoint.y,'ball','','liveBall');
+  root.innerHTML=`<div class="modal-overlay">
+    <div class="match-live-card">
+      <div class="match-scoreboard">
+        <span class="mclock" id="liveClock">${matchLive.done?'FT':matchLive.minute+"'"}</span>
+        <span class="mteam">${esc(state.teamName||'You')}</span>
+        <span class="mscore" id="liveScore">${matchLive.usLive} - ${matchLive.themLive}</span>
+        <span class="mteam">${esc(matchLive.opp.name)}</span>
+      </div>
+      <div class="pitch" id="livePitch"><div class="pitch-highlight" id="pitchHighlight"></div><svg class="pitch-markings" viewBox="0 0 100 70" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="0.65" opacity=".9"><rect x="1" y="1" width="98" height="68"/><path d="M50 1V69"/><circle cx="50" cy="35" r="9.15"/><circle cx="50" cy="35" r="0.7" fill="#fff"/><rect x="1" y="13.84" width="16.5" height="42.32"/><rect x="1" y="24.84" width="5.5" height="20.32"/><rect x="82.5" y="13.84" width="16.5" height="42.32"/><rect x="93.5" y="24.84" width="5.5" height="20.32"/><path d="M1 28.5h-1v13h1M99 28.5h1v13h-1"/><circle cx="11" cy="35" r=".65" fill="#fff"/><circle cx="89" cy="35" r=".65" fill="#fff"/></g></svg>${homeDots}${awayDots}${matchLive.done?'':ball}</div>
+      <div id="liveHud">${matchHudHTML()}</div>
+      ${matchLive.done?'':mentalityBarHTML(matchLive.mentality,'livementality')}
+      <div class="match-ticker" id="liveTicker">${matchLive.events.slice(0,10).map(eventLineHTML).join('')}</div>
+      ${matchLive.done
+        ? `<p style="margin-top:10px">${esc(matchLive.text)}</p><p><button class="btn gold" id="closeMatchLive">Continue</button></p>`
+        : `<p style="margin-top:10px"><button class="btn" id="skipToFullTime">Skip to Full Time</button></p>`}
+    </div>
+  </div>`;
+  if(!matchLive.done && matchLive.currentPassage){
+    requestAnimationFrame(()=>{
+      animateBallForPassage(matchLive.currentPassage);
+      updateLiveDisplay();
+    });
+  }
+}
+function renderMatches(){
+  const status=dailyChecklistStatus();
+  const opp=getTodayOpponent();
+  const us=ovr();
+  const myTier=TIERS[tierIndexForRating(us)];
+  const recap=seasonComplete() ? (()=>{
+    const scorers=Object.entries(state.season.scorers).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    return `<div class="season-recap">
+      <h3>🏁 Season ${state.season.number} complete!</h3>
+      <p>${state.season.wins}W – ${state.season.draws}D – ${state.season.losses}L · ${state.season.goalsFor} scored, ${state.season.goalsAgainst} conceded</p>
+      <p><b>Top scorers:</b> ${scorers.length? scorers.map(([n,g])=>`${esc(n)} (${g})`).join(', ') : 'None'}</p>
+      <button class="btn gold" id="newSeasonBtn">Start Season ${state.season.number+1}</button>
+    </div>`;
+  })() : '';
+  $('#seasonRecap').innerHTML=recap;
+  $('#seasonStatus').innerHTML=`
+    <div>${esc(myTier.label)} · Season ${state.season.number} · Game ${state.season.gamesPlayed}/${myTier.matchCount} · ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L</div>
+    <div style="margin-top:8px"><b>Today:</b> <img class="cpu-crest" src="${crestUrl(opp.crestSeed)}" alt="">${esc(state.teamName||'Your Club')} (OVR ${us}) vs ${esc(opp.name)} (OVR ${opp.rating})</div>
+    ${opp.roster ? `<details style="margin-top:6px"><summary style="cursor:pointer">View ${esc(opp.name)} roster</summary><div class="roster-strip">${opp.roster.map(p=>`<span class="summary-chip">${p.pos} ${esc(p.name)} ${p.rating}</span>`).join('')}</div></details>` : ''}
+    <div class="lockmsg" style="margin-top:8px;color:${status.ready?'var(--green)':'var(--red)'}">
+      ${status.ready ? '✔ Unlocked!' : `🔒 Finish today's habits & tasks to unlock (Habits ${status.doneHabits}/${status.totalHabits} · Tasks ${status.doneTasks}/${status.totalTasks})`}
+    </div>`;
+  const btn=$('#weekBtn');
+  if(seasonComplete()){ btn.disabled=true; btn.textContent='Season complete'; }
+  else if(!canPlayToday()){ btn.disabled=true; btn.textContent='Already played today'; }
+  else if(!status.ready){ btn.disabled=true; btn.textContent='🔒 Locked'; }
+  else { btn.disabled=false; btn.textContent=`Play today's match (Game ${state.season.gamesPlayed+1}/${myTier.matchCount})`; }
+  $('#matchReport').innerHTML=state.matches.slice(0,5).map(m=>`
+    <div class="match">
+      <h3><img class="cpu-crest" src="${crestUrl(m.crestSeed)}" alt="">Game ${m.game}: ${esc(state.teamName||'Your club')} ${m.us}–${m.them} ${esc(m.opponent)}</h3>
+      <p>${esc(m.text)}</p>
+      <p>OVR at kickoff: ${m.ovr}${m.scorers.length?` · Scorers: ${m.scorers.map(esc).join(', ')}`:''}</p>
+    </div>`).join('') || '<div class="empty">No matches played yet.</div>';
+  $('#standingsWrap').innerHTML=standingsHTML();
+}
+
+/* ---------------- statistics ---------------- */
+function chartForHabit(h,days){
+  const clarification=h.entryType==='clarification';
+  if(clarification){
+    const weeks=Array.from({length:49},(_,i)=>dayKey(i-48));
+    const yes=weeks.filter(d=>(state.history[d]||{})[h.id]?.value==='Yes').length;
+    const no=weeks.filter(d=>(state.history[d]||{})[h.id]?.value==='No').length;
+    return `<h3 style="margin-top:18px">${esc(h.name)}</h3><div class="chart-label">Last 7 weeks: Yes ${yes} · No ${no}</div>`;
+  }
+  const values=days.map(d=>{ const x=(state.history[d]||{})[h.id]; return x&&x.value!==undefined?Number(x.value):(x&&x.done?1:0); });
+  const goal=h.goalType&&h.goalType!=='none';
+  const max=Math.max(1,...values,goal?Number(h.target):1);
+  const pts=values.map((v,i)=>`${18+i*43},${110-(v/max)*88}`).join(' ');
+  const target=goal? 110-(Number(h.target)/max)*88 : null;
+  return `<h3 style="margin-top:18px">${esc(h.name)}</h3><div class="chart-label">${goalText(h)}</div>
+  <svg class="chart" viewBox="0 0 280 130" role="img" aria-label="History for ${esc(h.name)}">
+    <line x1="18" y1="110" x2="270" y2="110" stroke="#c8b88c"/>
+    ${target!==null?`<line x1="18" y1="${target}" x2="270" y2="${target}" stroke="#c99d20" stroke-dasharray="4 3"/>`:''}
+    <polyline points="${pts}" fill="none" stroke="#638c6c" stroke-width="3"/>
+    ${values.map((v,i)=>`<circle cx="${18+i*43}" cy="${110-(v/max)*88}" r="4" fill="#26382c"><title>${days[i]}: ${v}</title></circle><text x="${18+i*43}" y="125" text-anchor="middle" font-size="9" fill="#5a6657">${days[i].slice(8)}</text>`).join('')}
+  </svg>`;
+}
+function renderStatistics(){
+  const today=dayKey(), entries=state.history[today]||{};
+  const pretty=new Date(today+'T12:00:00').toLocaleDateString([], {weekday:'long',day:'numeric',month:'long'});
+  $('#statsDate').textContent=pretty;
+  const rows=state.habits.map(h=>{
+    const entry=entries[h.id]||{};
+    const automatic=h.entryType==='clarification'||h.goalType!=='none';
+    return `<div class="habit ${entry.done?'done':entry.failed?'fail':''}">
+      ${automatic?'':`<input class="check" type="checkbox" data-statdone="${h.id}" ${entry.done?'checked':''}>`}
+      <span class="name">${esc(h.name)}</span><span class="time">${goalText(h)}</span>
+      ${automatic?logControl(h,entry,'statvalue'):''}
+      <span class="score">${entry.done?'Done':entry.failed?progressMessage(h,entry):'—'}</span>
+    </div>`;
+  }).join('');
+  $('#statsToday').innerHTML=rows || '<div class="empty">Create habits first.</div>';
+  const days=Array.from({length:7},(_,i)=>dayKey(i-6));
+  $('#statsHistory').innerHTML=state.habits.length
+    ? state.habits.map(h=>chartForHabit(h,days)).join('')
+    : '<div class="empty">No history yet.</div>';
+}
+
+/* ---------------- summary ---------------- */
+function reminderIsDueSoon(r){ const due=new Date(`${r.date}T${r.time||'23:59'}`).getTime(); return Number.isFinite(due)&&due-Date.now()<=48*60*60*1000; }
+function reminderRow(r){
+  const urgent=reminderIsDueSoon(r);
+  return `<div class="task ${r.done?'done':''} ${urgent&&!r.done?'reminder-due':''}">
+    <input class="check" type="checkbox" data-reminder="${escAttr(r.id)}" ${r.done?'checked':''}>
+    <span class="name">${esc(r.name)}</span>
+    <span class="time">${esc(r.date)} ${esc(r.time)}</span>
+    <button class="btn small danger" data-del-reminder="${escAttr(r.id)}">×</button>
+  </div>`;
+}
+function renderReminders(){
+  const sorted=[...state.reminders].sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
+  const list=document.getElementById('reminderList');
+  if(list) list.innerHTML=sorted.map(reminderRow).join('') || '<div class="empty">No reminders yet.</div>';
+}
+function renderSummary(){
+  const today=dayKey(), entries=state.history[today]||{};
+  $('#summaryTeamName').textContent=state.teamName||'';
+  $('#summaryRecord').textContent=`Lv.${level()} · OVR ${ovr()} · S${state.season.number}: ${state.season.wins}W ${state.season.draws}D ${state.season.losses}L · ${state.season.gamesPlayed}/${TIERS[tierIndexForRating(ovr())].matchCount}`;
+  $('#summaryHabits').innerHTML=state.habits.slice(0,8).map(h=>habitRow(h,entries)).join('') || '<div class="empty">No habits yet.</div>';
+  $('#summaryTasks').innerHTML=state.tasks.slice(0,8).map(x=>`
+    <div class="task ${x.done?'done':''}">
+      <input class="check" type="checkbox" data-task="${escAttr(x.id)}" ${x.done?'checked':''}>
+      <span class="name">${esc(x.name)}</span>
+      <span class="time">${x.time?esc(x.time):'No time set'}</span>
+    </div>`).join('') || '<div class="empty">No tasks yet.</div>';
+  const remSorted=[...state.reminders].sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
+  $('#summaryReminders').innerHTML=remSorted.slice(0,8).map(reminderRow).join('') || '<div class="empty">No reminders yet.</div>';
+  $('#summarySquad').innerHTML=state.players.map((p,i)=>{
+    const r=rating(p), tier=tierOf(r);
+    return `<span class="summary-chip tier-${tier.key} ${i===state.selected?'active':''}">#${i+1} ${p.pos} ${r}</span>`;
+  }).join('');
+}
+
+/* ---------------- top-level render ---------------- */
+function render(){
+  try{
+    renderAuthUI();
+    const rb=$('#renameClubBtn');
+    if(rb) rb.classList.toggle('hidden', !state.teamName);
+    $('#welcomeLine').textContent = state.teamName ? `Welcome, ${state.teamName}!` : 'Habits, tasks, and your football-manager career.';
+    const progress=levelInfo();
+    $('#topLevel').textContent=`Manager Level ${progress.level}`;
+    $('#topXp').textContent=`${progress.into} / ${progress.need} XP`;
+    $('#topXpFill').style.width=(progress.into/progress.need*100)+'%';
+    renderSummary(); renderTasks(); renderCalendar(); renderReminders(); renderHabits(); renderStatistics(); renderSquad(); renderMatches();
+  } catch(err){
+    console.error('render() error (modal will still be reconciled):', err);
+  } finally {
+    // This always runs, so the modal never gets stuck showing stale state
+    // even if something above throws.
+    renderModalRoot();
+  }
+}
+
+/* ---------------- static forms ---------------- */
+$('#taskForm').onsubmit=e=>{
+  e.preventDefault(); const f=new FormData(e.target);
+  const duration=f.get('duration');
+  const task=newTask(f.get('name'), f.get('priority'), f.get('time'), duration?Number(duration):null, null, ''); task.sectionId=f.get('priority'); state.tasks.push(task);
+  save(); e.target.reset(); render();
+};
+$('#habitForm').onsubmit=e=>{ e.preventDefault(); const f=new FormData(e.target); const type=f.get('goalType'), entryType=f.get('entryType'); state.habits.push({id:id(), name:f.get('name'), goalType:type, entryType, target:entryType==='number'&&type!=='none'?Number(f.get('target')):null, unit:f.get('unit'), done:false}); save(); e.target.reset(); render(); };
+$('#reminderForm').onsubmit=e=>{ e.preventDefault(); const f=new FormData(e.target); state.reminders.push(newReminder(f.get('name'), f.get('date'), f.get('time'))); save(); e.target.reset(); render(); };
+$('#sectionForm').onsubmit=e=>{ e.preventDefault(); const f=new FormData(e.target); addTaskSection(f.get('name'),f.get('color'),f.get('xp')); e.target.reset(); };
+$('#weekBtn').onclick=()=>openPrematch();
+$('#renameClubBtn').onclick=()=>{ renamingClub=true; renderModalRoot(); };
+
+/* ---------------- delegated submit (for the dynamically-rendered club modal) ---------------- */
+function submitClubName(){
+  const input=document.getElementById('clubNameInput');
+  const v=input?input.value.trim():'';
+  if(v){ state.teamName=v; renamingClub=false; save(); render(); }
+}
+document.addEventListener('keydown',e=>{
+  if(e.target && e.target.id==='clubNameInput' && e.key==='Enter'){ e.preventDefault(); submitClubName(); }
+});
+
+/* ---------------- delegated change/click handlers ---------------- */
+document.addEventListener('change',e=>{
+  const t=e.target;
+  let handled=false;
+  if(t.id==='habitEntryType'){
+    const isNumber=t.value==='number';
+    document.getElementById('habitGoalType').classList.toggle('hidden', !isNumber);
+    document.getElementById('habitTarget').classList.toggle('hidden', !isNumber);
+    return;
+  }
+  if(t.id==='notifToggle'){
+    state.notificationsEnabled=t.checked;
+    save();
+    if(t.checked) requestNotifications();
+    $('#notifStatus').textContent=notifStatusText();
+    return;
+  }
+  if(t.dataset.task){
+    const x=state.tasks.find(x=>x.id===t.dataset.task);
+    if(x.done!==t.checked){
+      x.done=t.checked;
+      if(t.checked){ x.completedDate=dayKey(); x.startedAt=null; x.awaitingConfirm=false; }
+      else { delete x.completedDate; }
+      addXP(t.checked?taskReward(x.sectionId||x.priority):-taskReward(x.sectionId||x.priority));
+      handled=true;
+    }
+  }
+  if(t.dataset.priority){ const x=state.tasks.find(x=>x.id===t.dataset.priority); if(x){ x.priority=t.value; x.sectionId=t.value; handled=true; } }
+  if(t.dataset.duration){
+    const x=state.tasks.find(x=>x.id===t.dataset.duration);
+    if(x){ const v=t.value?Number(t.value):null; x.durationMin=v&&v>0?v:null; handled=true; }
+  }
+  if(t.dataset.habitvalue||t.dataset.statvalue){
+    const hid=t.dataset.habitvalue||t.dataset.statvalue, habit=state.habits.find(x=>x.id===hid);
+    const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
+    entry.value=habit.entryType==='clarification'?(t.value||undefined):(t.value===''?undefined:Number(t.value));
+    const pass=passesGoal(habit,entry.value), wasDone=entry.done;
+    entry.done=pass; entry.failed=entry.value!==undefined&&!pass;
+    if(pass&&!wasDone) addXP(10);
+    if(!pass&&wasDone) addXP(-10);
+    handled=true;
+  }
+  if(t.dataset.habit||t.dataset.statdone){
+    const hid=t.dataset.habit||t.dataset.statdone, habit=state.habits.find(x=>x.id===hid);
+    const log=state.history[dayKey()]||(state.history[dayKey()]={}), entry=log[hid]||(log[hid]={});
+    if(habit.goalType==='none'&&habit.entryType!=='clarification'&&entry.done!==t.checked){ entry.done=t.checked; entry.failed=false; addXP(t.checked?10:-10); handled=true; }
+  }
+  if(t.dataset.reminder){
+    const r=state.reminders.find(x=>x.id===t.dataset.reminder);
+    if(r && r.done!==t.checked){
+      r.done=t.checked;
+      if(t.checked){
+        r.completedDate=dayKey();
+        state.reminderCheckCount=(state.reminderCheckCount||0)+1;
+        if(state.reminderCheckCount%5===0){ addXP(10); notify('Reminders streak!', '+10 XP for 5 reminders checked off.'); }
+      } else { delete r.completedDate; }
+      handled=true;
+    }
+  }
+  if(t.dataset.time){ const x=state.tasks.find(x=>x.id===t.dataset.time); if(x){ x.time=t.value; x.notified={half:false,five:false,done:false,upcoming:false}; handled=true; } }
+  // Anything else (like the reschedule time picker before Save is pressed)
+  // is intentionally left alone here — re-rendering on every keystroke was
+  // exactly what wiped the field back to its old value each time.
+  if(handled){ save(); render(); }
+});
+
+document.addEventListener('click',e=>{
+  const selCard=e.target.closest('[data-select]');
+  if(selCard){ state.selected=Number(selCard.dataset.select); openUpgradeModal(); save(); render(); return; }
+
+  const t=e.target.closest('button')||e.target;
+  if(t.id==='signInBtn'){ signInWithGoogle(); }
+  if(t.id==='signOutBtn'){ signOutGoogle(); }
+  if(t.id==='googleSignInBtn'){ signInWithGoogle(); }
+  if(t.id==='skipSignInBtn'){ state.skippedSignIn=true; authError=''; saveLocal(); renderModalRoot(); }
+  if(t.id==='cancelRename'){ renamingClub=false; renderModalRoot(); }
+  if(t.id==='clubNameSubmit'){ submitClubName(); }
+  if(t.id==='overwriteLocalBtn'){
+    state=Object.assign(defaults(), pendingCloudState||{});
+    pendingCloudState=null; syncChoiceOpen=false; saveLocal(false); startCloudListener(); render();
+  }
+  if(t.id==='overwriteCloudBtn'){ pushToCloud(); pendingCloudState=null; syncChoiceOpen=false; startCloudListener(); render(); }
+  if(t.dataset.delTask){ pendingDelete={type:'task',id:t.dataset.delTask}; renderModalRoot(); }
+  if(t.dataset.delHabit){ state.habits=state.habits.filter(x=>x.id!==t.dataset.delHabit); save(); render(); }
+  if(t.dataset.delReminder){ pendingDelete={type:'reminder',id:t.dataset.delReminder}; renderModalRoot(); }
+  if(t.dataset.deleteSection){ pendingDelete={type:'section',id:t.dataset.deleteSection}; renderModalRoot(); }
+  if(t.dataset.taskup){ moveTask(t.dataset.taskup,-1); }
+  if(t.dataset.taskdown){ moveTask(t.dataset.taskdown,1); }
+  if(t.dataset.goalplus){ adjustTargetGoal(t.dataset.goalplus, 1); }
+  if(t.dataset.goalminus){ adjustTargetGoal(t.dataset.goalminus, -1); }
+  if(t.dataset.goallog){
+    const input=document.querySelector(`input[data-goallogval="${t.dataset.goallog}"]`);
+    const amount=input?Number(input.value):0;
+    if(amount) logTaskProgress(t.dataset.goallog, amount);
+  }
+  if(t.dataset.starttimer){
+    const task=state.tasks.find(x=>x.id===t.dataset.starttimer);
+    if(task){ ensureAudioCtx(); task.startedAt=Date.now(); if(!task.firstStartedAt) task.firstStartedAt=task.startedAt; task.awaitingConfirm=false; notify('Timer started', `"${task.name}" — ${task.durationMin} min countdown.`); }
+    save(); render();
+  }
+  if(t.dataset.stoptimer){
+    // Pause: bank the elapsed time, don't lose progress or reset notifications.
+    const task=state.tasks.find(x=>x.id===t.dataset.stoptimer);
+    if(task){ task.elapsedMs=taskElapsedMs(task); task.startedAt=null; }
+    save(); render();
+  }
+  if(t.dataset.timeplus){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus); if(task){ task.durationMin=(task.durationMin||0)+1; } save(); render(); }
+  if(t.dataset.timeminus){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-1); } save(); render(); }
+  if(t.dataset.timeplus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeplus1s); if(task){ task.durationMin=(task.durationMin||0)+(1/60); } save(); render(); }
+  if(t.dataset.timeminus1s){ const task=state.tasks.find(x=>x.id===t.dataset.timeminus1s); if(task){ task.durationMin=Math.max(1/60,(task.durationMin||1)-(1/60)); } save(); render(); }
+  if(t.dataset.canceltimer){
+    // Fully stop and clear this timer session (not a pause — no progress is kept).
+    const task=state.tasks.find(x=>x.id===t.dataset.canceltimer);
+    if(task){
+      task.startedAt=null; task.firstStartedAt=null; task.elapsedMs=0; task.extendedFromMin=null;
+      task.awaitingConfirm=false;
+      task.notified={half:false,five:false,done:false,upcoming:task.notified?task.notified.upcoming:false};
+      const qi=confirmQueue.indexOf(task.id); if(qi>-1) confirmQueue.splice(qi,1);
+    }
+    save(); render();
+  }
+  if(t.dataset.extendtask){ extendTaskFiveMinutes(t.dataset.extendtask); }
+  if(t.dataset.movelater){ moveTaskForLater(t.dataset.movelater); }
+  if(t.dataset.dotomorrow){ doItTomorrow(t.dataset.dotomorrow); }
+  if(t.id==='saveMovedTime'){ saveMovedTime(moveLaterFor); }
+  if(t.dataset.stat){
+    const p=state.players[state.selected];
+    if(p&&state.points>0){ p.stats[t.dataset.stat]=Math.min(99,p.stats[t.dataset.stat]+1); state.points--; state.lastUpgrade=`#${state.selected+1} ${p.pos}: ${t.dataset.stat} → ${p.stats[t.dataset.stat]}`; }
+    save(); render();
+  }
+  if(t.id==='openUpgrade'){ openUpgradeModal(); }
+  if(t.id==='closeUpgrade'){ closeUpgradeModal(); }
+  if(t.id==='confirmDeleteYes'){ performPendingDelete(); }
+  if(t.id==='confirmDeleteNo'){ pendingDelete=null; renderModalRoot(); }
+  if(t.id==='taskDoneYes'){ completeTaskFromTimer(confirmQueue[0], true); }
+  if(t.id==='taskDoneNo'){ completeTaskFromTimer(confirmQueue[0], false); }
+  if(t.id==='ngpBtn'){
+    const keep={teamName:state.teamName, ngp:(state.ngp||0)+1, cpuTeams:state.cpuTeams, season:state.season, matches:state.matches,
+      tasks:state.tasks, habits:state.habits, history:state.history, reminders:state.reminders, reminderCheckCount:state.reminderCheckCount, taskSections:state.taskSections, notificationsEnabled:state.notificationsEnabled};
+    state=defaults(); Object.assign(state, keep);
+    closeUpgradeModal(); save(); render();
+  }
+  if(t.id==='newSeasonBtn'){
+    state.season={number:state.season.number+1, gamesPlayed:0, wins:0, draws:0, losses:0, goalsFor:0, goalsAgainst:0, scorers:{}, lastPlayDate:null, todayOpponent:null};
+    (state.cpuTeams||[]).forEach(team=>{team.wins=0;team.draws=0;team.losses=0;team.gf=0;team.ga=0;team.pts=0;});
+    save(); render();
+  }
+  if(t.id==='kickoffBtn'){ kickoff(); }
+  if(t.dataset.prematchmentality){ setPreMatchMentality(t.dataset.prematchmentality); }
+  if(t.dataset.livementality){ setLiveMentality(t.dataset.livementality); }
+  if(t.id==='cancelPrematch'){ closePrematch(); }
+  if(t.id==='skipToFullTime'){ skipToFullTime(); }
+  if(t.id==='closeMatchLive'){ closeMatchLive(); }
+  if(t.id==='dismissDailyReset'){ state.dailyResetSummary=null; save(); renderModalRoot(); }
+});
+
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));
+  document.querySelectorAll(`[data-tab="${b.dataset.tab}"]`).forEach(x=>x.classList.add('active'));
+  $('#'+b.dataset.tab).classList.remove('hidden');
+  if(b.dataset.tab==='calendar'){
+    renderCalendar();
+    const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
+    const sc=document.querySelector('.cal-scroll');
+    if(sc) sc.scrollTop=Math.max(0, nowMin-180);
+  }
+}));
+
+/* ---------------- init ---------------- */
+(function init(){
+  registerSW();
+  const splashSlot=document.getElementById('splashLogoSlot');
+  if(splashSlot) splashSlot.innerHTML=ffmWordmark(1.6);
+  setTimeout(()=>{
+    const splash=document.getElementById('splashScreen');
+    if(splash){ splash.classList.add('hide'); setTimeout(()=>splash.remove(), 700); }
+  }, 1400);
+  const loaded=loadLocal();
+  if(loaded){
+    state=Object.assign(defaults(), loaded);
+    if(!state.cpuTeams||!state.cpuTeams.length||!state.cpuTeams[0].roster||!state.cpuTeams[0].roster[0].stats) state.cpuTeams=genCpuTeams();
+    state.cpuTeams.forEach(t=>{
+      if(t.tier===undefined) t.tier=tierIndexForRating(t.rating);
+      if(t.wins===undefined) t.wins=0;
+      if(t.draws===undefined) t.draws=0;
+      if(t.losses===undefined) t.losses=0;
+      if(t.gf===undefined) t.gf=0;
+      if(t.ga===undefined) t.ga=0;
+      if(t.pts===undefined) t.pts=0;
+    });
+    if(!state.season) state.season={number:1,gamesPlayed:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,scorers:{},lastPlayDate:null,todayOpponent:null};
+    if(state.season.todayOpponent===undefined) state.season.todayOpponent=null;
+    if(state.season.todayOpponent && !state.season.todayOpponent.roster) state.season.todayOpponent=null;
+    if(!state.history) state.history={};
+    if(state.notificationsEnabled===undefined) state.notificationsEnabled=false;
+    if(state.skippedSignIn===undefined) state.skippedSignIn=false;
+    if(state.selected===undefined) state.selected=state.active||0;
+    state.tasks.forEach(t=>{
+      if(t.durationMin===undefined) t.durationMin=null;
+      if(t.targetGoal===undefined) t.targetGoal=null;
+      if(t.loggedValue===undefined) t.loggedValue=0;
+      if(t.goalUnit===undefined) t.goalUnit='';
+      if(t.elapsedMs===undefined) t.elapsedMs=0;
+      if(!t.notified) t.notified={half:false,five:false,done:false,upcoming:false};
+      if(t.notified.upcoming===undefined) t.notified.upcoming=false;
+      if(t.awaitingConfirm===undefined) t.awaitingConfirm=false;
+      if(t.startedAt===undefined) t.startedAt=null;
+    });
+    if(!state.reminders) state.reminders=[];
+    state.reminders.forEach(r=>{ if(!r.notificationState) r.notificationState={oneHour:false,due:false}; });
+    [...state.tasks,...state.reminders].forEach(item=>{ if(item.done && !item.completedDate) item.completedDate=state.lastResetDate||dayKey(); });
+    if(!Array.isArray(state.taskSections)||!state.taskSections.length) state.taskSections=DEFAULT_TASK_SECTIONS.map(x=>({...x}));
+    state.taskSections=state.taskSections.map(sec=>({id:sec.id||('section-'+id()),name:sec.name||'Tasks',color:['red','yellow','blue'].includes(sec.color)?sec.color:'blue',xp:[20,40,60].includes(Number(sec.xp))?Number(sec.xp):(REWARDS[sec.color]||20)}));
+    state.tasks.forEach(task=>{ if(!task.sectionId) task.sectionId=state.taskSections.some(sec=>sec.id===task.priority)?task.priority:(state.taskSections.find(sec=>sec.color===task.priority)?.id||state.taskSections[0].id); task.priority=task.sectionId; });
+    if(state.reminderCheckCount===undefined) state.reminderCheckCount=0;
+    if(state.lastResetDate===undefined) state.lastResetDate=null;
+    if(state.dailyResetSummary===undefined) state.dailyResetSummary=null;
+    state.players.forEach((p,i)=>{
+      if(!p.name){ p.name=genPlayerName(); p.country=pickCountry(); p.avatarSeed='p'+i+'-'+id(); }
+      if(p.rep===undefined) p.rep=Math.floor(Math.random()*4);
+      const keys=statKeysFor(p.pos);
+      if(!keys.every(k=>k in p.stats)){ p.stats=Object.fromEntries(keys.map(k=>[k, p.stats[k]||0])); }
+      // One-time fix for saves created before starter stats existed: an
+      // all-zero stat block means this player predates that change.
+      if(keys.every(k=>(p.stats[k]||0)===0)){
+        const weights=WEIGHTS[p.pos]||WEIGHTS.CM;
+        const primary=new Set([...keys].sort((a,b)=>(weights[b]||0)-(weights[a]||0)).slice(0,3));
+        keys.forEach(k=>{ p.stats[k]=primary.has(k) ? 61+Math.floor(Math.random()*15) : 26+Math.floor(Math.random()*34); });
+      } else {
+        // Bump any stat still under the 26 floor from before that rule existed.
+        keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
+      }
+    });
+    (state.cpuTeams||[]).forEach(team=>{
+      (team.roster||[]).forEach(p=>{
+        const keys=statKeysFor(p.pos);
+        if(p.stats) keys.forEach(k=>{ if((p.stats[k]||0)<26) p.stats[k]=26+Math.floor(Math.random()*20); });
+      });
+    });
+  }
+  confirmQueue=state.tasks.filter(task=>task.awaitingConfirm===true).map(task=>task.id);
+  processDailyReset();
+  initFirebase();
+  render();
+})();
+</script>
+</body>
+</html>
